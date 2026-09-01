@@ -1,29 +1,45 @@
 # HELIX Requirements
 # Install with: pip install -r requirements.txt
+# Python 3.11+ required
 
-# Core AI
-ollama>=0.6.1                # Direct Ollama client (replaces langchain_ollama on Python 3.14)
-google-genai>=1.67.0         # Gemini Cloud Oracle (new SDK, replaces google-generativeai)
+# ── Core AI / Inference ───────────────────────────────────────────────────────
+ollama>=0.6.1                 # Direct Ollama client
 
-# Memory
-chromadb>=1.5.5              # Local vector store (used directly, no langchain_chroma needed)
+# ── LangGraph Orchestration ───────────────────────────────────────────────────
+langgraph>=0.2.0              # StateGraph, MemorySaver, interrupt(), Command
+langchain-core>=0.3.0         # BaseMessage, HumanMessage (langgraph dependency)
+langchain-ollama>=0.1.0       # ChatOllama for llm_call_node (falls back to direct ollama)
 
-# UI
-PyQt6>=6.10.2                # Voice HUD
+# ── PII Detection & Anonymization ─────────────────────────────────────────────
+presidio-analyzer>=2.2.0      # NER-based PII detection (Tier 2)
+presidio-anonymizer>=2.2.0    # Anonymization engine
+spacy>=3.7.0                  # NLP backbone for Presidio
+# After install, run: python -m spacy download en_core_web_sm
 
-# Voice
-SpeechRecognition>=3.15.1    # STT
-sounddevice>=0.5.5           # Mic input (replaces PyAudio - works on Python 3.14)
-openai-whisper               # Local Whisper STT (optional, heavier)
+# ── Memory / Vector Store ─────────────────────────────────────────────────────
+chromadb>=1.5.5               # Local vector store (session + persistent collections)
+sentence-transformers>=3.0.0  # all-MiniLM-L6-v2 embeddings for ChromaDB
 
-# OS Automation
-watchdog>=6.0.0              # Filesystem monitoring
-psutil>=7.0.0                # System health: CPU / RAM / disk (Phase 3)
+# ── MCP OS Stub ───────────────────────────────────────────────────────────────
+mcp>=1.0.0                    # MCP Python SDK for clipboard_stub.py
+pyperclip>=1.9.0              # Cross-platform clipboard access
 
-# LangChain (Phase 4 - kept for future cloud routing chains)
-langchain>=1.2.12
-langchain-community>=0.4.1
+# ── Utils ─────────────────────────────────────────────────────────────────────
+tiktoken>=0.7.0               # Token counting for prompt budget management
+numpy>=1.26.0                 # Numerical ops (sentence-transformers dependency)
+pydantic>=2.7.0               # Data models (SentinelResult, AgentState validation)
+typing-extensions>=4.12.0     # TypedDict, Annotated backports
 
-# Utils
-numpy
-torch
+# ── System Health ─────────────────────────────────────────────────────────────
+psutil>=7.0.0                 # CPU / RAM / disk monitoring (health check)
+
+# ── Optional: GUI (Voice HUD — descoped but left for reference) ───────────────
+# PyQt6>=6.10.2
+# SpeechRecognition>=3.15.1
+# sounddevice>=0.5.5
+# openai-whisper
+
+# ── Optional: Cloud fallback (kept for Phase 4 / cloud oracle) ────────────────
+# google-genai>=1.67.0
+# langchain>=1.2.12
+# langchain-community>=0.4.1

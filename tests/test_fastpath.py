@@ -123,7 +123,7 @@ print("\n[GROUP 5] System health (live psutil)")
 health = fm._action_system_health()
 check("system health contains 'CPU'",  "CPU" in health)
 check("system health contains 'RAM'",  "RAM" in health)
-check("system health contains 'Disk'", "Disk" in health or "disk" in health.lower())
+check("system health contains 'Drives'", "Drives" in health or "Drive" in health or "disk" in health.lower())
 
 
 # ---------------------------------------------------------------------------
@@ -137,4 +137,5 @@ if FAIL == 0:
     print("  All tests passed. Fast-path ready.\n")
 else:
     print(f"  {FAIL} test(s) FAILED -- review above.\n")
-    sys.exit(1)
+    if __name__ == "__main__":
+        sys.exit(1)

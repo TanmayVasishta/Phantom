@@ -14,6 +14,11 @@ from config.settings import (
     OPENROUTER_API_KEY,
 )
 
+try:
+    from config.settings import NVIDIA_API_KEY
+except ImportError:
+    NVIDIA_API_KEY = ""
+
 
 def _openai_compat_query(base_url: str, api_key: str, model: str, prompt: str) -> str:
     """Generic OpenAI-compatible chat completion."""
@@ -47,6 +52,13 @@ class CloudOracle:
 
     PROVIDERS = [
         {
+            "name": "NVIDIA",
+            "type": "openai_compat",
+            "base_url": "https://integrate.api.nvidia.com/v1",
+            "model": "nvidia/llama-3.1-nemotron-70b-instruct",
+            "key_attr": "NVIDIA_API_KEY",
+        },
+        {
             "name": "Groq",
             "type": "openai_compat",
             "base_url": "https://api.groq.com/openai/v1",
@@ -76,6 +88,7 @@ class CloudOracle:
     ]
 
     KEYS = {
+        "NVIDIA_API_KEY":     NVIDIA_API_KEY,
         "GROQ_API_KEY":       GROQ_API_KEY,
         "DEEPSEEK_API_KEY":   DEEPSEEK_API_KEY,
         "OPENROUTER_API_KEY": OPENROUTER_API_KEY,
