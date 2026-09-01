@@ -316,12 +316,22 @@ def memory_retrieve_node(state: AgentState) -> AgentState:
 # NODE 4 — llm_call_node
 # ═══════════════════════════════════════════════════════════════════════════════
 
+_router = None
+def _get_router():
+    global _router
+    if _router is None:
+        from dotenv import load_dotenv
+        load_dotenv()
+        from providers.router import ProviderRouter
+        _router = ProviderRouter()
+    return _router
+
 def llm_call_node(state: AgentState) -> AgentState:
     """
-    Local Ollama LLM call node.
+    Multi-provider LLM call node.
 
     Constructs system prompt with injected memory_context (A-MEM style).
-    Sends anonymised messages to local Ollama via ChatOllama.
+    Sends anonymised messages to ProviderRouter (tries local first, then cloud fallbacks).
     Stores raw LLM response (still contains PII placeholders) in state.
 
     The LLM NEVER sees real PII — it only sees [PII_TYPE_N] tokens.
@@ -329,7 +339,6 @@ def llm_call_node(state: AgentState) -> AgentState:
     """
     messages = state.get("messages", [])
     memory_context = state.get("memory_context", "")
-    intent = state.get("intent", "GENERAL_QA")
 
     if not messages:
         return {**state, "llm_response": "[HELIX] No input to process."}
@@ -352,43 +361,17 @@ def llm_call_node(state: AgentState) -> AgentState:
             "they will be restored before the user sees the response."
         )
 
-    # Format messages for ChatOllama
-    formatted = [("system", system_prompt)]
+    # Format messages for router (list of dicts)
+    formatted = [{"role": "system", "content": system_prompt}]
     for msg in messages[-6:]:  # last 3 turns (6 messages) for context
         role = msg.get("role", "user")
         content = msg.get("content", "")
-        formatted.append((role, content))
+        formatted.append({"role": role, "content": content})
 
     try:
-        from langchain_ollama import ChatOllama
-        from utils.config import get_best_available_model
-
-        model = get_best_available_model()
-        llm = ChatOllama(model=model, temperature=0.3)
-        response = llm.invoke(formatted)
-        llm_text = response.content if hasattr(response, "content") else str(response)
-        logger.info("[LLM] Response received (%d chars).", len(llm_text))
-
-    except ImportError:
-        # Fallback: direct ollama SDK
-        try:
-            import ollama as _ollama
-            from utils.config import get_best_available_model
-
-            model = get_best_available_model()
-            ollama_msgs = [{"role": "system", "content": system_prompt}]
-            for msg in messages[-6:]:
-                ollama_msgs.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
-
-            resp = _ollama.chat(
-                model=model,
-                messages=ollama_msgs,
-                options={"temperature": 0.3, "num_predict": 1024},
-            )
-            llm_text = resp["message"]["content"].strip()
-        except Exception as exc:
-            logger.error("[LLM] Ollama fallback error: %s", exc)
-            llm_text = f"[HELIX] LLM call failed: {exc}"
+        router = _get_router()
+        llm_text = router.call(formatted)
+        logger.info("[LLM] Response received (%d chars) via Router.", len(llm_text))
 
     except Exception as exc:
         logger.error("[LLM] Call error: %s", exc)

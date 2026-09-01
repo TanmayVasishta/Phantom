@@ -36,3 +36,7 @@ desktop.ini
 # Misc
 *.log
 *.tmp
+
+# Environment files
+.env
+*.env
