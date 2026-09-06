@@ -23,6 +23,13 @@ phantom_memory/
 *.jsonl
 logs/
 
+# Phantom 2.0 (agent_v2/) runtime data — surrogate_maps/ holds the ONLY place
+# original PII values touch disk (surrogate_map.py's whole design is that this
+# stays local); .preload_complete is a per-machine timing cache. Neither is
+# meaningful on another machine, and the surrogate maps must never leave this
+# one.
+agent_v2/data/
+
 # API keys — NEVER commit these
 config/settings.py
 

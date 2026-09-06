@@ -38,7 +38,7 @@ class TrayDaemon:
 
     def setup(self):
         self._tray = QSystemTrayIcon(_make_tray_icon())
-        self._tray.setToolTip('PHANTOM — Privacy-First AI\nCtrl+Alt+P to open')
+        self._tray.setToolTip('PHANTOM — Privacy-First AI\nCtrl+Space to open')
 
         menu = QMenu()
         menu.setStyleSheet("""
@@ -81,16 +81,8 @@ class TrayDaemon:
 
     def _new_session(self):
         self._window.hide()
-        if hasattr(self._window, '_browser'):
-            self._window._browser.page().runJavaScript(
-                "threadId = generateUUID();"
-                "document.getElementById('response-area').style.display='none';"
-                "document.getElementById('response-content').innerHTML='';"
-                "document.getElementById('status-bar').style.display='none';"
-                "document.getElementById('idle-hint').style.display='block';"
-                "document.getElementById('lock-icon').classList.remove('active');"
-                "document.getElementById('hitl-modal').style.display='none';"
-            )
+        if hasattr(self._window, 'new_session'):
+            self._window.new_session()
 
     def _show_privacy_report(self):
         try:

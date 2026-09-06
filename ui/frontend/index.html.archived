@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phantom Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --glass: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --accent: #7c3aed;
+    --accent-glow: rgba(124, 58, 237, 0.4);
+    --text: #f1f5f9;
+    --text-dim: #7b7f8c;
+    --green: #22c55e;
+    --red: #ef4444;
+    --amber: #f59e0b;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 80px;
+    overflow-x: hidden;
+  }
+
+  /* ── Animated background orbs ─────────────────────────────────────────── */
+  .orb {
+    position: fixed;
+    z-index: -1;
+    border-radius: 50%;
+    opacity: 0.12;
+    filter: blur(80px);
+    pointer-events: none;
+  }
+  .orb-1 {
+    width: 500px; height: 500px;
+    top: -100px; left: -100px;
+    background: radial-gradient(circle, #7c3aed, transparent 70%);
+    animation: float-a 20s ease-in-out infinite;
+  }
+  .orb-2 {
+    width: 350px; height: 350px;
+    bottom: -50px; right: -50px;
+    background: radial-gradient(circle, #4f46e5, transparent 70%);
+    animation: float-b 27s ease-in-out infinite;
+  }
+  .orb-3 {
+    width: 250px; height: 250px;
+    top: 50%; left: 50%;
+    background: radial-gradient(circle, #9333ea, transparent 70%);
+    animation: float-c 15s ease-in-out infinite;
+  }
+  @keyframes float-a {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(60px, 40px) scale(1.08); }
+  }
+  @keyframes float-b {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50%      { transform: translate(-50px, -30px) scale(1.1); }
+  }
+  @keyframes float-c {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50%      { transform: translate(-50%, -50%) translate(30px, -40px) scale(1.15); }
+  }
+
+  /* ── Search bar — fixed, always visible ──────────────────────────────── */
+  #bar-wrap {
+    position: fixed;
+    top: 18vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(680px, 90vw);
+    z-index: 10;
+    animation: bar-in 0.4s ease;
+  }
+  @keyframes bar-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  #search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border-radius: 24px;
+    background: var(--glass);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  #search-bar:focus-within {
+    border-color: rgba(124, 58, 237, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 3px var(--accent-glow);
+  }
+
+  #bar-icon {
+    color: var(--accent);
+    font-size: 22px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  #query-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 18px;
+    caret-color: var(--accent);
+  }
+  #query-input::placeholder { color: var(--text-dim); }
+  #query-input:disabled { color: var(--text-dim); cursor: not-allowed; }
+
+  #send-btn {
+    flex-shrink: 0;
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.1s ease, opacity 0.2s ease;
+  }
+  #send-btn:hover:not(:disabled) { box-shadow: 0 0 18px var(--accent-glow); }
+  #send-btn:active:not(:disabled) { transform: scale(0.94); }
+  #send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Status dot — top-right corner of the bar */
+  #status-dot {
+    position: absolute;
+    top: -5px;
+    right: 16px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 8px var(--amber);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  #status-dot.connecting { animation: pulse-dot 1s ease-in-out infinite; background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+  #status-dot.connected  { animation: pulse-dot 2s ease-in-out infinite; background: var(--green); box-shadow: 0 0 8px var(--green); }
+  #status-dot.offline    { animation: none; background: var(--red); box-shadow: 0 0 8px var(--red); }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(1.3); }
+  }
+
+  #status-text {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 10px;
+    min-height: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Content flowing below the fixed bar ─────────────────────────────── */
+  #content-below {
+    margin-top: calc(18vh + 78px);
+    width: min(680px, 90vw);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  /* ── Typing indicator ─────────────────────────────────────────────────── */
+  #typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 18px 22px;
+    border-radius: 24px;
+    background: var(--glass);
+    backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    width: fit-content;
+  }
+  #typing-indicator span {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+    animation: dot-pulse 1.2s ease-in-out infinite;
+  }
+  #typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+  #typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes dot-pulse {
+    0%, 80%, 100% { opacity: 0.25; transform: scale(0.8); }
+    40%           { opacity: 1;    transform: scale(1.15); }
+  }
+
+  /* ── Results panel ────────────────────────────────────────────────────── */
+  #results-panel {
+    border-radius: 24px;
+    background: var(--glass);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    padding: 20px 22px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  #results-panel.visible { opacity: 1; transform: translateY(0); }
+
+  .results-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  #provider-badge {
+    color: #a78bfa;
+    font-weight: 500;
+  }
+
+  #response-text {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+    word-wrap: break-word;
+  }
+  #response-text strong { color: #fff; font-weight: 600; }
+  #response-text code {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-family: 'Consolas', 'Cascadia Code', monospace;
+    font-size: 13px;
+    color: #a5b4fc;
+  }
+  #response-text pre {
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Cascadia Code', monospace;
+    font-size: 13px;
+    color: #c4b5fd;
+  }
+  #response-text ul { padding-left: 18px; margin: 6px 0; }
+
+  /* HITL approval — inline, styled to match the panel rather than a modal */
+  #hitl-box {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  #hitl-box span { font-size: 12px; color: var(--amber); font-weight: 500; }
+  .hitl-buttons { display: flex; gap: 8px; }
+  .hitl-btn {
+    padding: 7px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  .hitl-btn:hover { opacity: 0.85; }
+  .hitl-btn.approve { background: var(--green); color: #08130c; }
+  .hitl-btn.reject  { background: var(--red); color: #fff; }
+
+  .results-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--glass-border);
+  }
+  #copy-btn {
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-family: inherit;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  #copy-btn:hover { color: var(--text); border-color: rgba(124, 58, 237, 0.5); }
+  #token-badge { font-size: 11px; color: var(--text-dim); }
+
+  /* ── Error pill ───────────────────────────────────────────────────────── */
+  #error-pill {
+    align-self: center;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: rgba(239, 68, 68, 0.12);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+    font-size: 13px;
+  }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div id="bar-wrap">
+    <div id="search-bar">
+      <span id="bar-icon">&#11041;</span>
+      <input
+        id="query-input"
+        type="text"
+        placeholder="Ask Phantom anything..."
+        autocomplete="off"
+        spellcheck="false"
+        disabled
+      />
+      <button id="send-btn" title="Send (Enter)" disabled>&#10148;</button>
+      <div id="status-dot" class="connecting" title="Connecting&hellip;"></div>
+    </div>
+    <div id="status-text">Connecting to Phantom&hellip;</div>
+  </div>
+
+  <div id="content-below">
+    <div id="typing-indicator" hidden>
+      <span></span><span></span><span></span>
+    </div>
+
+    <div id="results-panel" hidden>
+      <div class="results-top">
+        <span id="provider-badge"></span>
+        <span id="latency-badge"></span>
+      </div>
+      <div id="response-text"></div>
+      <div id="hitl-box" hidden>
+        <span>&#9888;&nbsp; Approval required</span>
+        <div class="hitl-buttons">
+          <button class="hitl-btn approve" id="hitl-approve">Approve</button>
+          <button class="hitl-btn reject" id="hitl-reject">Reject</button>
+        </div>
+      </div>
+      <div class="results-bottom">
+        <span id="token-badge" hidden></span>
+        <button id="copy-btn">Copy</button>
+      </div>
+    </div>
+
+    <div id="error-pill" hidden>
+      <span>&#9888;</span><span id="error-text">Phantom is offline</span>
+    </div>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const API = 'http://127.0.0.1:8747';
+
+  // Generated once on load; sent as `thread_id` — the field the real
+  // /query, /resume and /stream endpoints actually read (not `session_id`).
+  const sessionId = (crypto.randomUUID && crypto.randomUUID()) || generateUUIDFallback();
+
+  // ── DOM refs ────────────────────────────────────────────────────────────
+  const input          = document.getElementById('query-input');
+  const sendBtn         = document.getElementById('send-btn');
+  const statusDot        = document.getElementById('status-dot');
+  const statusText       = document.getElementById('status-text');
+  const typingIndicator  = document.getElementById('typing-indicator');
+  const resultsPanel     = document.getElementById('results-panel');
+  const providerBadge    = document.getElementById('provider-badge');
+  const latencyBadge     = document.getElementById('latency-badge');
+  const responseText     = document.getElementById('response-text');
+  const hitlBox          = document.getElementById('hitl-box');
+  const hitlApprove      = document.getElementById('hitl-approve');
+  const hitlReject       = document.getElementById('hitl-reject');
+  const tokenBadge       = document.getElementById('token-badge');
+  const copyBtn          = document.getElementById('copy-btn');
+  const errorPill         = document.getElementById('error-pill');
+  const errorText        = document.getElementById('error-text');
+
+  let connected = false;
+  let busy = false;              // a query or HITL resume is in flight
+  let currentPlainText = '';     // last rendered response, for the copy button
+  let typewriterGen = 0;         // invalidates in-flight typewriter timers
+
+  function generateUUIDFallback() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+  }
+
+  // ── Connection handling ─────────────────────────────────────────────────
+  // Per spec: poll /health every 500ms, up to 20 tries (10s total), before
+  // ever calling any other endpoint. A connection-refused fetch throws
+  // rather than resolving with a bad status, so the retry has to catch that
+  // too, not just check res.ok — that's exactly the failure mode while the
+  // FastAPI server's own startup prewarm is still running.
+  const HEALTH_POLL_MS = 500;
+  const HEALTH_MAX_RETRIES = 20;
+  const HEALTH_RECHECK_MS = 30000;
+
+  function setDot(state, title) {
+    statusDot.className = state;
+    statusDot.title = title;
+  }
+
+  function onConnected(initial) {
+    if (!connected) {
+      connected = true;
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
+    }
+    setDot('connected', 'Connected');
+    statusText.textContent = 'Phantom is ready';
+    if (initial) {
+      setTimeout(() => { if (connected) statusText.textContent = ''; }, 2500);
+    }
+  }
+
+  function onDisconnected(reason) {
+    connected = false;
+    input.disabled = true;
+    sendBtn.disabled = true;
+    setDot('offline', 'Offline');
+    statusText.textContent = reason || 'Start Phantom server first';
+  }
+
+  function pollHealthOnce() {
+    return fetch(`${API}/health`, { cache: 'no-store' })
+      .then(res => res.ok)
+      .catch(() => false);
+  }
+
+  function startupConnect() {
+    setDot('connecting', 'Connecting…');
+    statusText.textContent = 'Connecting to Phantom…';
+    let attempt = 0;
+
+    function tryOnce() {
+      pollHealthOnce().then(ok => {
+        if (ok) {
+          onConnected(true);
+          setInterval(recheckHealth, HEALTH_RECHECK_MS);
+          return;
+        }
+        attempt += 1;
+        if (attempt >= HEALTH_MAX_RETRIES) {
+          onDisconnected('Start Phantom server first');
+          return;
+        }
+        setTimeout(tryOnce, HEALTH_POLL_MS);
+      });
+    }
+    tryOnce();
+  }
+
+  function recheckHealth() {
+    pollHealthOnce().then(ok => {
+      if (ok) {
+        if (!connected) onConnected(false);
+      } else if (connected) {
+        onDisconnected('Phantom went offline');
+        // Try to reconnect quickly rather than waiting for the next 30s tick.
+        startupConnect();
+      }
+    });
+  }
+
+  // ── Typing indicator / results panel visibility ─────────────────────────
+  function showTyping() {
+    typingIndicator.hidden = false;
+    closeResults();
+    hideError();
+  }
+  function hideTyping() {
+    typingIndicator.hidden = true;
+  }
+
+  function openResults() {
+    resultsPanel.hidden = false;
+    // Force layout so the transition actually fires instead of the panel
+    // just appearing already in its end state.
+    void resultsPanel.offsetHeight;
+    resultsPanel.classList.add('visible');
+  }
+  function closeResults() {
+    resultsPanel.classList.remove('visible');
+    resultsPanel.hidden = true;
+    hitlBox.hidden = true;
+  }
+  function hideError() { errorPill.hidden = true; }
+  function showError(msg) {
+    hideTyping();
+    closeResults();
+    errorText.textContent = msg || 'Phantom is offline';
+    errorPill.hidden = false;
+  }
+
+  // ── Minimal markdown → HTML (bold, inline code, code blocks, bullets) ───
+  function escapeHtml(t) {
+    return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function renderMarkdown(text) {
+    if (!text) return '';
+    let html = escapeHtml(text);
+    html = html.replace(/```([\s\S]*?)```/g, (_, c) => `<pre>${c.trim()}</pre>`);
+    html = html.replace(/`([^`]+)`/g, (_, c) => `<code>${c}</code>`);
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/^[\-\*]\s+(.+)$/gm, '<li>$1</li>');
+    html = html.replace(/((<li>.*<\/li>\n?)+)/g, '<ul>$1</ul>');
+    html = html.replace(/\n/g, '<br>');
+    return html;
+  }
+
+  // Reveals `text` word-by-word (15ms/word) as plain text, then swaps in the
+  // fully markdown-rendered HTML once the reveal finishes.
+  function typewriterReveal(text) {
+    const gen = ++typewriterGen;
+    const words = text.split(/(\s+)/); // keep the whitespace tokens
+    responseText.textContent = '';
+    let i = 0;
+
+    function step() {
+      if (gen !== typewriterGen) return; // superseded by a newer response
+      if (i >= words.length) {
+        responseText.innerHTML = renderMarkdown(text);
+        return;
+      }
+      responseText.textContent += words[i];
+      i += 1;
+      setTimeout(step, 15);
+    }
+    step();
+  }
+
+  // ── Rendering a query/resume result ──────────────────────────────────────
+  function renderResult(result, elapsedMs) {
+    hideTyping();
+    currentPlainText = result.final_response || result.response || 'Done.';
+
+    const provider = result.provider_used;
+    providerBadge.textContent = provider ? `via ${provider.charAt(0).toUpperCase()}${provider.slice(1)}` : '';
+    latencyBadge.textContent = `${elapsedMs}ms`;
+
+    if (typeof result.tokens_used === 'number') {
+      tokenBadge.textContent = `${result.tokens_used} tokens`;
+      tokenBadge.hidden = false;
+    } else {
+      tokenBadge.hidden = true;
+    }
+
+    openResults();
+    typewriterReveal(currentPlainText);
+
+    hitlBox.hidden = !result.hitl_required;
+    busy = !!result.hitl_required; // keep input locked while a decision is pending
+    if (!busy) {
+      input.disabled = false;
+      sendBtn.disabled = false;
+    }
+  }
+
+  // ── Submit / HITL ────────────────────────────────────────────────────────
+  function submitQuery() {
+    if (!connected || busy) return;
+    const query = input.value.trim();
+    if (!query) return;
+
+    input.value = '';
+    busy = true;
+    input.disabled = true;
+    sendBtn.disabled = true;
+    showTyping();
+
+    const t0 = Date.now();
+    fetch(`${API}/query`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, thread_id: sessionId }),
+    })
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(result => {
+        renderResult(result, Date.now() - t0);
+      })
+      .catch(() => {
+        busy = false;
+        input.disabled = false;
+        sendBtn.disabled = false;
+        showError('Phantom is offline');
+      });
+  }
+
+  function resolveHitl(decision) {
+    if (!connected) return;
+    hitlBox.hidden = true;
+    showTyping();
+
+    const t0 = Date.now();
+    fetch(`${API}/resume`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ decision, thread_id: sessionId }),
+    })
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(result => {
+        renderResult(result, Date.now() - t0);
+      })
+      .catch(() => {
+        busy = false;
+        input.disabled = false;
+        sendBtn.disabled = false;
+        showError('Phantom is offline');
+      });
+  }
+
+  // ── Copy button ──────────────────────────────────────────────────────────
+  copyBtn.addEventListener('click', () => {
+    const text = currentPlainText || '';
+    const done = () => {
+      const prev = copyBtn.textContent;
+      copyBtn.textContent = 'Copied';
+      setTimeout(() => { copyBtn.textContent = prev; }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else {
+      fallbackCopy(text, done);
+    }
+  });
+
+  function fallbackCopy(text, done) {
+    // navigator.clipboard can be unavailable on a plain file:// page in some
+    // browsers — a hidden textarea + execCommand still works there.
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  // ── Wiring ───────────────────────────────────────────────────────────────
+  sendBtn.addEventListener('click', submitQuery);
+  hitlApprove.addEventListener('click', () => resolveHitl('approve'));
+  hitlReject.addEventListener('click', () => resolveHitl('reject'));
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitQuery();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const isK = e.key === 'k' || e.key === 'K';
+    if ((e.ctrlKey || e.metaKey) && isK) {
+      e.preventDefault();
+      input?.focus();
+      return;
+    }
+    if (e.key === 'Escape') {
+      if (!resultsPanel.hidden) {
+        closeResults();
+      } else if (!errorPill.hidden) {
+        hideError();
+      } else {
+        input.value = '';
+      }
+    }
+  });
+
+  // Called from ui/phantom_window.py's PyQt bridge, if this page happens to
+  // be hosted inside that overlay instead of a plain browser tab — a no-op
+  // everywhere else since window.phantom won't exist there.
+  window.__phantomBackendReadyHint = function () {
+    if (!connected) startupConnect();
+  };
+
+  startupConnect();
+});
+</script>
+</body>
+</html>

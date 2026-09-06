@@ -51,8 +51,7 @@ def main():
     # High-DPI
     os.environ.setdefault('QT_ENABLE_HIGHDPI_SCALING', '1')
 
-    # MUST IMPORT WEBENGINE BEFORE QApplication!
-    from ui.phantom_window import PhantomWindow, HAS_WEBENGINE
+    from ui.phantom_window import PhantomAgentWindow
 
     print("Importing QApplication")
     from PyQt6.QtWidgets import QApplication
@@ -68,7 +67,7 @@ def main():
     api_thread.start()
     print('[PHANTOM] Starting API server...')
 
-    window = PhantomWindow()
+    window = PhantomAgentWindow()
 
     from ui.tray_daemon import TrayDaemon
     from ui.hotkey_listener import HotkeyListener
@@ -80,27 +79,20 @@ def main():
     hotkey.triggered.connect(window.show_window)
     hotkey.start()
 
-    # Show immediately on launch — do NOT gate this on backend readiness.
-    # The frontend (index.html) independently polls /health every 2s and
-    # disables its own input until that succeeds (Fix 1), so the window
-    # showing early is safe. wait_for_api() below just gives the frontend a
-    # head start: model warm-up (spaCy/Presidio/embedder/reranker) takes
-    # ~80s cold, so this has to outlast that — but it must NOT block window
-    # creation, or the window itself would be delayed by up to 120s.
-    window.show_window()
-
-    def _wait_for_backend_and_hint():
+    # Hidden on launch — this is a Spotlight-style overlay, summoned only by
+    # the hotkey or the tray icon, never shown automatically. PhantomWorker
+    # talks to phantom_graph.run_query() in-process (no HTTP server needed
+    # for the overlay itself); the window tracks the FastAPI server's own
+    # /health independently via its own QTimer. This thread is just console
+    # logging for the ~80s warm-up window, not the dot's data source.
+    def _log_backend_ready():
         ready = wait_for_api(timeout=120)
-        if ready:
-            print('[PHANTOM] API ready at http://127.0.0.1:8747')
-            window.notify_backend_ready()
-        else:
-            print('[PHANTOM] API not ready after 120s — the frontend keeps '
-                  'polling /health independently and will unlock once it is.')
+        print('[PHANTOM] API ready at http://127.0.0.1:8747' if ready
+              else '[PHANTOM] API not ready after 120s.')
 
-    threading.Thread(target=_wait_for_backend_and_hint, daemon=True).start()
+    threading.Thread(target=_log_backend_ready, daemon=True).start()
 
-    print('[PHANTOM] Ready. Press Ctrl+Alt+P or use system tray.')
+    print('[PHANTOM] Ready. Press Ctrl+Space or use system tray.')
     sys.exit(app.exec())
 
 
