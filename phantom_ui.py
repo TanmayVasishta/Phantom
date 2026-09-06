@@ -92,7 +92,7 @@ def main():
 
     threading.Thread(target=_log_backend_ready, daemon=True).start()
 
-    print('[PHANTOM] Ready. Press Ctrl+Space or use system tray.')
+    print('[PHANTOM] Ready. Press Ctrl+Shift+Space or use system tray.')
     sys.exit(app.exec())
 
 

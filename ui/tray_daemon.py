@@ -38,7 +38,7 @@ class TrayDaemon:
 
     def setup(self):
         self._tray = QSystemTrayIcon(_make_tray_icon())
-        self._tray.setToolTip('PHANTOM — Privacy-First AI\nCtrl+Space to open')
+        self._tray.setToolTip('PHANTOM — Privacy-First AI\nCtrl+Shift+Space to open')
 
         menu = QMenu()
         menu.setStyleSheet("""

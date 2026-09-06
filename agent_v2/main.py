@@ -5,7 +5,7 @@ Self-contained privacy-first agent. Reuses the parent project's PhantomRouter
 for cloud routing; everything else lives under agent_v2/.
 
 Run: python agent_v2/main.py
-Hotkey: Ctrl+Shift+Space
+Hotkey: Ctrl+Space
 """
 from __future__ import annotations
 
@@ -101,13 +101,13 @@ class PreloadWorker(QThread):
 
 
 class HotkeyListener(QThread):
-    """Global Ctrl+Shift+Space (distinct from v1's Ctrl+Space)."""
+    """Global Ctrl+Space (v1 moved to Ctrl+Shift+Space so the two don't collide)."""
     triggered = pyqtSignal()
 
     def run(self) -> None:
         try:
             import keyboard
-            keyboard.add_hotkey("ctrl+shift+space", lambda: self.triggered.emit())
+            keyboard.add_hotkey("ctrl+space", lambda: self.triggered.emit())
             keyboard.wait()
         except Exception as exc:
             print(f"[PHANTOM 2.0] Hotkey listener error: {exc}")
@@ -164,7 +164,7 @@ def main() -> int:
     tray.show()
 
     def on_preloaded(status: dict, duration_s: float) -> None:
-        tray.setToolTip("Phantom 2.0 — Ctrl+Shift+Space")
+        tray.setToolTip("Phantom 2.0 — Ctrl+Space")
         _write_preload_sentinel(duration_s, status)
 
         # On a warm start the component banner is suppressed; the engines are
@@ -176,7 +176,7 @@ def main() -> int:
             print("[PHANTOM 2.0] Router: PhantomRouter (Gemini primary, Groq speed lane)")
         # Printed only once preload has actually returned — never predicted
         # from the cache file, or the agent would claim to be usable ~16s early.
-        print(f"[PHANTOM 2.0] Ready ({duration_s:.0f}s). Ctrl+Shift+Space to activate.")
+        print(f"[PHANTOM 2.0] Ready ({duration_s:.0f}s). Ctrl+Space to activate.")
 
     preloader = PreloadWorker(pipeline)
     preloader.done.connect(on_preloaded)
