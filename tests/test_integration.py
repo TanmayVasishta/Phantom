@@ -1,5 +1,5 @@
 """
-HELIX Phase 2 — End-to-End Integration Tests
+PHANTOM Phase 2 — End-to-End Integration Tests
 
 Tests the complete Phase 2 pipeline from query intake through routing and
 response assembly. All external services (Ollama, Gemini, ChromaDB) are
@@ -310,10 +310,10 @@ class TestIntentCachePipeline:
         assert cache.get("MEMORY_LOOKUP", "q3") is not None
 
 
-# ── helix_cli.run_query integration (mocked) ─────────────────────────────────
+# ── phantom_cli.run_query integration (mocked) ─────────────────────────────────
 
-class TestHelixCLIIntegration:
-    """Test helix_cli.run_query() end-to-end with all external services mocked."""
+class TestPhantomCLIIntegration:
+    """Test phantom_cli.run_query() end-to-end with all external services mocked."""
 
     def _make_sentinel_payload(self, intent: str, confidence: float, sub: str = "") -> dict:
         return {"response": json.dumps({
@@ -323,7 +323,7 @@ class TestHelixCLIIntegration:
 
     def test_cli_run_query_returns_dict(self):
         """run_query must always return a dict with required keys."""
-        from helix_cli import run_query
+        from phantom_cli import run_query
 
         sentinel_payload = self._make_sentinel_payload("GENERAL_QA", 0.93, "explain")
         local_llm_response = {"response": "Recursion is a function that calls itself."}
@@ -341,7 +341,7 @@ class TestHelixCLIIntegration:
 
     def test_cli_low_confidence_returns_clarification(self):
         """Queries below the confidence threshold must return a clarification dict."""
-        from helix_cli import run_query
+        from phantom_cli import run_query
 
         payload = self._make_sentinel_payload("UNKNOWN", 0.30)
         with patch("ollama.generate", return_value=payload):
@@ -352,7 +352,7 @@ class TestHelixCLIIntegration:
 
     def test_cli_pii_in_query_redacted(self):
         """PII in the query must not appear in the routed prompt."""
-        from helix_cli import run_query
+        from phantom_cli import run_query
 
         query = "send this to test@example.com"
         sentinel_payload = self._make_sentinel_payload("GENERAL_QA", 0.88, "send")
@@ -368,7 +368,7 @@ class TestHelixCLIIntegration:
 
     def test_cli_hitl_required_skips_execution(self):
         """High-risk local routes must be reported as HITL-required, not executed."""
-        from helix_cli import run_query
+        from phantom_cli import run_query
 
         sentinel_payload = self._make_sentinel_payload("FILE_OP", 0.91, "delete")
         with patch("ollama.generate", return_value=sentinel_payload):

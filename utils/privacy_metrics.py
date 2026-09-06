@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 
 @dataclass
 class SessionPrivacyMetrics:
-    """Thread-safe privacy counters for the current HELIX session."""
+    """Thread-safe privacy counters for the current PHANTOM session."""
 
     total_queries: int = 0
     local_queries: int = 0

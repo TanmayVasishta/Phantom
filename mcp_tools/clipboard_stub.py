@@ -1,10 +1,10 @@
 """
-HELIX MCP OS Stub — one server, one tool.
+PHANTOM MCP OS Stub — one server, one tool.
 
 Replaces the full OS middleware layer (Vedika's module — descoped per revised spec).
 Exposes a single safe read-only operation: read_clipboard.
 
-Wired as a LangGraph tool node in helix_graph.py.
+Wired as a LangGraph tool node in phantom_graph.py.
 HITL gate in hitl_check_node guards any write actions before they reach this server.
 
 Usage (standalone test):
@@ -61,7 +61,7 @@ async def _run_mcp_server() -> None:
         print(f"[MCP CLIPBOARD] Content: {result!r}")
         return
 
-    server = Server("helix-os-stub")
+    server = Server("phantom-os-stub")
 
     @server.list_tools()
     async def list_tools() -> list[Tool]:
@@ -71,7 +71,7 @@ async def _run_mcp_server() -> None:
                 description=(
                     "Read the current system clipboard text. "
                     "Read-only. No data is written. "
-                    "HELIX uses this to paste content into queries."
+                    "PHANTOM uses this to paste content into queries."
                 ),
                 inputSchema={
                     "type": "object",
@@ -99,6 +99,6 @@ async def _run_mcp_server() -> None:
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-    print("HELIX MCP OS Stub — read_clipboard tool")
+    print("PHANTOM MCP OS Stub — read_clipboard tool")
     print("Testing clipboard read directly...\n")
     asyncio.run(_run_mcp_server())

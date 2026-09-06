@@ -1,5 +1,5 @@
 ================================================================================
-HELIX PHASE ROADMAP AND PLANNING
+PHANTOM PHASE ROADMAP AND PLANNING
 ================================================================================
 
 ================================================================================
@@ -33,14 +33,14 @@ PHASE 3 PRIORITIES:
    - Use regex + keyword extraction, NOT another LLM call
 
 3. WORKFLOW PROFILES in a new file: core/profiles/profiles.py
-   - "code mode" → open VS Code + Spotify + Chrome (GitHub) + HELIX sidebar
+   - "code mode" → open VS Code + Spotify + Chrome (GitHub) + PHANTOM sidebar
    - "study mode" → open PDFs + organize notes folder + silence notifications
    - "presentation mode" → open PowerPoint + hide desktop + mute mic
    - Profiles stored in ChromaDB, triggered by voice/text command
    - Profile format: {name: str, actions: [list of file_manager commands]}
 
 4. WATCHDOG CONNECTED TO ROUTER
-   - start_watcher() called at HELIX startup in main.py
+   - start_watcher() called at PHANTOM startup in main.py
    - Watches: Downloads folder + Desktop
    - On new file: Sentinel classifies it → suggests organization
    - Example: "New file detected: resume_final.pdf — move to Documents/Career?"
@@ -66,13 +66,13 @@ PHASE 4 PRIORITIES:
 8. GMAIL DRAFTING (privacy-safe)
    - User: "Draft an email to my professor about assignment extension"
    - Sentinel redacts professor name before Gemini drafts
-   - HELIX returns draft → user reviews → opens Gmail with pre-filled content
+   - PHANTOM returns draft → user reviews → opens Gmail with pre-filled content
    - Use webbrowser.open() with mailto: URL or Gmail compose URL
 
 PHASE 5 PRIORITIES:
 
 9. WAKE WORD DETECTION
-   - Background thread always listening for "hey helix"
+   - Background thread always listening for "hey phantom"
    - Use: pvporcupine (Picovoice, free tier) or keyword_spotting with Whisper
    - On wake: activate VoiceListener.listen_once()
 
@@ -92,10 +92,10 @@ FEATURE A: SEMANTIC FILE SEARCH
    Uses: chromadb + pathlib + PyPDF2 + python-docx for content extraction
 
 FEATURE B: CLIPBOARD INTELLIGENCE
-   What: HELIX monitors clipboard, auto-categorizes copied content
+   What: PHANTOM monitors clipboard, auto-categorizes copied content
    How: Background thread reads pyperclip, Sentinel classifies content type
-   Example: Copy a URL → HELIX: "Save this to bookmarks or open now?"
-   Example: Copy a code block → HELIX: "Save to snippets?"
+   Example: Copy a URL → PHANTOM: "Save this to bookmarks or open now?"
+   Example: Copy a code block → PHANTOM: "Save to snippets?"
    Files: new file core/clipboard/monitor.py
    Uses: pyperclip, threading
 
@@ -106,15 +106,15 @@ FEATURE C: SYSTEM HEALTH MONITOR
    Uses: psutil (pip install psutil)
 
 FEATURE D: SCREEN CONTEXT AWARENESS
-   What: HELIX can see what's on screen and act on it
+   What: PHANTOM can see what's on screen and act on it
    How: mss screenshot → local vision model (llava via Ollama)
-        "helix what am I looking at?" → describes screen content
+        "phantom what am I looking at?" → describes screen content
    Files: new file core/vision/screen_reader.py
    Uses: mss (pip install mss), ollama with llava model
    Privacy: Screenshot never leaves machine — local vision only
 
 FEATURE E: SMART NOTIFICATION SYSTEM
-   What: HELIX proactively notifies about important events
+   What: PHANTOM proactively notifies about important events
    How: Windows toast notifications via win10toast or plyer
    Triggers: New file in Downloads, Watchdog event, exam calendar date
    Example: "exam_schedule.pdf detected in Downloads — added to Documents/Exams"
@@ -127,7 +127,7 @@ FEATURE F: CONVERSATION HISTORY BROWSER
    Output: Formatted list of past interactions with dates
 
 FEATURE G: MULTI-LANGUAGE SUPPORT
-   What: User can speak/type in Hindi/Kannada, HELIX understands
+   What: User can speak/type in Hindi/Kannada, PHANTOM understands
    How: Whisper (multilingual model) for STT
         Translate prompt to English before Sentinel classification
         Respond in user's language via Gemini
@@ -140,13 +140,13 @@ FEATURE H: SCHEDULED TASKS
    Uses: schedule (pip install schedule)
 
 FEATURE I: FOCUS MODE / DO NOT DISTURB
-   What: "helix, focus mode for 2 hours"
+   What: "phantom, focus mode for 2 hours"
    How: Mute notifications, close distracting apps, set timer
         Open study playlist, block social media via hosts file edit
    Integration: Workflow profile + system commands
 
 FEATURE J: PROJECT CONTEXT SWITCHING
-   What: "switch to HELIX project" → HELIX loads all context about that project
+   What: "switch to PHANTOM project" → PHANTOM loads all context about that project
    How: ChromaDB collection per project, switch active collection
         Preloads: recent files, last commands, open tasks
-   This makes HELIX feel like it knows each project intimately
+   This makes PHANTOM feel like it knows each project intimately

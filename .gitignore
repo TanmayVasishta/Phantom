@@ -13,8 +13,13 @@ build/
 venv/
 env/
 
-# HELIX runtime data (local only, not for sharing)
+# PHANTOM runtime data (local only, not for sharing) — this is real
+# conversation memory (ChromaDB vectors, LangGraph SQLite checkpoints), never
+# belongs in a public repo for a privacy-first project.
 data/chromadb/
+data/backups/
+data/chromadb_backup_*/
+phantom_memory/
 *.jsonl
 logs/
 

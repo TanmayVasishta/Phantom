@@ -1,5 +1,5 @@
 """
-HELIX — Voice Listener (Phase 5 full implementation)
+PHANTOM — Voice Listener (Phase 5 full implementation)
 Uses sounddevice + SpeechRecognition for mic capture.
 PyAudio replaced with sounddevice — works on Python 3.14.
 

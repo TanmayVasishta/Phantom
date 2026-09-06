@@ -28,8 +28,12 @@ REGEX_PATTERNS: dict[str, re.Pattern] = {
     "AADHAAR":      re.compile(r"\b[2-9]\d{3}\s\d{4}\s\d{4}\b"),
     "PAN":          re.compile(r"\b[A-Z]{5}[0-9]{4}[A-Z]\b"),
     "PHONE_IN":     re.compile(r"(\+91[\-\s]?)?[0]?(91)?[789]\d{4}[\s\-]?\d{5}\b"),
-    # UPI ID: alphanumeric handle @ bank/VPA domain (e.g. rahul@okicici, tanmay@paytm)
-    "UPI_ID":       re.compile(r"\b[a-zA-Z0-9._-]{2,256}@[a-zA-Z]{2,64}\b"),
+    # UPI ID: alphanumeric handle @ bank/VPA domain (e.g. rahul@okicici, tanmay@paytm).
+    # The negative lookahead stops this from swallowing the local part of a real
+    # email address ("teammate@example.com" -> "teammate@example"), which left a
+    # mangled "[PII_UPI_ID_1].com" behind and broke email-drafting tool calls.
+    # A genuine UPI handle never carries a dotted TLD.
+    "UPI_ID":       re.compile(r"\b[a-zA-Z0-9._-]{2,256}@[a-zA-Z]{2,64}\b(?!\.[a-zA-Z])"),
     # Indian PIN code: exactly 6 digits, 1xx–9xx (never 0xx)
     "IN_PIN_CODE":  re.compile(r"\b[1-9][0-9]{5}\b"),
     "EMAIL":        re.compile(r"\b[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+\b"),

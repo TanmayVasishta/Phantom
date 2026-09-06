@@ -10,7 +10,7 @@ class SessionPIIMap:
     """
     Maps PII placeholder tokens to original values for the current query.
 
-    Key design: Presidio anonymises PII but discards originals. HELIX keeps them
+    Key design: Presidio anonymises PII but discards originals. PHANTOM keeps them
     so we can restore them in the response (PII Restorer). This is Tanmay's
     original contribution — do not replace with Presidio's AnonymizerEngine alone.
 
@@ -66,5 +66,5 @@ class SessionPIIMap:
 
     @property
     def placeholder_pattern(self) -> re.Pattern:
-        """Regex that matches any HELIX PII placeholder token."""
+        """Regex that matches any PHANTOM PII placeholder token."""
         return re.compile(r"\[PII_[A-Z]+_\d+\]")

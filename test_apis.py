@@ -1,5 +1,5 @@
 """
-Test all available free API alternatives for HELIX Cloud Oracle
+Test all available free API alternatives for PHANTOM Cloud Oracle
 Run: python test_apis.py
 """
 import urllib.request
@@ -64,7 +64,7 @@ def test_together(api_key):
 
 if __name__ == "__main__":
     print("=" * 55)
-    print("  HELIX -- Cloud Oracle API Test Suite")
+    print("  PHANTOM -- Cloud Oracle API Test Suite")
     print("=" * 55)
 
     # ── Replace these with your keys ──

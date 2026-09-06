@@ -1,4 +1,4 @@
-"""HELIX health check — verifies all required services and packages before startup."""
+"""PHANTOM health check — verifies all required services and packages before startup."""
 
 from __future__ import annotations
 
@@ -19,15 +19,15 @@ class HealthCheckResult:
             self.all_ok = False
 
     def report(self) -> str:
-        lines = ["", "HELIX Health Check", "=" * 40]
+        lines = ["", "PHANTOM Health Check", "=" * 40]
         for name, result in self.checks.items():
             icon = "OK " if result["ok"] else "ERR"
             lines.append(f"  [{icon}] {name}: {result['message']}")
         lines.append("=" * 40)
         if self.all_ok:
-            lines.append("  All systems ready. Starting HELIX...")
+            lines.append("  All systems ready. Starting PHANTOM...")
         else:
-            lines.append("  Fix errors above before starting HELIX.")
+            lines.append("  Fix errors above before starting PHANTOM.")
             lines.append("  Non-critical warnings will not block startup.")
         lines.append("")
         return "\n".join(lines)
@@ -100,12 +100,9 @@ def run_health_check() -> HealthCheckResult:
 
     # 5. ChromaDB
     try:
-        import chromadb
-        from utils.config import CHROMA_PERSIST_DIR
-        persist = os.path.abspath(CHROMA_PERSIST_DIR)
-        os.makedirs(persist, exist_ok=True)
-        client = chromadb.PersistentClient(persist)
-        result.add("ChromaDB", True, f"Accessible at {persist}")
+        from phantom_graph import _get_chroma
+        cm = _get_chroma()
+        result.add("ChromaDB", True, f"Accessible at {cm._persist_dir}")
     except Exception as e:
         result.add("ChromaDB", False, str(e))
 

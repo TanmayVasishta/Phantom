@@ -1,14 +1,14 @@
-# CLAUDE.md — Project HELIX
+﻿# CLAUDE.md â€” Project PHANTOM
 ## Master Context File for Claude Code
 
-> Place this file at the **root of the HELIX repository** as `CLAUDE.md`.
+> Place this file at the **root of the PHANTOM repository** as `CLAUDE.md`.
 > Claude Code reads this automatically on every session. Keep it updated as the project evolves.
 
 ---
 
 ## 0. HOW TO USE THIS FILE
 
-This file gives Claude Code complete context about Project HELIX so it can assist with implementation, debugging, and architecture decisions without needing repeated explanations. Every section is intentionally detailed. Do not summarise or shorten it.
+This file gives Claude Code complete context about Project PHANTOM so it can assist with implementation, debugging, and architecture decisions without needing repeated explanations. Every section is intentionally detailed. Do not summarise or shorten it.
 
 ---
 
@@ -16,10 +16,10 @@ This file gives Claude Code complete context about Project HELIX so it can assis
 
 | Field | Value |
 |---|---|
-| Project Name | HELIX — Hybrid Edge Cloud Learning and Intelligent Exchange |
-| Type | AI Operating System (AIOS) — Major Project, Phase 1 complete |
+| Project Name | PHANTOM â€” Hybrid Edge Cloud Learning and Intelligent Exchange |
+| Type | AI Operating System (AIOS) â€” Major Project, Phase 1 complete |
 | Institution | B.M.S. College of Engineering (BMSCE), Dept. of CSE, Bengaluru |
-| Academic Year | 2025–2026 |
+| Academic Year | 2025â€“2026 |
 | Guide | Sindhoor N, Assistant Professor, Dept. of CSE |
 | Phase | Phase 1 complete (architecture + research). Phase 2 = full implementation |
 
@@ -36,7 +36,7 @@ This file gives Claude Code complete context about Project HELIX so it can assis
 
 ## 2. SYSTEM OVERVIEW
 
-HELIX is a **privacy-first hybrid local-cloud AI Operating System** that runs on consumer hardware (minimum 16 GB RAM laptop). It accepts natural language voice/text commands, sanitises all PII locally, routes tasks intelligently between a local LLM and cloud, and requires explicit human approval before irreversible OS actions.
+PHANTOM is a **privacy-first hybrid local-cloud AI Operating System** that runs on consumer hardware (minimum 16 GB RAM laptop). It accepts natural language voice/text commands, sanitises all PII locally, routes tasks intelligently between a local LLM and cloud, and requires explicit human approval before irreversible OS actions.
 
 ### Core Design Principles
 1. **Local-first**: Every query is processed locally before any cloud routing decision.
@@ -45,46 +45,46 @@ HELIX is a **privacy-first hybrid local-cloud AI Operating System** that runs on
 4. **Offline-capable**: Core functions work without internet (Gemini calls gracefully degrade).
 5. **Consumer hardware**: Runs on 16 GB RAM, no GPU required (GPU optional for speed).
 
-### Six Research Gaps HELIX Fills
+### Six Research Gaps PHANTOM Fills
 1. No local PII guardrail before cloud routing in any existing system
 2. No mandatory HITL checkpoint before OS-level actions
-3. Hardware exclusion — most capable AI requires expensive cloud subscriptions
+3. Hardware exclusion â€” most capable AI requires expensive cloud subscriptions
 4. No offline-first persistent contextual memory
 5. Unfair privacy trade-off (intelligence vs sovereignty)
 6. Dangerous AI autonomy in multi-step agents (AutoGPT-style)
 
 ### SDG Alignment
-- **SDG 9** — Industry, Innovation and Infrastructure (decentralised AI on edge)
-- **SDG 16** — Peace, Justice and Strong Institutions (digital privacy, ethical AI)
+- **SDG 9** â€” Industry, Innovation and Infrastructure (decentralised AI on edge)
+- **SDG 16** â€” Peace, Justice and Strong Institutions (digital privacy, ethical AI)
 
 ---
 
 ## 3. FIVE-LAYER PIPELINE ARCHITECTURE
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  LAYER 1: Input & Intent Recognition                                     │
-│  [Voice HUD — PyQt6 async] → Whisper ASR → Text Normalisation           │
-│  Owner: Varshitha                                                         │
-├─────────────────────────────────────────────────────────────────────────┤
-│  LAYER 2: Privacy & Context                                               │
-│  [Sentinel Node — LLaMA 3.2 3B] → [PII Redaction Engine]               │
-│  → [Memory-Augmented Re-prompting — ChromaDB RAG]                        │
-│  Owner: Tanmay (Sentinel + PII + Re-prompting), Yukta (ChromaDB)         │
-├─────────────────────────────────────────────────────────────────────────┤
-│  LAYER 3: Dynamic Workload Router                                         │
-│  [LangChain Task Orchestrator] → routing decision + risk scoring         │
-│  Owner: Tanmay                                                            │
-├─────────────────────────────────────────────────────────────────────────┤
-│  LAYER 4: Dual-Path Execution                                             │
-│  LOCAL → [Python OS Middleware] (Vedika)                                  │
-│  CLOUD  → [Gemini 1.5 Flash Oracle] (Tanmay coordinates)                │
-├─────────────────────────────────────────────────────────────────────────┤
-│  LAYER 5: Safety & Visualisation                                          │
-│  [HITL Dashboard — PyQt6] → Approve / Reject / Modify                   │
-│  → [PII Restorer] → [Async Memory Write-back]                            │
-│  Owner: Tanmay                                                            │
-└─────────────────────────────────────────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  LAYER 1: Input & Intent Recognition                                     â”‚
+â”‚  [Voice HUD â€” PyQt6 async] â†’ Whisper ASR â†’ Text Normalisation           â”‚
+â”‚  Owner: Varshitha                                                         â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚  LAYER 2: Privacy & Context                                               â”‚
+â”‚  [Sentinel Node â€” LLaMA 3.2 3B] â†’ [PII Redaction Engine]               â”‚
+â”‚  â†’ [Memory-Augmented Re-prompting â€” ChromaDB RAG]                        â”‚
+â”‚  Owner: Tanmay (Sentinel + PII + Re-prompting), Yukta (ChromaDB)         â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚  LAYER 3: Dynamic Workload Router                                         â”‚
+â”‚  [LangChain Task Orchestrator] â†’ routing decision + risk scoring         â”‚
+â”‚  Owner: Tanmay                                                            â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚  LAYER 4: Dual-Path Execution                                             â”‚
+â”‚  LOCAL â†’ [Python OS Middleware] (Vedika)                                  â”‚
+â”‚  CLOUD  â†’ [Gemini 1.5 Flash Oracle] (Tanmay coordinates)                â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚  LAYER 5: Safety & Visualisation                                          â”‚
+â”‚  [HITL Dashboard â€” PyQt6] â†’ Approve / Reject / Modify                   â”‚
+â”‚  â†’ [PII Restorer] â†’ [Async Memory Write-back]                            â”‚
+â”‚  Owner: Tanmay                                                            â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ---
@@ -92,8 +92,8 @@ HELIX is a **privacy-first hybrid local-cloud AI Operating System** that runs on
 ## 4. TECH STACK
 
 ### Runtime & Language
-- **Python 3.10+** — all AI pipelines, middleware, orchestration
-- **Node.js** — not used in production (only build tooling)
+- **Python 3.10+** â€” all AI pipelines, middleware, orchestration
+- **Node.js** â€” not used in production (only build tooling)
 
 ### AI / ML
 | Component | Library / Model | Purpose |
@@ -108,7 +108,7 @@ HELIX is a **privacy-first hybrid local-cloud AI Operating System** that runs on
 | Vector DB | ChromaDB | Offline persistent memory store |
 
 ### UI
-- **PyQt6** — Voice HUD, HITL Dashboard (QThread for async)
+- **PyQt6** â€” Voice HUD, HITL Dashboard (QThread for async)
 
 ### Python Packages (key)
 ```
@@ -137,74 +137,74 @@ transformers
 ## 5. RECOMMENDED PROJECT STRUCTURE
 
 ```
-helix/
-├── CLAUDE.md                          ← this file
-├── README.md
-├── requirements.txt
-├── .env                               ← GEMINI_API_KEY (never commit)
-├── .gitignore
-│
-├── main.py                            ← entry point, starts all services
-│
-├── sentinel/
-│   ├── __init__.py
-│   ├── sentinel_node.py               ← Tanmay: intent classification via Ollama
-│   ├── pii_engine.py                  ← Tanmay: tiered PII redaction
-│   ├── session_pii_map.py             ← Tanmay: SESSION_PII_MAP + PII Restorer
-│   └── intent_types.py                ← Enum: FILE_OP, SYSTEM_CMD, etc.
-│
-├── memory/
-│   ├── __init__.py
-│   ├── chroma_manager.py              ← Yukta: ChromaDB collections management
-│   ├── retrieval_engine.py            ← Yukta: cosine + recency decay scoring
-│   ├── reranker.py                    ← Tanmay: cross-encoder re-ranking
-│   ├── reprompting.py                 ← Tanmay: prompt construction + token budget
-│   └── eviction_policy.py             ← Yukta: LRU + relevance hybrid eviction
-│
-├── orchestrator/
-│   ├── __init__.py
-│   ├── task_orchestrator.py           ← Tanmay: LangChain ReAct routing engine
-│   ├── risk_scorer.py                 ← Tanmay: risk_score formula
-│   ├── routing_rules.py               ← Tanmay: decision tree logic
-│   └── gemini_oracle.py               ← Tanmay: Gemini API wrapper + PII assertion
-│
-├── middleware/
-│   ├── __init__.py
-│   ├── os_middleware.py               ← Vedika: sandboxed command execution
-│   ├── command_mapper.py              ← Vedika: intent → OS command translation
-│   ├── risk_classifier.py             ← Vedika: command-level risk scoring
-│   ├── rollback_stack.py              ← Vedika: undo mechanism
-│   └── blocked_commands.py            ← Vedika: static + dynamic blocklist
-│
-├── hitl/
-│   ├── __init__.py
-│   ├── hitl_controller.py             ← Tanmay: approval state machine
-│   └── approval_states.py             ← Tanmay: PENDING, APPROVED, REJECTED, MODIFIED
-│
-├── hud/
-│   ├── __init__.py
-│   ├── voice_hud.py                   ← Varshitha: main PyQt6 HUD window
-│   ├── asr_pipeline.py                ← Varshitha: Whisper + normalisation
-│   ├── state_machine.py               ← Varshitha: IDLE→LISTENING→PROCESSING→...
-│   └── hitl_widget.py                 ← Varshitha: approval dialog widget
-│
-├── utils/
-│   ├── __init__.py
-│   ├── logger.py
-│   └── config.py                      ← loads .env, model paths, thresholds
-│
-└── tests/
-    ├── test_pii_engine.py
-    ├── test_sentinel.py
-    ├── test_routing.py
-    └── test_memory.py
+phantom/
+â”œâ”€â”€ CLAUDE.md                          â† this file
+â”œâ”€â”€ README.md
+â”œâ”€â”€ requirements.txt
+â”œâ”€â”€ .env                               â† GEMINI_API_KEY (never commit)
+â”œâ”€â”€ .gitignore
+â”‚
+â”œâ”€â”€ main.py                            â† entry point, starts all services
+â”‚
+â”œâ”€â”€ sentinel/
+â”‚   â”œâ”€â”€ __init__.py
+â”‚   â”œâ”€â”€ sentinel_node.py               â† Tanmay: intent classification via Ollama
+â”‚   â”œâ”€â”€ pii_engine.py                  â† Tanmay: tiered PII redaction
+â”‚   â”œâ”€â”€ session_pii_map.py             â† Tanmay: SESSION_PII_MAP + PII Restorer
+â”‚   â””â”€â”€ intent_types.py                â† Enum: FILE_OP, SYSTEM_CMD, etc.
+â”‚
+â”œâ”€â”€ memory/
+â”‚   â”œâ”€â”€ __init__.py
+â”‚   â”œâ”€â”€ chroma_manager.py              â† Yukta: ChromaDB collections management
+â”‚   â”œâ”€â”€ retrieval_engine.py            â† Yukta: cosine + recency decay scoring
+â”‚   â”œâ”€â”€ reranker.py                    â† Tanmay: cross-encoder re-ranking
+â”‚   â”œâ”€â”€ reprompting.py                 â† Tanmay: prompt construction + token budget
+â”‚   â””â”€â”€ eviction_policy.py             â† Yukta: LRU + relevance hybrid eviction
+â”‚
+â”œâ”€â”€ orchestrator/
+â”‚   â”œâ”€â”€ __init__.py
+â”‚   â”œâ”€â”€ task_orchestrator.py           â† Tanmay: LangChain ReAct routing engine
+â”‚   â”œâ”€â”€ risk_scorer.py                 â† Tanmay: risk_score formula
+â”‚   â”œâ”€â”€ routing_rules.py               â† Tanmay: decision tree logic
+â”‚   â””â”€â”€ gemini_oracle.py               â† Tanmay: Gemini API wrapper + PII assertion
+â”‚
+â”œâ”€â”€ middleware/
+â”‚   â”œâ”€â”€ __init__.py
+â”‚   â”œâ”€â”€ os_middleware.py               â† Vedika: sandboxed command execution
+â”‚   â”œâ”€â”€ command_mapper.py              â† Vedika: intent â†’ OS command translation
+â”‚   â”œâ”€â”€ risk_classifier.py             â† Vedika: command-level risk scoring
+â”‚   â”œâ”€â”€ rollback_stack.py              â† Vedika: undo mechanism
+â”‚   â””â”€â”€ blocked_commands.py            â† Vedika: static + dynamic blocklist
+â”‚
+â”œâ”€â”€ hitl/
+â”‚   â”œâ”€â”€ __init__.py
+â”‚   â”œâ”€â”€ hitl_controller.py             â† Tanmay: approval state machine
+â”‚   â””â”€â”€ approval_states.py             â† Tanmay: PENDING, APPROVED, REJECTED, MODIFIED
+â”‚
+â”œâ”€â”€ hud/
+â”‚   â”œâ”€â”€ __init__.py
+â”‚   â”œâ”€â”€ voice_hud.py                   â† Varshitha: main PyQt6 HUD window
+â”‚   â”œâ”€â”€ asr_pipeline.py                â† Varshitha: Whisper + normalisation
+â”‚   â”œâ”€â”€ state_machine.py               â† Varshitha: IDLEâ†’LISTENINGâ†’PROCESSINGâ†’...
+â”‚   â””â”€â”€ hitl_widget.py                 â† Varshitha: approval dialog widget
+â”‚
+â”œâ”€â”€ utils/
+â”‚   â”œâ”€â”€ __init__.py
+â”‚   â”œâ”€â”€ logger.py
+â”‚   â””â”€â”€ config.py                      â† loads .env, model paths, thresholds
+â”‚
+â””â”€â”€ tests/
+    â”œâ”€â”€ test_pii_engine.py
+    â”œâ”€â”€ test_sentinel.py
+    â”œâ”€â”€ test_routing.py
+    â””â”€â”€ test_memory.py
 ```
 
 ---
 
 ## 6. MODULE SPECIFICATIONS
 
-### 6.1 Sentinel Node (`sentinel/sentinel_node.py`) — TANMAY
+### 6.1 Sentinel Node (`sentinel/sentinel_node.py`) â€” TANMAY
 
 **Purpose**: Two-pass intent classification + initial PII detection using local LLaMA 3.2 3B.
 
@@ -220,14 +220,14 @@ class IntentType(Enum):
     UNKNOWN = "unknown"           # fallback
 ```
 
-**Pass 1 — Intent Classification**:
+**Pass 1 â€” Intent Classification**:
 ```python
 def classify_intent(query: str) -> dict:
     """
     Returns:
     {
         "intent": IntentType,
-        "confidence": float,   # 0.0–1.0
+        "confidence": float,   # 0.0â€“1.0
         "sub_intent": str,     # e.g. "delete", "create", "rename"
         "entities": list[str], # detected nouns/objects
         "raw": str             # Llama's JSON output
@@ -255,7 +255,7 @@ def classify_intent(query: str) -> dict:
 - HUD shows: `"Did you mean: [paraphrased interpretation]? [Yes / No / Rephrase]"`
 - Wait for user confirmation before any further processing.
 
-**Pass 2 — Basic PII Pre-screen**:
+**Pass 2 â€” Basic PII Pre-screen**:
 - Run spaCy NER on query to find PERSON, ORG, GPE entities.
 - Flag high-confidence entities for the PII Engine.
 - Pass intent context to PII Engine (knowing intent=PAYMENT_OP makes "4111" more likely a card number).
@@ -275,23 +275,23 @@ class SentinelNode:
 
 ---
 
-### 6.2 PII Redaction Engine (`sentinel/pii_engine.py`) — TANMAY
+### 6.2 PII Redaction Engine (`sentinel/pii_engine.py`) â€” TANMAY
 
 **Purpose**: Tiered PII detection and redaction. Three-tier cascade. Output must be zero-PII guaranteed.
 
-**Architecture** (ORIGINAL DESIGN — Tiered Cascade):
+**Architecture** (ORIGINAL DESIGN â€” Tiered Cascade):
 
 ```
-Tier 1: Regex (FAST — always runs first)
-    ↓ (if missed entities detected by confidence scoring)
+Tier 1: Regex (FAST â€” always runs first)
+    â†“ (if missed entities detected by confidence scoring)
 Tier 2: Presidio + spaCy NER (ACCURATE)
-    ↓ (if Tier 2 confidence still low on some spans)
-Tier 3: LLaMA 3.2 3B semantic check (SAFETY NET — expensive, rare)
-    ↓
-Merge all results → deduplicate → apply redaction → build SESSION_PII_MAP
+    â†“ (if Tier 2 confidence still low on some spans)
+Tier 3: LLaMA 3.2 3B semantic check (SAFETY NET â€” expensive, rare)
+    â†“
+Merge all results â†’ deduplicate â†’ apply redaction â†’ build SESSION_PII_MAP
 ```
 
-**Tier 1 — Regex patterns for Indian context**:
+**Tier 1 â€” Regex patterns for Indian context**:
 ```python
 REGEX_PATTERNS = {
     "AADHAAR": r"\b[2-9]{1}[0-9]{3}\s[0-9]{4}\s[0-9]{4}\b",
@@ -304,7 +304,7 @@ REGEX_PATTERNS = {
 }
 ```
 
-**Tier 2 — Presidio configuration**:
+**Tier 2 â€” Presidio configuration**:
 ```python
 from presidio_analyzer import AnalyzerEngine, RecognizerRegistry
 from presidio_anonymizer import AnonymizerEngine
@@ -314,7 +314,7 @@ from presidio_anonymizer import AnonymizerEngine
 # PersonRecognizer, LocationRecognizer, NRP recogniser (for Indian IDs)
 ```
 
-**Tier 3 — LLaMA semantic check** (only called when Tiers 1+2 combined confidence < 0.80):
+**Tier 3 â€” LLaMA semantic check** (only called when Tiers 1+2 combined confidence < 0.80):
 ```python
 SEMANTIC_PII_PROMPT = """Analyse this text for ANY personally identifiable information including:
 indirect references ("my sister's address"), financial references ("the card I use for Netflix"),
@@ -326,7 +326,7 @@ If none found: {"pii_found": []}
 """
 ```
 
-**SESSION_PII_MAP** (ORIGINAL DESIGN — Presidio does NOT do this):
+**SESSION_PII_MAP** (ORIGINAL DESIGN â€” Presidio does NOT do this):
 ```python
 class SessionPIIMap:
     """
@@ -353,24 +353,24 @@ class SessionPIIMap:
         """Called at session end."""
 ```
 
-**PII Restorer** (ORIGINAL DESIGN — bidirectional PII control):
+**PII Restorer** (ORIGINAL DESIGN â€” bidirectional PII control):
 - After Gemini responds, run `SESSION_PII_MAP.restore(response)` before showing to user.
 - Also scan response for any leaked PII patterns (Gemini hallucinated real-sounding PII).
 - Alert if response contains placeholders that don't match the map (indicates a bug).
 
 ---
 
-### 6.3 ChromaDB Memory Manager (`memory/chroma_manager.py`) — YUKTA
+### 6.3 ChromaDB Memory Manager (`memory/chroma_manager.py`) â€” YUKTA
 
 **Purpose**: Offline persistent vector memory. Two-collection design.
 
 **Collections**:
 ```python
 # Collection 1: Session memory (cleared each session)
-SESSION_COLLECTION = "helix_session_memory"
+SESSION_COLLECTION = "phantom_session_memory"
 
 # Collection 2: Persistent memory (survives restarts)
-PERSISTENT_COLLECTION = "helix_persistent_memory"
+PERSISTENT_COLLECTION = "phantom_persistent_memory"
 ```
 
 **Schema** (metadata per document):
@@ -396,23 +396,23 @@ from sentence_transformers import SentenceTransformer
 model = SentenceTransformer('all-MiniLM-L6-v2')  # 384-dim, ~90MB, fast on CPU
 ```
 
-**Retrieval** (ORIGINAL DESIGN — Recency-weighted scoring):
+**Retrieval** (ORIGINAL DESIGN â€” Recency-weighted scoring):
 ```python
 def retrieve_relevant(query: str, top_k: int = 5) -> list[dict]:
     """
-    1. Embed query → 384-dim vector
-    2. ChromaDB cosine similarity search → top-k=5
+    1. Embed query â†’ 384-dim vector
+    2. ChromaDB cosine similarity search â†’ top-k=5
     3. Apply recency decay:
-       final_score = cosine_sim * exp(-λ * days_old)
-       where λ = 0.1
+       final_score = cosine_sim * exp(-Î» * days_old)
+       where Î» = 0.1
     4. Filter: final_score > 0.65
     5. Return top-3 after filtering
     """
-    λ = 0.1
+    Î» = 0.1
     # ...
 ```
 
-**Eviction policy** (ORIGINAL DESIGN — LRU + relevance hybrid):
+**Eviction policy** (ORIGINAL DESIGN â€” LRU + relevance hybrid):
 ```python
 def evict_if_needed(collection_name: str, max_entries: int = 1000):
     """
@@ -421,7 +421,7 @@ def evict_if_needed(collection_name: str, max_entries: int = 1000):
     """
 ```
 
-**Write-back** (ORIGINAL DESIGN — outcome-gated):
+**Write-back** (ORIGINAL DESIGN â€” outcome-gated):
 ```python
 def write_back(interaction_summary: str, outcome: str, hitl_approved: bool):
     """
@@ -438,11 +438,11 @@ def write_back(interaction_summary: str, outcome: str, hitl_approved: bool):
 
 ---
 
-### 6.4 Memory-Augmented Re-prompting (`memory/reprompting.py`) — TANMAY
+### 6.4 Memory-Augmented Re-prompting (`memory/reprompting.py`) â€” TANMAY
 
 **Purpose**: Constructs enriched prompts by injecting relevant memory context.
 
-**Cross-encoder re-ranking** (ORIGINAL DESIGN — added on top of ChromaDB):
+**Cross-encoder re-ranking** (ORIGINAL DESIGN â€” added on top of ChromaDB):
 ```python
 from sentence_transformers import CrossEncoder
 reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
@@ -459,7 +459,7 @@ def rerank(query: str, candidates: list[str]) -> list[tuple[float, str]]:
 
 **Prompt construction** (with token budget management):
 ```python
-SYSTEM_PROMPT = """You are HELIX, a privacy-first AI assistant for local system management.
+SYSTEM_PROMPT = """You are PHANTOM, a privacy-first AI assistant for local system management.
 You have access to local OS commands and cloud reasoning.
 Use the context below ONLY if directly relevant to the current task.
 Never reveal PII. Never execute irreversible actions without flagging them."""
@@ -480,7 +480,7 @@ def build_enriched_prompt(
 
 ---
 
-### 6.5 LangChain Task Orchestrator (`orchestrator/task_orchestrator.py`) — TANMAY
+### 6.5 LangChain Task Orchestrator (`orchestrator/task_orchestrator.py`) â€” TANMAY
 
 **Purpose**: Routes enriched prompts to correct execution path. Calculates risk scores. Triggers HITL.
 
@@ -546,11 +546,11 @@ tools = [
 
 ---
 
-### 6.6 Gemini Oracle (`orchestrator/gemini_oracle.py`) — TANMAY
+### 6.6 Gemini Oracle (`orchestrator/gemini_oracle.py`) â€” TANMAY
 
 **Purpose**: Cloud reasoning via Gemini 1.5 Flash. Strict PII guarantee before every API call.
 
-**Critical pre-call assertion** (ORIGINAL DESIGN — must never be removed):
+**Critical pre-call assertion** (ORIGINAL DESIGN â€” must never be removed):
 ```python
 def query(sanitised_prompt: str) -> str:
     # SAFETY GATE: Assert zero PII before any network call
@@ -576,7 +576,7 @@ def query(sanitised_prompt: str) -> str:
 
 ---
 
-### 6.7 Python OS Middleware (`middleware/os_middleware.py`) — VEDIKA
+### 6.7 Python OS Middleware (`middleware/os_middleware.py`) â€” VEDIKA
 
 **Purpose**: Translates intent+entities into safe OS commands and executes them in a sandbox.
 
@@ -629,9 +629,9 @@ class RollbackStack:
     """
     Tracks inverse operations for each executed command.
     Examples:
-        mkdir ~/test        → inverse: rmdir ~/test
-        cp a.txt b.txt      → inverse: rm b.txt
-        mv a.txt ~/docs/    → inverse: mv ~/docs/a.txt .
+        mkdir ~/test        â†’ inverse: rmdir ~/test
+        cp a.txt b.txt      â†’ inverse: rm b.txt
+        mv a.txt ~/docs/    â†’ inverse: mv ~/docs/a.txt .
         
     On HITL rejection mid-sequence: pop and execute inverse operations.
     """
@@ -646,19 +646,19 @@ def map_intent_to_command(intent: IntentType, sub_intent: str, entities: list[st
     """
     Examples:
     FILE_OP/delete + ["old PDFs", "Downloads"] 
-        → "find ~/Downloads -name '*.pdf' -mtime +30 -delete"
+        â†’ "find ~/Downloads -name '*.pdf' -mtime +30 -delete"
     
     FILE_OP/list + ["Documents"]
-        → "ls -lah ~/Documents"
+        â†’ "ls -lah ~/Documents"
     
     FILE_OP/create + ["notes.txt", "Desktop"]
-        → "touch ~/Desktop/notes.txt"
+        â†’ "touch ~/Desktop/notes.txt"
     """
 ```
 
 ---
 
-### 6.8 HITL Controller (`hitl/hitl_controller.py`) — TANMAY
+### 6.8 HITL Controller (`hitl/hitl_controller.py`) â€” TANMAY
 
 **Purpose**: Approval state machine. Manages approve/reject/modify flow with timeout logic.
 
@@ -715,23 +715,23 @@ def on_decision(state: HITLState, modified_command: str | None = None):
 
 ---
 
-### 6.9 Voice HUD (`hud/voice_hud.py`) — VARSHITHA
+### 6.9 Voice HUD (`hud/voice_hud.py`) â€” VARSHITHA
 
 **Purpose**: Asynchronous PyQt6 interface for voice + text input and system state display.
 
 **State machine** (ORIGINAL DESIGN):
 ```
-IDLE → LISTENING (mic activated) → PROCESSING (Whisper ASR running)
-     → AWAITING_SENTINEL (Sentinel Node processing)
-     → AWAITING_HITL (HITL approval dialog shown)
-     → DISPLAYING (response shown)
-     → back to IDLE
+IDLE â†’ LISTENING (mic activated) â†’ PROCESSING (Whisper ASR running)
+     â†’ AWAITING_SENTINEL (Sentinel Node processing)
+     â†’ AWAITING_HITL (HITL approval dialog shown)
+     â†’ DISPLAYING (response shown)
+     â†’ back to IDLE
 ```
 
 **Key components**:
 - `AudioCapture` (QThread): non-blocking microphone capture
 - `WhisperWorker` (QThread): ASR in background thread
-- `TextNormaliser`: lowercase → filler word removal → punctuation → spell check
+- `TextNormaliser`: lowercase â†’ filler word removal â†’ punctuation â†’ spell check
 - `PromptIntentAnnotator` (ORIGINAL DESIGN): attaches metadata packet to query
   ```python
   @dataclass
@@ -744,11 +744,11 @@ IDLE → LISTENING (mic activated) → PROCESSING (Whisper ASR running)
 - Live status panel: shows pipeline stage, routing decision, memory context hits, pending HITL
 - `HITLWidget`: embedded approve/reject/modify dialog with countdown timer
 
-**ASR pre-processing** (ORIGINAL DESIGN — Indian accent robustness):
+**ASR pre-processing** (ORIGINAL DESIGN â€” Indian accent robustness):
 ```python
 def preprocess_audio(audio_data: np.ndarray, sample_rate: int = 16000) -> np.ndarray:
     """
-    1. Bandpass filter: 300–3400 Hz (voice frequency range)
+    1. Bandpass filter: 300â€“3400 Hz (voice frequency range)
     2. Noise gate: suppress frames below -40 dB
     3. Amplitude normalisation: RMS to -20 dBFS
     Output: cleaned PCM array ready for Whisper
@@ -757,61 +757,61 @@ def preprocess_audio(audio_data: np.ndarray, sample_rate: int = 16000) -> np.nda
 
 ---
 
-## 7. DATA FLOW — COMPLETE SEQUENCE
+## 7. DATA FLOW â€” COMPLETE SEQUENCE
 
 ```
 1. User speaks or types
-        ↓
-2. [HUD] AudioCapture (QThread) → WhisperWorker → raw transcript
-        ↓
-3. [HUD] TextNormaliser → PromptIntentAnnotator → AnnotatedQuery
-        ↓
+        â†“
+2. [HUD] AudioCapture (QThread) â†’ WhisperWorker â†’ raw transcript
+        â†“
+3. [HUD] TextNormaliser â†’ PromptIntentAnnotator â†’ AnnotatedQuery
+        â†“
 4. [SENTINEL] Pass 1: LLaMA 3.2 3B intent classification
-   → if confidence < 0.65: return ClarificationRequest to HUD (GOTO 1)
-   → if confidence >= 0.65: continue
-        ↓
-5. [PII ENGINE] Tier 1 (Regex) → Tier 2 (Presidio+spaCy) → Tier 3 (LLaMA, if needed)
-   → Build SESSION_PII_MAP
-   → Output: sanitised_query (guaranteed zero-PII)
-        ↓
-6. [MEMORY] ChromaDB cosine search → top-5 results
-   → Cross-encoder re-rank → top-2 snippets
-   → Recency decay scoring → filter < 0.65
-        ↓
+   â†’ if confidence < 0.65: return ClarificationRequest to HUD (GOTO 1)
+   â†’ if confidence >= 0.65: continue
+        â†“
+5. [PII ENGINE] Tier 1 (Regex) â†’ Tier 2 (Presidio+spaCy) â†’ Tier 3 (LLaMA, if needed)
+   â†’ Build SESSION_PII_MAP
+   â†’ Output: sanitised_query (guaranteed zero-PII)
+        â†“
+6. [MEMORY] ChromaDB cosine search â†’ top-5 results
+   â†’ Cross-encoder re-rank â†’ top-2 snippets
+   â†’ Recency decay scoring â†’ filter < 0.65
+        â†“
 7. [RE-PROMPTING] Build enriched_prompt:
    system_instructions + memory_context + sanitised_query
-   → Token budget check (max 2048 tokens)
-        ↓
+   â†’ Token budget check (max 2048 tokens)
+        â†“
 8. [ORCHESTRATOR] Routing decision:
-   LOCAL (FILE_OP/SYSTEM_CMD with conf≥0.80) → GOTO 9a
-   CLOUD (GENERAL_QA/UNKNOWN or conf<0.80)   → GOTO 9b
-   MEMORY (MEMORY_LOOKUP)                     → GOTO 9c
-        ↓
-   Risk score calculated → if risk_score > 40: flag HITL_REQUIRED
-        ↓
-9a. [OS MIDDLEWARE] Blocked check → resource-capped subprocess → ExecutionResult
-    → RollbackStack.push(command, inverse)
-    → ExecutionContextTracker.record(diff)
-9b. [GEMINI ORACLE] PII assertion → API call → AI response → PII Restorer
-9c. [CHROMADB] Direct semantic search → return result
-        ↓
+   LOCAL (FILE_OP/SYSTEM_CMD with confâ‰¥0.80) â†’ GOTO 9a
+   CLOUD (GENERAL_QA/UNKNOWN or conf<0.80)   â†’ GOTO 9b
+   MEMORY (MEMORY_LOOKUP)                     â†’ GOTO 9c
+        â†“
+   Risk score calculated â†’ if risk_score > 40: flag HITL_REQUIRED
+        â†“
+9a. [OS MIDDLEWARE] Blocked check â†’ resource-capped subprocess â†’ ExecutionResult
+    â†’ RollbackStack.push(command, inverse)
+    â†’ ExecutionContextTracker.record(diff)
+9b. [GEMINI ORACLE] PII assertion â†’ API call â†’ AI response â†’ PII Restorer
+9c. [CHROMADB] Direct semantic search â†’ return result
+        â†“
 10. if HITL_REQUIRED:
-    [HITL CONTROLLER] → HITLDisplayData → [HUD] shows approval dialog
-    → User: APPROVE / REJECT / MODIFY
-    → if APPROVED: execute + write-back to persistent_memory (async)
-    → if REJECTED: rollback + write-back to session_memory only
-    → if MODIFIED: re-route from step 8
-        ↓
+    [HITL CONTROLLER] â†’ HITLDisplayData â†’ [HUD] shows approval dialog
+    â†’ User: APPROVE / REJECT / MODIFY
+    â†’ if APPROVED: execute + write-back to persistent_memory (async)
+    â†’ if REJECTED: rollback + write-back to session_memory only
+    â†’ if MODIFIED: re-route from step 8
+        â†“
 11. [PII RESTORER] Substitute SESSION_PII_MAP placeholders in response
-        ↓
+        â†“
 12. [HUD] Display final response to user
-        ↓
-13. [MEMORY] Async write-back to ChromaDB (summarise → embed → store)
+        â†“
+13. [MEMORY] Async write-back to ChromaDB (summarise â†’ embed â†’ store)
 ```
 
 ---
 
-## 8. KEY ALGORITHMS — IMPLEMENTATION REFERENCE
+## 8. KEY ALGORITHMS â€” IMPLEMENTATION REFERENCE
 
 ### 8.1 Recency Decay Formula (Yukta)
 ```python
@@ -875,41 +875,41 @@ def build_prompt_within_budget(system: str, snippets: list[str],
 
 ## 9. RESEARCH PAPERS REFERENCE
 
-### Cluster A — PII Sentinel Node (Tanmay's papers)
+### Cluster A â€” PII Sentinel Node (Tanmay's papers)
 
 | Ref | Paper | Authors | Year | arXiv | Key Insight |
 |---|---|---|---|---|---|
 | [1] BASE | Hybrid LLM: Cost-Efficient and Quality-Aware Query Routing | Ding, Mallick, Wang et al. | 2024 | 2404.14618 | Routes queries between small local + large cloud model based on difficulty. 40% fewer cloud calls. |
 | [2] | PRvL: Quantifying LLM Capabilities for PII Redaction | Anonymous | 2025 | 2508.05545 | No single PII method works across all entity types. Justifies tiered cascade. |
-| [3] | RouteLLM: Learning to Route LLMs with Preference Data | Ong et al. | 2024 | 2406.18665 | Learned routing achieves 2x cost reduction. Validates HELIX routing architecture. |
+| [3] | RouteLLM: Learning to Route LLMs with Preference Data | Ong et al. | 2024 | 2406.18665 | Learned routing achieves 2x cost reduction. Validates PHANTOM routing architecture. |
 | [4] | Agentic RAG: A Survey | Xiong et al. | 2025 | 2501.09136 | Autonomous agents in RAG pipelines with dynamic retrieval and write-back. |
-| [5] | PBa-LLM: Privacy- and Bias-aware NLP using NER | Peña et al. | 2025 | 2507.02966 | NER-driven anonymisation at LLM input layer. Justifies Sentinel Node NER design. |
+| [5] | PBa-LLM: Privacy- and Bias-aware NLP using NER | PeÃ±a et al. | 2025 | 2507.02966 | NER-driven anonymisation at LLM input layer. Justifies Sentinel Node NER design. |
 
-### Cluster B — Memory Management (Yukta's papers)
+### Cluster B â€” Memory Management (Yukta's papers)
 
 | Ref | Paper | Authors | Year | arXiv | Key Insight |
 |---|---|---|---|---|---|
 | [6] BASE | MemGPT: Towards LLMs as Operating Systems | Packer et al. | 2023 | 2310.08560 | Hierarchical memory tiers (session vs archival) inspired by OS memory management. |
 | [7] | MemoryBank: Enhancing LLMs with Long-Term Memory | Zhong et al. | 2023/2024 | 2305.10250 | Ebbinghaus Forgetting Curve applied to memory decay. Justifies recency formula. |
 | [8] | Conversational Agents with Time-Sensitive Long-term Memory | Alonso et al. | 2024 | 2406.00057 | Pure cosine retrieval fails on time-based queries. Motivates hybrid scoring. |
-| [9] | RAG for LLMs: A Survey | Gao et al. | 2023 | 2312.10997 | Defines Naive/Advanced/Modular RAG. HELIX = Advanced RAG. |
+| [9] | RAG for LLMs: A Survey | Gao et al. | 2023 | 2312.10997 | Defines Naive/Advanced/Modular RAG. PHANTOM = Advanced RAG. |
 | [10] | Agentic RAG: A Survey | Xiong et al. | 2025 | 2501.09136 | Bidirectional memory in agents. Justifies write-back architecture. |
 
-### Cluster C — OS Middleware (Vedika's papers)
+### Cluster C â€” OS Middleware (Vedika's papers)
 
 | Ref | Paper | Authors | Year | arXiv | Key Insight |
 |---|---|---|---|---|---|
-| [11] BASE | OS-Copilot: Towards Generalist Computer Agents | Wu et al. | 2024 | — | Generalist OS agent with sandboxed execution and HITL. HELIX extends with rollback. |
-| [12] | Toolformer | Schick et al. | 2023 | 2302.04761 | LLMs decide when to invoke tools. Underpins intent→command mapping. |
-| [13] | ReAct: Synergizing Reasoning and Acting | Yao et al. | 2023 | 2210.03629 | Reason-Act-Observe loop. Models HELIX middleware workflow. |
+| [11] BASE | OS-Copilot: Towards Generalist Computer Agents | Wu et al. | 2024 | â€” | Generalist OS agent with sandboxed execution and HITL. PHANTOM extends with rollback. |
+| [12] | Toolformer | Schick et al. | 2023 | 2302.04761 | LLMs decide when to invoke tools. Underpins intentâ†’command mapping. |
+| [13] | ReAct: Synergizing Reasoning and Acting | Yao et al. | 2023 | 2210.03629 | Reason-Act-Observe loop. Models PHANTOM middleware workflow. |
 | [14] | ToolLLM | Qin et al. | 2023 | 2307.16789 | Structured API selection. Informs command template selection. |
-| [15] | AgentBench | Liu et al. | 2023 | 2308.03688 | Benchmarks LLM agents on real OS tasks. Identifies failure modes HELIX solves. |
+| [15] | AgentBench | Liu et al. | 2023 | 2308.03688 | Benchmarks LLM agents on real OS tasks. Identifies failure modes PHANTOM solves. |
 
-### Cluster D — Voice & Interaction (Varshitha's papers)
+### Cluster D â€” Voice & Interaction (Varshitha's papers)
 
 | Ref | Paper | Authors | Year | arXiv | Key Insight |
 |---|---|---|---|---|---|
-| [16] BASE | OS-Copilot (same as [11]) | Wu et al. | 2024 | — | OS interaction model. How HUD connects to execution layer. |
+| [16] BASE | OS-Copilot (same as [11]) | Wu et al. | 2024 | â€” | OS interaction model. How HUD connects to execution layer. |
 | [17] | Toolformer (same as [12]) | Schick et al. | 2023 | 2302.04761 | Tool invocation chains triggered from HUD input. |
 | [18] | ReAct (same as [13]) | Yao et al. | 2023 | 2210.03629 | HUD feedback loop: user sees reasoning + observations per action step. |
 | [19] | ToolLLM (same as [14]) | Qin et al. | 2023 | 2307.16789 | HUD intents matched to validated command templates. |
@@ -917,7 +917,7 @@ def build_prompt_within_budget(system: str, snippets: list[str],
 
 ---
 
-## 10. ORIGINAL CONTRIBUTIONS — DO NOT CONFUSE WITH EXISTING TOOLS
+## 10. ORIGINAL CONTRIBUTIONS â€” DO NOT CONFUSE WITH EXISTING TOOLS
 
 These are the parts Tanmay designed from scratch. When Claude Code touches these, do not simplify them away or replace them with off-the-shelf equivalents without discussion.
 
@@ -925,20 +925,20 @@ These are the parts Tanmay designed from scratch. When Claude Code touches these
 |---|---|---|---|
 | Two-Pass Sequential Architecture | Tanmay | Pass 1 intent enriches context for Pass 2 PII detection | Presidio + spaCy (normally run independently) |
 | SESSION_PII_MAP with Reversibility | Tanmay | Stores original PII values for local restoration in responses | Presidio (throws away originals) |
-| Tiered Redaction Cascade | Tanmay | Regex → NER → Semantic LLM fallback with confidence thresholds | Presidio + spaCy (normally one-shot) |
-| Confidence-Gated Clarification Loop | Tanmay | confidence < 0.65 → ask user before routing | Ollama/LLaMA (no built-in gate) |
+| Tiered Redaction Cascade | Tanmay | Regex â†’ NER â†’ Semantic LLM fallback with confidence thresholds | Presidio + spaCy (normally one-shot) |
+| Confidence-Gated Clarification Loop | Tanmay | confidence < 0.65 â†’ ask user before routing | Ollama/LLaMA (no built-in gate) |
 | Risk-Scored HITL Trigger | Tanmay | Weighted formula determines if HITL fires | LangChain (provides agent loop only) |
 | Cross-Encoder Re-ranking | Tanmay | Re-ranks ChromaDB top-5 before prompt injection | ChromaDB (returns cosine only) |
 | PII Restorer on Response Path | Tanmay | Bidirectional PII control: sanitise in, restore out | Presidio (input only) |
-| Recency-Weighted Retrieval Score | Yukta | cosine_sim × exp(−λ × days_old) | ChromaDB (cosine only) |
+| Recency-Weighted Retrieval Score | Yukta | cosine_sim Ã— exp(âˆ’Î» Ã— days_old) | ChromaDB (cosine only) |
 | Interaction Summarisation Strategy | Yukta | Privacy-safe summarisation before ChromaDB storage | ChromaDB (stores raw text) |
 | Session vs Persistent Memory Separation | Yukta | Two collections, outcome-gated promotion | MemGPT (single archival store) |
-| LRU + Relevance Hybrid Eviction | Yukta | (recency_rank × 0.4) + (retrieval_freq × 0.6) | ChromaDB (no built-in eviction) |
+| LRU + Relevance Hybrid Eviction | Yukta | (recency_rank Ã— 0.4) + (retrieval_freq Ã— 0.6) | ChromaDB (no built-in eviction) |
 | Outcome-Gated Promotion Policy | Yukta | Only HITL-approved interactions enter persistent memory | MemGPT/MemoryBank (store everything) |
 | Dual-Mode Async Input State Machine | Varshitha | Voice + text simultaneously, non-blocking | PyQt6 (no built-in AI state machine) |
 | Prompt Intent Annotator | Varshitha | Metadata packet: modality + system state + language confidence | Whisper (transcript only) |
 | Indian Accent Robustness Pipeline | Varshitha | Bandpass + noise gate + normalisation before Whisper | Whisper (raw audio) |
-| Dynamic Intent-to-Command Mapping | Vedika | NL intent + entities → safe OS command string | subprocess (executes commands only) |
+| Dynamic Intent-to-Command Mapping | Vedika | NL intent + entities â†’ safe OS command string | subprocess (executes commands only) |
 | Execution Context Tracker | Vedika | Diffs filesystem state after each command | subprocess (no tracking) |
 | Partial Rollback Mechanism | Vedika | Inverse operation stack, pop on HITL rejection | No existing tool does this |
 | Command Risk Classifier | Vedika | Numeric risk score per command | Static blocklists only |
@@ -953,8 +953,8 @@ GEMINI_API_KEY=your_key_here
 OLLAMA_HOST=http://localhost:11434
 OLLAMA_MODEL=llama3.2:3b
 CHROMA_PERSIST_DIR=./data/chromadb
-SESSION_COLLECTION=helix_session_memory
-PERSISTENT_COLLECTION=helix_persistent_memory
+SESSION_COLLECTION=phantom_session_memory
+PERSISTENT_COLLECTION=phantom_persistent_memory
 RISK_THRESHOLD_HITL=40
 CONFIDENCE_THRESHOLD_CLARIFY=0.65
 MEMORY_SCORE_THRESHOLD=0.65
@@ -993,7 +993,7 @@ MAX_PROMPT_TOKENS = int(os.getenv("MAX_PROMPT_TOKENS", "2048"))
 | RAM | 16 GB | 32 GB |
 | CPU | Intel i5 8th Gen+ / AMD Ryzen 5+ / Apple M-series | Intel i7 / AMD Ryzen 7 / Apple M2 |
 | Storage | 256 GB SSD | 512 GB SSD |
-| GPU | None required | NVIDIA RTX (any VRAM ≥ 6 GB) |
+| GPU | None required | NVIDIA RTX (any VRAM â‰¥ 6 GB) |
 | Network | 10 Mbps | 50+ Mbps |
 | Microphone | Any standard | Noise-cancelling preferred |
 
@@ -1006,7 +1006,7 @@ MAX_PROMPT_TOKENS = int(os.getenv("MAX_PROMPT_TOKENS", "2048"))
 - PyQt6 HUD: ~50 MB RAM
 - Whisper tiny: ~150 MB RAM
 - **Total peak RAM (without GPU)**: ~3.5 GB Python + 2 GB model = ~5.5 GB. Comfortable on 16 GB.
-- **Ollama startup time** on CPU: 10–15 seconds cold load. Start as background service at boot.
+- **Ollama startup time** on CPU: 10â€“15 seconds cold load. Start as background service at boot.
 
 ---
 
@@ -1014,26 +1014,26 @@ MAX_PROMPT_TOKENS = int(os.getenv("MAX_PROMPT_TOKENS", "2048"))
 
 Build in this order (each step unlocks the next):
 
-1. **`utils/config.py`** — environment setup, all thresholds loaded
-2. **`sentinel/pii_engine.py`** — most testable, most critical, most exam-ready
-3. **`sentinel/session_pii_map.py`** — tiny but foundational
-4. **`sentinel/sentinel_node.py`** — depends on pii_engine
-5. **`memory/chroma_manager.py`** — Yukta's core, needed by re-prompting
-6. **`memory/retrieval_engine.py`** + **`memory/reranker.py`** — Yukta + Tanmay
-7. **`memory/reprompting.py`** — Tanmay, depends on reranker
-8. **`orchestrator/risk_scorer.py`** — Tanmay, standalone
-9. **`orchestrator/routing_rules.py`** — Tanmay, standalone
-10. **`middleware/blocked_commands.py`** + **`middleware/risk_classifier.py`** — Vedika
-11. **`middleware/rollback_stack.py`** — Vedika
-12. **`middleware/command_mapper.py`** + **`middleware/os_middleware.py`** — Vedika
-13. **`orchestrator/gemini_oracle.py`** — Tanmay, needs pii_engine
-14. **`orchestrator/task_orchestrator.py`** — Tanmay, needs everything above
-15. **`hitl/hitl_controller.py`** — Tanmay, needs orchestrator
-16. **`hud/asr_pipeline.py`** — Varshitha
-17. **`hud/state_machine.py`** — Varshitha
-18. **`hud/voice_hud.py`** — Varshitha, needs ASR + state machine
-19. **`hud/hitl_widget.py`** — Varshitha, needs hitl_controller
-20. **`main.py`** — wires everything together
+1. **`utils/config.py`** â€” environment setup, all thresholds loaded
+2. **`sentinel/pii_engine.py`** â€” most testable, most critical, most exam-ready
+3. **`sentinel/session_pii_map.py`** â€” tiny but foundational
+4. **`sentinel/sentinel_node.py`** â€” depends on pii_engine
+5. **`memory/chroma_manager.py`** â€” Yukta's core, needed by re-prompting
+6. **`memory/retrieval_engine.py`** + **`memory/reranker.py`** â€” Yukta + Tanmay
+7. **`memory/reprompting.py`** â€” Tanmay, depends on reranker
+8. **`orchestrator/risk_scorer.py`** â€” Tanmay, standalone
+9. **`orchestrator/routing_rules.py`** â€” Tanmay, standalone
+10. **`middleware/blocked_commands.py`** + **`middleware/risk_classifier.py`** â€” Vedika
+11. **`middleware/rollback_stack.py`** â€” Vedika
+12. **`middleware/command_mapper.py`** + **`middleware/os_middleware.py`** â€” Vedika
+13. **`orchestrator/gemini_oracle.py`** â€” Tanmay, needs pii_engine
+14. **`orchestrator/task_orchestrator.py`** â€” Tanmay, needs everything above
+15. **`hitl/hitl_controller.py`** â€” Tanmay, needs orchestrator
+16. **`hud/asr_pipeline.py`** â€” Varshitha
+17. **`hud/state_machine.py`** â€” Varshitha
+18. **`hud/voice_hud.py`** â€” Varshitha, needs ASR + state machine
+19. **`hud/hitl_widget.py`** â€” Varshitha, needs hitl_controller
+20. **`main.py`** â€” wires everything together
 
 ---
 
@@ -1060,18 +1060,18 @@ Test with at least 50 Indian-context sentences containing:
 - Test all RISK_WEIGHTS keywords
 
 ### Memory Tests (`tests/test_memory.py`)
-- Write 10 interactions → retrieve with known query → verify top-3 returned
+- Write 10 interactions â†’ retrieve with known query â†’ verify top-3 returned
 - Test recency decay: old interactions should score lower
-- Test eviction: add 1001 entries → verify lowest-score evicted
+- Test eviction: add 1001 entries â†’ verify lowest-score evicted
 
 ---
 
 ## 15. KNOWN CONSTRAINTS & DECISIONS
 
-- **Do not use LLaMA 3 8B for the Sentinel Node** — too heavy for 16 GB RAM alongside other services. Use LLaMA 3.2 3B. Reserve 8B for future enhancement only if GPU is available.
-- **Do not use `WidthType.PERCENTAGE`** in any docx output — breaks in Google Docs.
+- **Do not use LLaMA 3 8B for the Sentinel Node** â€” too heavy for 16 GB RAM alongside other services. Use LLaMA 3.2 3B. Reserve 8B for future enhancement only if GPU is available.
+- **Do not use `WidthType.PERCENTAGE`** in any docx output â€” breaks in Google Docs.
 - **Gemini model**: use `gemini-1.5-flash`, NOT `gemini-1.5-pro`. Flash is fast enough for this use case and stays within free tier for development.
-- **Whisper model**: use `tiny` for development, `base` for final demo if latency allows. Do not use `small` or larger — too slow on CPU.
+- **Whisper model**: use `tiny` for development, `base` for final demo if latency allows. Do not use `small` or larger â€” too slow on CPU.
 - **ChromaDB**: use local persistent client (`chromadb.PersistentClient`), not the HTTP client. No server needed.
 - **PyQt6 not PyQt5**: the report specifies PyQt6. If a library only supports PyQt5, use a compatibility shim.
 - **No threading.Thread**: use QThread for all background work so PyQt6 event loop stays clean.
@@ -1082,14 +1082,14 @@ Test with at least 50 Indian-context sentences containing:
 
 ## 16. PLAGIARISM ASSESSMENT
 
-Closest existing project: **Open Interpreter** (~35-40% conceptual similarity). Key differences that make HELIX distinct:
+Closest existing project: **Open Interpreter** (~35-40% conceptual similarity). Key differences that make PHANTOM distinct:
 - Open Interpreter has NO dedicated PII redaction layer
 - Open Interpreter has NO hybrid local-cloud routing (local only)
 - Open Interpreter has NO persistent offline memory (ChromaDB)
-- Open Interpreter's "confirmation" is a simple y/n — not HELIX's risk-scored HITL with timeout policy
+- Open Interpreter's "confirmation" is a simple y/n â€” not PHANTOM's risk-scored HITL with timeout policy
 - Open Interpreter has NO SESSION_PII_MAP reversibility
 
-HELIX's unique combination: PII-first + hybrid routing + offline memory + HITL risk scoring = no direct clone exists.
+PHANTOM's unique combination: PII-first + hybrid routing + offline memory + HITL risk scoring = no direct clone exists.
 
 ---
 
@@ -1104,7 +1104,7 @@ python -m spacy download en_core_web_lg
 ollama serve &
 ollama pull llama3.2:3b
 
-# Run HELIX
+# Run PHANTOM
 python main.py
 
 # Run tests
@@ -1120,7 +1120,7 @@ python -m pytest tests/test_sentinel.py -v
 python -c "
 import chromadb
 client = chromadb.PersistentClient('./data/chromadb')
-col = client.get_collection('helix_persistent_memory')
+col = client.get_collection('phantom_persistent_memory')
 print(f'Persistent memory entries: {col.count()}')
 "
 ```
@@ -1141,13 +1141,13 @@ print(f'Persistent memory entries: {col.count()}')
 
 ---
 
-## 19. MISSING FROM INITIAL DESIGN — ADDITIONS (PATCHED)
+## 19. MISSING FROM INITIAL DESIGN â€” ADDITIONS (PATCHED)
 
-### 19.1 Query Intent Cache (NEW MODULE — `orchestrator/intent_cache.py`) — TANMAY
+### 19.1 Query Intent Cache (NEW MODULE â€” `orchestrator/intent_cache.py`) â€” TANMAY
 
 This module was explicitly recommended during architecture review but was missing from the initial spec. It sits **between the Sentinel Node and the Task Orchestrator**.
 
-**Purpose**: Cache recent intent→route decisions. If the same intent pattern was seen recently with a known safe outcome, skip 2 full LLM calls (Sentinel re-classification + Orchestrator routing LLM). Significant latency reduction for repetitive OS tasks (e.g. "list my downloads" asked multiple times per session).
+**Purpose**: Cache recent intentâ†’route decisions. If the same intent pattern was seen recently with a known safe outcome, skip 2 full LLM calls (Sentinel re-classification + Orchestrator routing LLM). Significant latency reduction for repetitive OS tasks (e.g. "list my downloads" asked multiple times per session).
 
 **Implementation**:
 ```python
@@ -1159,7 +1159,7 @@ class IntentCache:
     """
     Key   = (intent_type, hash(normalised_query_structure))
     Value = (route_target, risk_score, cached_at_timestamp)
-    TTL   = 300 seconds (5 minutes) — stale after that
+    TTL   = 300 seconds (5 minutes) â€” stale after that
     Size  = max 50 entries (LRU eviction)
     """
     def __init__(self, ttl: int = 300, max_size: int = 50):
@@ -1194,7 +1194,7 @@ class IntentCache:
         }
     
     def invalidate(self, intent: str = None):
-        """Call this after any HITL rejection — cached decisions may be wrong."""
+        """Call this after any HITL rejection â€” cached decisions may be wrong."""
         if intent:
             keys_to_del = [k for k in self._cache if k.startswith(intent)]
             for k in keys_to_del:
@@ -1208,7 +1208,7 @@ class IntentCache:
 # Before routing:
 cached = intent_cache.get(intent, query)
 if cached and cached['risk_score'] <= RISK_THRESHOLD_HITL:
-    # Safe cached route — skip LLM routing call
+    # Safe cached route â€” skip LLM routing call
     return RouteDecision(cached['route_target'], hitl_required=False, from_cache=True)
 
 # After routing decision is made:
@@ -1219,42 +1219,42 @@ intent_cache.set(intent, query, route_target, risk_score)
 
 ---
 
-### 19.2 Sequence Diagram — Known Bugs to Fix Before Phase 2 Presentation
+### 19.2 Sequence Diagram â€” Known Bugs to Fix Before Phase 2 Presentation
 
-These are the **5 architectural errors** identified in the existing HELIX sequence diagram during the design audit. Fix these in the diagram before any presentation or submission.
+These are the **5 architectural errors** identified in the existing PHANTOM sequence diagram during the design audit. Fix these in the diagram before any presentation or submission.
 
-**Bug 1 — Memory-Augmented Re-prompting is missing from the sequence**
-- Current diagram: `SentinelNode → sanitised_query → TaskOrchestrator` (direct jump)
-- Correct flow: `SentinelNode → sanitised_query → MemoryManager (retrieve) → MemoryManager returns context → Re-prompting Module → enriched_prompt → TaskOrchestrator`
+**Bug 1 â€” Memory-Augmented Re-prompting is missing from the sequence**
+- Current diagram: `SentinelNode â†’ sanitised_query â†’ TaskOrchestrator` (direct jump)
+- Correct flow: `SentinelNode â†’ sanitised_query â†’ MemoryManager (retrieve) â†’ MemoryManager returns context â†’ Re-prompting Module â†’ enriched_prompt â†’ TaskOrchestrator`
 - Fix: Add MemoryManager and Re-prompting as explicit lifelines. Add `Retrieve Relevant Memory` call from SentinelNode to MemoryManager, `Memory Context` return arrow, `Enriched Query` arrow from Re-prompting to TaskOrchestrator.
 
-**Bug 2 — No failure path in the sequence diagram**
-- Current diagram: Only shows the happy path (Gemini responds → result returned)
+**Bug 2 â€” No failure path in the sequence diagram**
+- Current diagram: Only shows the happy path (Gemini responds â†’ result returned)
 - Required: Add an `alt` fragment for cloud failure:
   ```
-  alt [Cloud Execution — Gemini Available]
-      Send Sanitised Query → GeminiService
-      AI Response ← GeminiService
-  [Cloud Execution — Gemini Unavailable]
+  alt [Cloud Execution â€” Gemini Available]
+      Send Sanitised Query â†’ GeminiService
+      AI Response â† GeminiService
+  [Cloud Execution â€” Gemini Unavailable]
       Fallback to local Llama
       Local AI Response
   end
   ```
-- When Gemini API is down or times out (10s timeout): re-route to local Llama with a degraded prompt. Log the failure. Show user: "Cloud unavailable — using local model (response may be less detailed)."
+- When Gemini API is down or times out (10s timeout): re-route to local Llama with a degraded prompt. Log the failure. Show user: "Cloud unavailable â€” using local model (response may be less detailed)."
 
-**Bug 3 — ChromaDB write-back path is missing from the sequence**
+**Bug 3 â€” ChromaDB write-back path is missing from the sequence**
 - Current diagram: After displaying response, the sequence ends. No write-back shown.
-- Required: After `Display Response`, add an async dashed arrow: `HELIXHUD → MemoryManager: async write-back (outcome summary)`
+- Required: After `Display Response`, add an async dashed arrow: `PHANTOMHUD â†’ MemoryManager: async write-back (outcome summary)`
 - This is a dashed arrow (memory context flow) not a solid arrow (data flow), per the HLD legend.
 
-**Bug 4 — Final Decision arrow goes to wrong component**
-- Current diagram: `ApprovalManager → OSMiddleware: Final Decision`
-- Correct: `ApprovalManager → TaskOrchestrator: Final Decision` — the orchestrator then decides whether to call OSMiddleware or abort.
+**Bug 4 â€” Final Decision arrow goes to wrong component**
+- Current diagram: `ApprovalManager â†’ OSMiddleware: Final Decision`
+- Correct: `ApprovalManager â†’ TaskOrchestrator: Final Decision` â€” the orchestrator then decides whether to call OSMiddleware or abort.
 - The orchestrator must receive the HITL decision because it may need to re-route a modified command, not just pass it to OSMiddleware.
 
-**Bug 5 — Response-side PII check is missing**
-- Current diagram: `GeminiService → TaskOrchestrator: AI Response` goes directly back with no processing.
-- Required: Add a `PIIRedactionEngine: restore + validate` step between receiving the AI Response and returning it to HELIXHUD.
+**Bug 5 â€” Response-side PII check is missing**
+- Current diagram: `GeminiService â†’ TaskOrchestrator: AI Response` goes directly back with no processing.
+- Required: Add a `PIIRedactionEngine: restore + validate` step between receiving the AI Response and returning it to PHANTOMHUD.
 - This is where `SESSION_PII_MAP.restore(response)` runs and the response is scanned for leaked PII.
 
 ---
@@ -1287,7 +1287,7 @@ def query(sanitised_prompt: str) -> tuple[str, bool]:
         # Fallback: use local Llama with degraded prompt
         fallback_response = ollama.generate(
             model=OLLAMA_MODEL,
-            prompt=f"[OFFLINE MODE — Limited capability]\n\n{sanitised_prompt}",
+            prompt=f"[OFFLINE MODE â€” Limited capability]\n\n{sanitised_prompt}",
             options={"temperature": 0.3, "num_predict": 512}
         )
         return fallback_response['response'], False
@@ -1295,7 +1295,7 @@ def query(sanitised_prompt: str) -> tuple[str, bool]:
 
 **HUD display when fallback occurs**:
 ```
-"⚠ Cloud unavailable — using local model. Response may be less detailed."
+"âš  Cloud unavailable â€” using local model. Response may be less detailed."
 ```
 
 **Memory write-back when fallback**:
@@ -1304,112 +1304,112 @@ def query(sanitised_prompt: str) -> tuple[str, bool]:
 
 ---
 
-### 19.4 Varshitha's Correct Research Papers (Cluster D — Voice & Interaction Systems)
+### 19.4 Varshitha's Correct Research Papers (Cluster D â€” Voice & Interaction Systems)
 
-The CLAUDE.md Cluster D section incorrectly lists the same papers as Cluster C. Cluster D is Varshitha's voice/HUD section and should reference the following papers (from the original document's reference list [16]–[20]):
+The CLAUDE.md Cluster D section incorrectly lists the same papers as Cluster C. Cluster D is Varshitha's voice/HUD section and should reference the following papers (from the original document's reference list [16]â€“[20]):
 
-| Ref | Paper | Authors | Year | arXiv / Venue | Key Insight | Relevance to HELIX |
+| Ref | Paper | Authors | Year | arXiv / Venue | Key Insight | Relevance to PHANTOM |
 |---|---|---|---|---|---|---|
-| [16] BASE | OS-Copilot: Towards Generalist Computer Agents with Self-Improvement | Wu et al. | 2024 | arXiv preprint | Generalist OS agent with HUD-level interaction design, self-improving from feedback. | Base design for how the HELIX HUD connects to and triggers the execution layer. |
-| [17] | WhisperX: Time-Accurate Speech Transcription with Forced Alignment | Bain et al. | 2023 | arXiv:2303.00747 | Extends Whisper with forced phoneme alignment for time-accurate word-level transcription. | Justifies Whisper as the ASR backbone. WhisperX's alignment technique informs HELIX's accent robustness pipeline. |
+| [16] BASE | OS-Copilot: Towards Generalist Computer Agents with Self-Improvement | Wu et al. | 2024 | arXiv preprint | Generalist OS agent with HUD-level interaction design, self-improving from feedback. | Base design for how the PHANTOM HUD connects to and triggers the execution layer. |
+| [17] | WhisperX: Time-Accurate Speech Transcription with Forced Alignment | Bain et al. | 2023 | arXiv:2303.00747 | Extends Whisper with forced phoneme alignment for time-accurate word-level transcription. | Justifies Whisper as the ASR backbone. WhisperX's alignment technique informs PHANTOM's accent robustness pipeline. |
 | [18] | Speech-to-Text Pipeline in Real Time on Edge | Vaidya et al. | 2023 | IEEE Conference | Real-time STT on edge devices with latency constraints similar to consumer laptops. | Validates feasibility of running Whisper tiny/base locally on consumer hardware within the 2-second latency target. |
-| [19] | Efficient On-Device Wake Word Detection Using Tiny Transformers | Anonymous | 2024 | arXiv preprint | Ultra-lightweight transformer for always-on wake word detection without cloud dependency. | Informs the future enhancement of HELIX HUD with wake word activation ("Hey HELIX") before full ASR pipeline. |
-| [20] | Attention Is All You Need | Vaswani et al. | 2017 | NeurIPS 2017 | Introduces the Transformer architecture — foundational to Whisper, LLaMA, and all Transformer-based models in HELIX. | Foundational reference for the entire model stack: Whisper ASR, LLaMA Sentinel Node, Gemini Cloud Oracle. |
+| [19] | Efficient On-Device Wake Word Detection Using Tiny Transformers | Anonymous | 2024 | arXiv preprint | Ultra-lightweight transformer for always-on wake word detection without cloud dependency. | Informs the future enhancement of PHANTOM HUD with wake word activation ("Hey PHANTOM") before full ASR pipeline. |
+| [20] | Attention Is All You Need | Vaswani et al. | 2017 | NeurIPS 2017 | Introduces the Transformer architecture â€” foundational to Whisper, LLaMA, and all Transformer-based models in PHANTOM. | Foundational reference for the entire model stack: Whisper ASR, LLaMA Sentinel Node, Gemini Cloud Oracle. |
 
-**Varshitha's base paper is [16] OS-Copilot** — it describes the HUD-level interaction and how a generalist agent interfaces with the OS, which maps to how HELIX's Voice HUD triggers the full pipeline.
+**Varshitha's base paper is [16] OS-Copilot** â€” it describes the HUD-level interaction and how a generalist agent interfaces with the OS, which maps to how PHANTOM's Voice HUD triggers the full pipeline.
 
 ---
 
 ### 19.5 Corrected Complete Data Flow (Revised with All Fixes Applied)
 
-This replaces Section 7 as the authoritative sequence. Differences from Section 7 are marked with ▶
+This replaces Section 7 as the authoritative sequence. Differences from Section 7 are marked with â–¶
 
 ```
 1. User speaks or types
-        ↓
-2. [HUD] AudioCapture (QThread) → WhisperWorker → raw transcript
-   ▶ Pre-processing: bandpass filter (300–3400 Hz) + noise gate + normalisation
-        ↓
-3. [HUD] TextNormaliser → PromptIntentAnnotator → AnnotatedQuery
+        â†“
+2. [HUD] AudioCapture (QThread) â†’ WhisperWorker â†’ raw transcript
+   â–¶ Pre-processing: bandpass filter (300â€“3400 Hz) + noise gate + normalisation
+        â†“
+3. [HUD] TextNormaliser â†’ PromptIntentAnnotator â†’ AnnotatedQuery
    (Annotated with: modality, language confidence, system state)
-        ↓
-▶ 3b. [INTENT CACHE] Check cache for (intent, query_hash)
-   → Cache HIT + risk_score ≤ 40: skip steps 4-8, use cached route (GOTO 9)
-   → Cache MISS: continue to step 4
-        ↓
+        â†“
+â–¶ 3b. [INTENT CACHE] Check cache for (intent, query_hash)
+   â†’ Cache HIT + risk_score â‰¤ 40: skip steps 4-8, use cached route (GOTO 9)
+   â†’ Cache MISS: continue to step 4
+        â†“
 4. [SENTINEL] Pass 1: LLaMA 3.2 3B intent classification
-   → if confidence < 0.65: return ClarificationRequest to HUD (GOTO 1)
-   → if confidence >= 0.65: continue
-        ↓
-5. [PII ENGINE] Tier 1 (Regex) → Tier 2 (Presidio+spaCy) → Tier 3 (LLaMA, if needed)
-   → Build SESSION_PII_MAP (RAM only, never logged or persisted)
-   → Output: sanitised_query (guaranteed zero-PII)
-        ↓
-6. [MEMORY] ChromaDB cosine search → top-5 results
-   → Cross-encoder re-rank → top-2 snippets (Tanmay's addition)
-   → Recency decay scoring: final_score = cosine_sim × exp(−0.1 × days_old)
-   → Filter results with score < 0.65
-        ↓
+   â†’ if confidence < 0.65: return ClarificationRequest to HUD (GOTO 1)
+   â†’ if confidence >= 0.65: continue
+        â†“
+5. [PII ENGINE] Tier 1 (Regex) â†’ Tier 2 (Presidio+spaCy) â†’ Tier 3 (LLaMA, if needed)
+   â†’ Build SESSION_PII_MAP (RAM only, never logged or persisted)
+   â†’ Output: sanitised_query (guaranteed zero-PII)
+        â†“
+6. [MEMORY] ChromaDB cosine search â†’ top-5 results
+   â†’ Cross-encoder re-rank â†’ top-2 snippets (Tanmay's addition)
+   â†’ Recency decay scoring: final_score = cosine_sim Ã— exp(âˆ’0.1 Ã— days_old)
+   â†’ Filter results with score < 0.65
+        â†“
 7. [RE-PROMPTING] Build enriched_prompt:
    system_instructions + memory_context + sanitised_query
-   → Token budget check (max 2048 tokens, truncate old snippets first)
-        ↓
+   â†’ Token budget check (max 2048 tokens, truncate old snippets first)
+        â†“
 8. [ORCHESTRATOR] Routing decision + risk score
-   LOCAL (FILE_OP/SYSTEM_CMD conf≥0.80)  → GOTO 9a
-   CLOUD (GENERAL_QA/UNKNOWN or conf<0.80) → GOTO 9b
-   MEMORY (MEMORY_LOOKUP)                  → GOTO 9c
-   → risk_score calculated → if > 40: HITL_REQUIRED = True
-   ▶ Store route in IntentCache
-        ↓
+   LOCAL (FILE_OP/SYSTEM_CMD confâ‰¥0.80)  â†’ GOTO 9a
+   CLOUD (GENERAL_QA/UNKNOWN or conf<0.80) â†’ GOTO 9b
+   MEMORY (MEMORY_LOOKUP)                  â†’ GOTO 9c
+   â†’ risk_score calculated â†’ if > 40: HITL_REQUIRED = True
+   â–¶ Store route in IntentCache
+        â†“
 9a. [OS MIDDLEWARE]
-    → Blocked pattern check → Resource-capped subprocess (CPU 5s, RAM 512MB)
-    → ExecutionResult captured
-    → RollbackStack.push(command, inverse_command)
-    → ExecutionContextTracker.record(filesystem_diff)
+    â†’ Blocked pattern check â†’ Resource-capped subprocess (CPU 5s, RAM 512MB)
+    â†’ ExecutionResult captured
+    â†’ RollbackStack.push(command, inverse_command)
+    â†’ ExecutionContextTracker.record(filesystem_diff)
     
 9b. [GEMINI ORACLE]
-    → PII assertion (assert no raw PII in payload — abort if detected)
-    → API call with 10s timeout
-    ▶ If Gemini unavailable: fallback to local Llama, tag as degraded
-    → AI response received
+    â†’ PII assertion (assert no raw PII in payload â€” abort if detected)
+    â†’ API call with 10s timeout
+    â–¶ If Gemini unavailable: fallback to local Llama, tag as degraded
+    â†’ AI response received
     
-9c. [CHROMADB] Direct semantic search → return result (skip to step 11)
-        ↓
-▶ 10. [PII RESTORER] (MISSING FROM ORIGINAL DIAGRAM — NOW EXPLICIT)
-    → SESSION_PII_MAP.restore(response): replace placeholders with original values
-    → Scan response for leaked raw PII (Gemini hallucination check)
-    → Alert if placeholder mismatch detected
-        ↓
+9c. [CHROMADB] Direct semantic search â†’ return result (skip to step 11)
+        â†“
+â–¶ 10. [PII RESTORER] (MISSING FROM ORIGINAL DIAGRAM â€” NOW EXPLICIT)
+    â†’ SESSION_PII_MAP.restore(response): replace placeholders with original values
+    â†’ Scan response for leaked raw PII (Gemini hallucination check)
+    â†’ Alert if placeholder mismatch detected
+        â†“
 11. if HITL_REQUIRED:
-    [HITL CONTROLLER] → HITLDisplayData → [HUD] shows approval dialog
+    [HITL CONTROLLER] â†’ HITLDisplayData â†’ [HUD] shows approval dialog
     Panel 1: Proposed action (human-readable)
     Panel 2: Risk level + colour (green/amber/red/dark red)
     Panel 3: Memory context (relevant past interactions)
     Panel 4: Approve / Reject / Modify buttons + countdown
     
-    → APPROVED:
-      ▶ [TASK ORCHESTRATOR receives Final Decision] (not OSMiddleware directly)
-      → Execute (if not already executed in 9a) or confirm result
-      → RollbackStack.clear()
-      → Async write-back to ChromaDB persistent_memory
+    â†’ APPROVED:
+      â–¶ [TASK ORCHESTRATOR receives Final Decision] (not OSMiddleware directly)
+      â†’ Execute (if not already executed in 9a) or confirm result
+      â†’ RollbackStack.clear()
+      â†’ Async write-back to ChromaDB persistent_memory
     
-    → REJECTED:
-      → RollbackStack.pop_and_execute() (undo partial steps)
-      → Async write-back to ChromaDB session_memory only (not persistent)
-      → IntentCache.invalidate(intent) (rejected routes should not be cached)
-      → HUD: "Action cancelled."
+    â†’ REJECTED:
+      â†’ RollbackStack.pop_and_execute() (undo partial steps)
+      â†’ Async write-back to ChromaDB session_memory only (not persistent)
+      â†’ IntentCache.invalidate(intent) (rejected routes should not be cached)
+      â†’ HUD: "Action cancelled."
     
-    → MODIFIED:
-      → Re-route modified_command from step 8 (full pipeline again)
-        ↓
+    â†’ MODIFIED:
+      â†’ Re-route modified_command from step 8 (full pipeline again)
+        â†“
 12. [HUD] Display final response to user
-        ↓
-▶ 13. [MEMORY] Async write-back (QThread — non-blocking)
-    → Summarise interaction using LLaMA (privacy-safe, no PII)
-    → Run PII check on summary before storage
-    → Store in session_memory always
-    → Store in persistent_memory ONLY IF hitl_approved=True AND not degraded (fallback)
-    → Increment retrieval_count for any memories that were used
+        â†“
+â–¶ 13. [MEMORY] Async write-back (QThread â€” non-blocking)
+    â†’ Summarise interaction using LLaMA (privacy-safe, no PII)
+    â†’ Run PII check on summary before storage
+    â†’ Store in session_memory always
+    â†’ Store in persistent_memory ONLY IF hitl_approved=True AND not degraded (fallback)
+    â†’ Increment retrieval_count for any memories that were used
 ```
 
 ---
@@ -1479,14 +1479,14 @@ The following additions to Section 5's folder structure were missed:
 
 ```
 orchestrator/
-├── intent_cache.py          ← NEW: Query Intent Cache (Section 19.1)
-│
+â”œâ”€â”€ intent_cache.py          â† NEW: Query Intent Cache (Section 19.1)
+â”‚
 sentinel/
-├── pii_restorer.py          ← NEW: Explicit PII Restorer module (Section 19.2 Bug 5)
-│
+â”œâ”€â”€ pii_restorer.py          â† NEW: Explicit PII Restorer module (Section 19.2 Bug 5)
+â”‚
 utils/
-├── requirements.txt         ← at project root (Section 19.6)
-├── fallback_handler.py      ← NEW: Gemini fallback logic (Section 19.3)
+â”œâ”€â”€ requirements.txt         â† at project root (Section 19.6)
+â”œâ”€â”€ fallback_handler.py      â† NEW: Gemini fallback logic (Section 19.3)
 ```
 
 **`sentinel/pii_restorer.py`** (split out from `session_pii_map.py` for clarity):
@@ -1532,23 +1532,23 @@ class PIIRestorer:
 
 ---
 
-## 20. FULL PROJECT ASSESSMENT — GAPS AND IMPROVEMENTS (May 2025)
+## 20. FULL PROJECT ASSESSMENT â€” GAPS AND IMPROVEMENTS (May 2025)
 
-This section documents every gap, missing feature, and improvement identified after a complete audit of HELIX against the 2025-2026 state of the art in local AI agent systems. All items here are **additions to what is already specified in Sections 1–19**. Claude Code must implement everything in this section during Phase 2.
+This section documents every gap, missing feature, and improvement identified after a complete audit of PHANTOM against the 2025-2026 state of the art in local AI agent systems. All items here are **additions to what is already specified in Sections 1â€“19**. Claude Code must implement everything in this section during Phase 2.
 
 ---
 
-### 20.1 CRITICAL GAPS — Will cause crashes or major missing functionality if not fixed
+### 20.1 CRITICAL GAPS â€” Will cause crashes or major missing functionality if not fixed
 
 ---
 
 #### GAP 1: No Streaming Responses (HIGHEST PRIORITY UX FIX)
 
-**Problem**: Currently Ollama and Gemini calls are fully blocking. The HUD shows a spinner for 5–15 seconds with no feedback. This is the single worst UX issue in the project.
+**Problem**: Currently Ollama and Gemini calls are fully blocking. The HUD shows a spinner for 5â€“15 seconds with no feedback. This is the single worst UX issue in the project.
 
 **Fix**: Stream tokens from both Ollama and Gemini directly to the HUD using Qt signals.
 
-**Implementation — `hud/streaming_worker.py`** (Varshitha):
+**Implementation â€” `hud/streaming_worker.py`** (Varshitha):
 ```python
 from PyQt6.QtCore import QThread, pyqtSignal
 import ollama
@@ -1601,7 +1601,7 @@ def stream_query(self, sanitised_prompt: str, callback):
     return full
 ```
 
-**Add to requirements.txt**: no new package needed — ollama SDK already supports streaming.
+**Add to requirements.txt**: no new package needed â€” ollama SDK already supports streaming.
 
 ---
 
@@ -1609,7 +1609,7 @@ def stream_query(self, sanitised_prompt: str, callback):
 
 **Problem**: If user says "delete that file" in a follow-up query, the system has no reference to what "that file" means. RAG retrieval gets past interactions but not the current conversation thread.
 
-**New module — `memory/conversation_buffer.py`** (Yukta):
+**New module â€” `memory/conversation_buffer.py`** (Yukta):
 ```python
 from collections import deque
 from dataclasses import dataclass
@@ -1624,7 +1624,7 @@ class ConversationTurn:
 class ConversationBuffer:
     """
     Stores last N turns of the current session conversation.
-    Cleared on session end (not persisted — session-scoped only).
+    Cleared on session end (not persisted â€” session-scoped only).
     Used for pronoun/reference resolution and multi-turn coherence.
     Max 10 turns to keep prompt size manageable.
     """
@@ -1646,7 +1646,7 @@ class ConversationBuffer:
     def resolve_reference(self, query: str) -> str:
         """
         Simple reference resolution:
-        'delete that' → look in last 3 user turns for file/path mentions.
+        'delete that' â†’ look in last 3 user turns for file/path mentions.
         Returns enriched query if reference resolved, else original query.
         """
         pronouns = ["that", "it", "this", "those", "them", "the file", "the folder"]
@@ -1668,11 +1668,11 @@ class ConversationBuffer:
 
 ---
 
-#### GAP 3: No Pydantic Validation for Sentinel Output — Will Crash on Bad JSON
+#### GAP 3: No Pydantic Validation for Sentinel Output â€” Will Crash on Bad JSON
 
 **Problem**: LLaMA 3.2 3B sometimes returns malformed JSON. Currently `json.loads()` will throw an exception and crash the pipeline.
 
-**Fix — Use Ollama's native structured output + Pydantic validation with retry**:
+**Fix â€” Use Ollama's native structured output + Pydantic validation with retry**:
 
 In `sentinel/sentinel_node.py`:
 ```python
@@ -1720,9 +1720,9 @@ def classify_intent_with_retry(query: str, max_retries: int = 3) -> SentinelResu
 
 ---
 
-#### GAP 4: No Health Check System — Crashes Silently on Missing Services
+#### GAP 4: No Health Check System â€” Crashes Silently on Missing Services
 
-**New module — `utils/health_check.py`**:
+**New module â€” `utils/health_check.py`**:
 ```python
 import subprocess, sys, os
 import chromadb
@@ -1741,12 +1741,12 @@ class HealthCheckResult:
             self.all_ok = False
 
     def report(self) -> str:
-        lines = ["HELIX Health Check:"]
+        lines = ["PHANTOM Health Check:"]
         for name, result in self.checks.items():
-            icon = "✓" if result["ok"] else "✗"
+            icon = "âœ“" if result["ok"] else "âœ—"
             lines.append(f"  {icon} {name}: {result['message']}")
         lines.append("" )
-        lines.append("All systems ready." if self.all_ok else "FIX ERRORS ABOVE BEFORE STARTING HELIX.")
+        lines.append("All systems ready." if self.all_ok else "FIX ERRORS ABOVE BEFORE STARTING PHANTOM.")
         return "\n".join(lines)
 
 def run_health_check() -> HealthCheckResult:
@@ -1830,11 +1830,11 @@ if not health.all_ok:
 
 ---
 
-#### GAP 5: No Gemini Rate Limiter — Will Fail Under Testing Load
+#### GAP 5: No Gemini Rate Limiter â€” Will Fail Under Testing Load
 
 **Free tier limit**: 15 requests per minute, 1 million tokens per minute.
 
-**New module — `orchestrator/rate_limiter.py`**:
+**New module â€” `orchestrator/rate_limiter.py`**:
 ```python
 import time
 from collections import deque
@@ -1869,7 +1869,7 @@ class TokenBucketRateLimiter:
 
             self._calls.append(time.time())
 
-# Singleton — import and use everywhere
+# Singleton â€” import and use everywhere
 gemini_rate_limiter = TokenBucketRateLimiter(max_calls=12, period_seconds=60.0)
 # Using 12 not 15 to leave 3 requests buffer
 ```
@@ -1885,16 +1885,16 @@ def query(self, sanitised_prompt: str) -> str:
 
 ---
 
-#### GAP 6: No HELIX CLI Mode — Impossible to Test Without GUI
+#### GAP 6: No PHANTOM CLI Mode â€” Impossible to Test Without GUI
 
-**New file — `helix_cli.py`** (run from project root):
+**New file â€” `phantom_cli.py`** (run from project root):
 ```python
 #!/usr/bin/env python3
 """
-HELIX CLI Mode — headless pipeline for testing without PyQt6 GUI.
-Usage: python helix_cli.py
-       python helix_cli.py --query "list my downloads"
-       python helix_cli.py --test   (runs built-in test suite)
+PHANTOM CLI Mode â€” headless pipeline for testing without PyQt6 GUI.
+Usage: python phantom_cli.py
+       python phantom_cli.py --query "list my downloads"
+       python phantom_cli.py --test   (runs built-in test suite)
 """
 import argparse
 import sys
@@ -1916,7 +1916,7 @@ def run_query(query: str, verbose: bool = True) -> dict:
     reprompt = ReprompingModule(chroma)
     orchestrator = TaskOrchestrator()
 
-    if verbose: print(f"\n[HELIX CLI] Query: {query}")
+    if verbose: print(f"\n[PHANTOM CLI] Query: {query}")
 
     # Pipeline
     sentinel_result = sentinel.process(query)
@@ -1927,7 +1927,7 @@ def run_query(query: str, verbose: bool = True) -> dict:
 
     enriched = reprompt.build(sanitised, sentinel_result)
     route = orchestrator.route(sentinel_result, enriched)
-    if verbose: print(f"[ROUTE] → {route.target} | Risk: {route.risk_score}")
+    if verbose: print(f"[ROUTE] â†’ {route.target} | Risk: {route.risk_score}")
 
     response = orchestrator.execute(route, enriched)
     restored = pii_map.restore(response)
@@ -1936,7 +1936,7 @@ def run_query(query: str, verbose: bool = True) -> dict:
     return {"query": query, "intent": sentinel_result.intent, "response": restored, "n_pii": n_pii}
 
 def interactive_mode():
-    print("HELIX CLI — type 'exit' to quit, 'stats' for session stats")
+    print("PHANTOM CLI â€” type 'exit' to quit, 'stats' for session stats")
     session_stats = {"total": 0, "local": 0, "cloud": 0, "pii_total": 0}
     while True:
         try:
@@ -1953,7 +1953,7 @@ def interactive_mode():
             break
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="HELIX CLI")
+    parser = argparse.ArgumentParser(description="PHANTOM CLI")
     parser.add_argument("--query", "-q", help="Run single query")
     parser.add_argument("--skip-health", action="store_true", help="Skip health check")
     args = parser.parse_args()
@@ -1972,54 +1972,54 @@ if __name__ == "__main__":
 
 ---
 
-#### GAP 7: No Custom Exception Hierarchy — Error Handling Will Be Messy
+#### GAP 7: No Custom Exception Hierarchy â€” Error Handling Will Be Messy
 
-**New file — `utils/exceptions.py`**:
+**New file â€” `utils/exceptions.py`**:
 ```python
-class HELIXBaseError(Exception):
-    """Base class for all HELIX exceptions."""
+class PHANTOMBaseError(Exception):
+    """Base class for all PHANTOM exceptions."""
     pass
 
-class PIILeakageError(HELIXBaseError):
+class PIILeakageError(PHANTOMBaseError):
     """Raised when raw PII is detected in a cloud-bound payload."""
     pass
 
-class SentinelError(HELIXBaseError):
+class SentinelError(PHANTOMBaseError):
     """Raised when Sentinel Node fails to classify after max retries."""
     pass
 
-class MemoryWriteError(HELIXBaseError):
+class MemoryWriteError(PHANTOMBaseError):
     """Raised when ChromaDB write-back fails."""
     pass
 
-class RouteError(HELIXBaseError):
+class RouteError(PHANTOMBaseError):
     """Raised when task orchestrator cannot determine a valid route."""
     pass
 
-class HITLTimeoutError(HELIXBaseError):
+class HITLTimeoutError(PHANTOMBaseError):
     """Raised when HITL approval times out on a medium-risk action."""
     pass
 
-class CommandBlockedError(HELIXBaseError):
+class CommandBlockedError(PHANTOMBaseError):
     """Raised when OS middleware detects a blocked command pattern."""
     pass
 
-class GeminiRateLimitError(HELIXBaseError):
+class GeminiRateLimitError(PHANTOMBaseError):
     """Raised when Gemini rate limit is exhausted and fallback is unavailable."""
     pass
 
-class OllamaUnavailableError(HELIXBaseError):
+class OllamaUnavailableError(PHANTOMBaseError):
     """Raised when Ollama service is not running."""
     pass
 
-class ChromaDBCorruptionError(HELIXBaseError):
+class ChromaDBCorruptionError(PHANTOMBaseError):
     """Raised when ChromaDB data cannot be loaded (possible corruption)."""
     pass
 ```
 
 ---
 
-#### GAP 8: Whisper Not Pre-Warmed — First Voice Command Unusably Slow
+#### GAP 8: Whisper Not Pre-Warmed â€” First Voice Command Unusably Slow
 
 **Fix in `hud/asr_pipeline.py`** (Varshitha):
 ```python
@@ -2043,8 +2043,8 @@ class ASRPipeline:
         return self._model.transcribe(
             audio_array,
             language="en",
-            fp16=False,            # CPU mode — no fp16
-            initial_prompt="HELIX AI assistant. User is giving a command in English or Hinglish."
+            fp16=False,            # CPU mode â€” no fp16
+            initial_prompt="PHANTOM AI assistant. User is giving a command in English or Hinglish."
         )
 ```
 
@@ -2052,7 +2052,7 @@ The `initial_prompt` improves accuracy for Indian-accented English by priming Wh
 
 ---
 
-#### GAP 9: No ChromaDB WAL Mode — Risk of Data Corruption on Power Loss
+#### GAP 9: No ChromaDB WAL Mode â€” Risk of Data Corruption on Power Loss
 
 **Fix in `memory/chroma_manager.py`** (Yukta):
 ```python
@@ -2069,7 +2069,7 @@ def create_chroma_client(persist_dir: str) -> chromadb.ClientAPI:
         )
     )
     # WAL mode is enabled by default in SQLite (ChromaDB's backend) from version 0.4+
-    # Verify: the .chromadb directory should contain helix.sqlite3-wal
+    # Verify: the .chromadb directory should contain phantom.sqlite3-wal
 ```
 
 **Backup strategy** (add to `memory/chroma_manager.py`):
@@ -2094,7 +2094,7 @@ def backup_chromadb(persist_dir: str, backup_dir: str = "./data/backups"):
 
 ---
 
-#### GAP 10: No Pydantic Models — Using @dataclass Throughout
+#### GAP 10: No Pydantic Models â€” Using @dataclass Throughout
 
 Replace all `@dataclass` in the codebase with Pydantic `BaseModel` for automatic validation, JSON serialisation, and schema generation. This is critical for Ollama structured output support.
 
@@ -2123,11 +2123,11 @@ class PIIEntity(BaseModel):
     placeholder: str       # "[PII_PERSON_1]"
     entity_type: str       # "PERSON"
     tier_detected: int     # 1, 2, or 3
-    presidio_score: float  # 0.0–1.0
+    presidio_score: float  # 0.0â€“1.0
 
 class RouteDecision(BaseModel):
     target: str            # "local" | "cloud" | "memory"
-    risk_score: int        # 0–100
+    risk_score: int        # 0â€“100
     hitl_required: bool
     from_cache: bool = False
     enriched_prompt: str = ""
@@ -2160,15 +2160,15 @@ class AnnotatedQuery(BaseModel):
 
 ---
 
-### 20.2 IMPROVEMENTS — Significantly Enhance HELIX's Value and Demo Impact
+### 20.2 IMPROVEMENTS â€” Significantly Enhance PHANTOM's Value and Demo Impact
 
 ---
 
 #### IMPROVEMENT 1: Privacy Metrics Dashboard (KILLER DEMO FEATURE)
 
-This is the most visually impactful addition for any judge or panel. Shows exactly what HELIX is protecting in real time.
+This is the most visually impactful addition for any judge or panel. Shows exactly what PHANTOM is protecting in real time.
 
-**New module — `utils/privacy_metrics.py`**:
+**New module â€” `utils/privacy_metrics.py`**:
 ```python
 from dataclasses import dataclass, field
 import threading
@@ -2224,15 +2224,15 @@ session_metrics = SessionPrivacyMetrics()
 
 **HUD Privacy Panel** (in `voice_hud.py` sidebar):
 ```
-┌─────────────────────────────┐
-│  🔒 Privacy Score: 87%      │
-│  ─────────────────────────  │
-│  Queries: 15 total          │
-│  Local:   13  ████████▓░░   │
-│  Cloud:    2  ██░░░░░░░░    │
-│  PII protected: 34 entities │
-│  HITL: 3 approved, 1 reject │
-└─────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚  ðŸ”’ Privacy Score: 87%      â”‚
+â”‚  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€  â”‚
+â”‚  Queries: 15 total          â”‚
+â”‚  Local:   13  â–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–ˆâ–“â–‘â–‘   â”‚
+â”‚  Cloud:    2  â–ˆâ–ˆâ–‘â–‘â–‘â–‘â–‘â–‘â–‘â–‘    â”‚
+â”‚  PII protected: 34 entities â”‚
+â”‚  HITL: 3 approved, 1 reject â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 Update this panel after every query using a QTimer or direct signal.
@@ -2243,7 +2243,7 @@ Update this panel after every query using a QTimer or direct signal.
 
 Logs WHAT happened (intent, route, outcome, risk) without logging the actual query content or any PII. Safe to review for debugging. Safe to show to panel.
 
-**New module — `utils/audit_logger.py`**:
+**New module â€” `utils/audit_logger.py`**:
 ```python
 import logging
 import datetime
@@ -2255,7 +2255,7 @@ class PrivacyAuditLogger:
     Logs system behaviour WITHOUT logging query content or PII.
     Output format: JSONL (one JSON object per line)
     """
-    def __init__(self, log_path: str = "./data/helix_audit.jsonl"):
+    def __init__(self, log_path: str = "./data/phantom_audit.jsonl"):
         os.makedirs(os.path.dirname(log_path), exist_ok=True)
         self._log_path = log_path
 
@@ -2329,17 +2329,17 @@ def _count_matching_files(command: str) -> str:
 
 #### IMPROVEMENT 4: Session Summary on Exit
 
-When user closes HELIX, display a summary card before the window closes.
+When user closes PHANTOM, display a summary card before the window closes.
 
-**In `voice_hud.py`** (Varshitha) — override `closeEvent`:
+**In `voice_hud.py`** (Varshitha) â€” override `closeEvent`:
 ```python
 def closeEvent(self, event):
     from utils.privacy_metrics import session_metrics
     summary = session_metrics.to_display_dict()
     msg = "\n".join([f"{k}: {v}" for k, v in summary.items()])
     dialog = QMessageBox(self)
-    dialog.setWindowTitle("HELIX Session Summary")
-    dialog.setText(f"Session complete.\n\n{msg}\n\nThank you for using HELIX.")
+    dialog.setWindowTitle("PHANTOM Session Summary")
+    dialog.setText(f"Session complete.\n\n{msg}\n\nThank you for using PHANTOM.")
     dialog.setIcon(QMessageBox.Icon.Information)
     dialog.exec()
     event.accept()
@@ -2382,14 +2382,14 @@ Wire to the text input field's `keyPressEvent` to intercept Up/Down arrow keys.
 
 #### IMPROVEMENT 6: Flexible Model Configuration with Fallback Chain
 
-**In `utils/config.py`** — add model preference chain:
+**In `utils/config.py`** â€” add model preference chain:
 ```python
-# Model preference order — system tries each in order, uses first available
+# Model preference order â€” system tries each in order, uses first available
 SENTINEL_MODEL_PREFERENCE = [
-    "llama3.2:3b",       # Best balance — default
-    "phi3.5",            # Microsoft Phi-3.5 Mini — fast, surprisingly capable
-    "gemma2:2b",         # Google Gemma 2B — very lightweight
-    "qwen2.5:3b",        # Alibaba Qwen 2.5 — good at structured tasks
+    "llama3.2:3b",       # Best balance â€” default
+    "phi3.5",            # Microsoft Phi-3.5 Mini â€” fast, surprisingly capable
+    "gemma2:2b",         # Google Gemma 2B â€” very lightweight
+    "qwen2.5:3b",        # Alibaba Qwen 2.5 â€” good at structured tasks
 ]
 
 def get_best_available_model() -> str:
@@ -2408,7 +2408,7 @@ def get_best_available_model() -> str:
 
 #### IMPROVEMENT 7: PII Detection Sensitivity Levels
 
-**In `utils/config.py`** — add:
+**In `utils/config.py`** â€” add:
 ```python
 # Options: "LOW" | "MEDIUM" | "HIGH"
 # LOW    = Tier 1 (Regex) only. Fast, catches structured PII only.
@@ -2417,7 +2417,7 @@ def get_best_available_model() -> str:
 PII_SENSITIVITY = os.getenv("PII_SENSITIVITY", "MEDIUM")
 ```
 
-**In `sentinel/pii_engine.py`** — use this to short-circuit the cascade:
+**In `sentinel/pii_engine.py`** â€” use this to short-circuit the cascade:
 ```python
 def redact(self, query: str, sentinel_result) -> tuple[str, int]:
     results = []
@@ -2439,9 +2439,9 @@ def transcribe(self, audio_array: np.ndarray) -> dict:
     result = self._model.transcribe(
         audio_array,
         fp16=False,
-        # Do NOT hardcode language — let Whisper detect it
+        # Do NOT hardcode language â€” let Whisper detect it
         # This handles English, Hindi, and Hinglish automatically
-        initial_prompt="HELIX AI assistant for local system management."
+        initial_prompt="PHANTOM AI assistant for local system management."
     )
     # result["language"] will be "en", "hi", or detected language
     # result["text"] will be transcribed in detected language
@@ -2453,7 +2453,7 @@ def transcribe(self, audio_array: np.ndarray) -> dict:
     }
 ```
 
-Add `language` and `language_confidence` to `AnnotatedQuery` Pydantic model. Pass to Sentinel Node — for non-English, add instruction to handle transliterated text.
+Add `language` and `language_confidence` to `AnnotatedQuery` Pydantic model. Pass to Sentinel Node â€” for non-English, add instruction to handle transliterated text.
 
 ---
 
@@ -2462,29 +2462,29 @@ Add `language` and `language_confidence` to `AnnotatedQuery` Pydantic model. Pas
 Add these files to Section 5's folder structure:
 
 ```
-helix/
-├── helix_cli.py                           ← NEW: Headless CLI mode (GAP 6)
-│
-├── utils/
-│   ├── exceptions.py                      ← NEW: Custom exception hierarchy (GAP 7)
-│   ├── models.py                          ← NEW: All Pydantic data models (GAP 10)
-│   ├── privacy_metrics.py                 ← NEW: Session privacy counters (IMPROVEMENT 1)
-│   ├── audit_logger.py                    ← NEW: Privacy-respecting audit log (IMPROVEMENT 2)
-│   └── health_check.py                    ← NEW: Service health checker (GAP 4)
-│
-├── orchestrator/
-│   └── rate_limiter.py                    ← NEW: Gemini rate limiter (GAP 5)
-│
-├── memory/
-│   └── conversation_buffer.py             ← NEW: Multi-turn context (GAP 2)
-│
-├── hud/
-│   └── streaming_worker.py                ← NEW: Qt streaming workers (GAP 1)
-│
-└── data/
-    ├── chromadb/                          ← ChromaDB persistence
-    ├── backups/                           ← ChromaDB backups (GAP 9)
-    └── helix_audit.jsonl                  ← Audit log (IMPROVEMENT 2)
+phantom/
+â”œâ”€â”€ phantom_cli.py                           â† NEW: Headless CLI mode (GAP 6)
+â”‚
+â”œâ”€â”€ utils/
+â”‚   â”œâ”€â”€ exceptions.py                      â† NEW: Custom exception hierarchy (GAP 7)
+â”‚   â”œâ”€â”€ models.py                          â† NEW: All Pydantic data models (GAP 10)
+â”‚   â”œâ”€â”€ privacy_metrics.py                 â† NEW: Session privacy counters (IMPROVEMENT 1)
+â”‚   â”œâ”€â”€ audit_logger.py                    â† NEW: Privacy-respecting audit log (IMPROVEMENT 2)
+â”‚   â””â”€â”€ health_check.py                    â† NEW: Service health checker (GAP 4)
+â”‚
+â”œâ”€â”€ orchestrator/
+â”‚   â””â”€â”€ rate_limiter.py                    â† NEW: Gemini rate limiter (GAP 5)
+â”‚
+â”œâ”€â”€ memory/
+â”‚   â””â”€â”€ conversation_buffer.py             â† NEW: Multi-turn context (GAP 2)
+â”‚
+â”œâ”€â”€ hud/
+â”‚   â””â”€â”€ streaming_worker.py                â† NEW: Qt streaming workers (GAP 1)
+â”‚
+â””â”€â”€ data/
+    â”œâ”€â”€ chromadb/                          â† ChromaDB persistence
+    â”œâ”€â”€ backups/                           â† ChromaDB backups (GAP 9)
+    â””â”€â”€ phantom_audit.jsonl                  â† Audit log (IMPROVEMENT 2)
 ```
 
 ---
@@ -2496,57 +2496,57 @@ Replace Section 13 with this corrected order that includes all new modules:
 ```
 Phase 2 build order:
 
-FOUNDATION (do these first — everything depends on them):
-1.  utils/exceptions.py                 — custom exception hierarchy
-2.  utils/models.py                     — all Pydantic data models
-3.  utils/config.py                     — environment + model selection
-4.  utils/health_check.py               — run this to verify environment
-5.  utils/privacy_metrics.py            — session counters singleton
-6.  utils/audit_logger.py               — audit log singleton
+FOUNDATION (do these first â€” everything depends on them):
+1.  utils/exceptions.py                 â€” custom exception hierarchy
+2.  utils/models.py                     â€” all Pydantic data models
+3.  utils/config.py                     â€” environment + model selection
+4.  utils/health_check.py               â€” run this to verify environment
+5.  utils/privacy_metrics.py            â€” session counters singleton
+6.  utils/audit_logger.py               â€” audit log singleton
 
 SENTINEL + PII (core logic):
-7.  sentinel/session_pii_map.py         — SESSION_PII_MAP + PIIRestorer
-8.  sentinel/pii_engine.py              — tiered PII cascade
-9.  sentinel/sentinel_node.py           — Ollama structured output + retry
-10. sentinel/pii_restorer.py            — response-side PII check
+7.  sentinel/session_pii_map.py         â€” SESSION_PII_MAP + PIIRestorer
+8.  sentinel/pii_engine.py              â€” tiered PII cascade
+9.  sentinel/sentinel_node.py           â€” Ollama structured output + retry
+10. sentinel/pii_restorer.py            â€” response-side PII check
 
 MEMORY (Yukta):
-11. memory/conversation_buffer.py       — multi-turn context
-12. memory/chroma_manager.py            — ChromaDB two-collection setup
-13. memory/retrieval_engine.py          — cosine + recency scoring
-14. memory/reranker.py                  — cross-encoder re-ranking
-15. memory/reprompting.py               — prompt construction + token budget
-16. memory/eviction_policy.py           — LRU + relevance eviction
+11. memory/conversation_buffer.py       â€” multi-turn context
+12. memory/chroma_manager.py            â€” ChromaDB two-collection setup
+13. memory/retrieval_engine.py          â€” cosine + recency scoring
+14. memory/reranker.py                  â€” cross-encoder re-ranking
+15. memory/reprompting.py               â€” prompt construction + token budget
+16. memory/eviction_policy.py           â€” LRU + relevance eviction
 
 ORCHESTRATION (Tanmay):
-17. orchestrator/intent_cache.py        — query intent cache
-18. orchestrator/rate_limiter.py        — Gemini rate limiter
-19. orchestrator/risk_scorer.py         — risk score formula
-20. orchestrator/routing_rules.py       — decision tree
-21. orchestrator/gemini_oracle.py       — streaming + fallback
-22. orchestrator/task_orchestrator.py   — LangChain ReAct agent
+17. orchestrator/intent_cache.py        â€” query intent cache
+18. orchestrator/rate_limiter.py        â€” Gemini rate limiter
+19. orchestrator/risk_scorer.py         â€” risk score formula
+20. orchestrator/routing_rules.py       â€” decision tree
+21. orchestrator/gemini_oracle.py       â€” streaming + fallback
+22. orchestrator/task_orchestrator.py   â€” LangChain ReAct agent
 
 MIDDLEWARE (Vedika):
-23. middleware/blocked_commands.py      — blocklist
-24. middleware/risk_classifier.py       — command risk scoring
-25. middleware/rollback_stack.py        — undo mechanism
-26. middleware/command_mapper.py        — NL → OS command
-27. middleware/os_middleware.py         — sandboxed execution + dry-run
+23. middleware/blocked_commands.py      â€” blocklist
+24. middleware/risk_classifier.py       â€” command risk scoring
+25. middleware/rollback_stack.py        â€” undo mechanism
+26. middleware/command_mapper.py        â€” NL â†’ OS command
+27. middleware/os_middleware.py         â€” sandboxed execution + dry-run
 
 HITL (Tanmay):
-28. hitl/approval_states.py            — state enum
-29. hitl/hitl_controller.py            — approval state machine
+28. hitl/approval_states.py            â€” state enum
+29. hitl/hitl_controller.py            â€” approval state machine
 
 HUD (Varshitha):
-30. hud/asr_pipeline.py                — Whisper pre-warmed + language detection
-31. hud/streaming_worker.py            — Qt token streaming workers
-32. hud/state_machine.py               — HUD state machine
-33. hud/hitl_widget.py                 — approval dialog
-34. hud/voice_hud.py                   — main window + privacy panel + command history
+30. hud/asr_pipeline.py                â€” Whisper pre-warmed + language detection
+31. hud/streaming_worker.py            â€” Qt token streaming workers
+32. hud/state_machine.py               â€” HUD state machine
+33. hud/hitl_widget.py                 â€” approval dialog
+34. hud/voice_hud.py                   â€” main window + privacy panel + command history
 
 INTEGRATION:
-35. helix_cli.py                        — headless test mode
-36. main.py                             — health check → start HUD
+35. phantom_cli.py                        â€” headless test mode
+36. main.py                             â€” health check â†’ start HUD
 ```
 
 ---
@@ -2557,9 +2557,9 @@ INTEGRATION:
 # Health check (always run this first)
 python -m utils.health_check
 
-# CLI mode (no GUI — for testing)
-python helix_cli.py
-python helix_cli.py --query "list my downloads"
+# CLI mode (no GUI â€” for testing)
+python phantom_cli.py
+python phantom_cli.py --query "list my downloads"
 
 # GUI mode (full system)
 python main.py
@@ -2571,10 +2571,10 @@ python -m pytest tests/test_memory.py -v
 python -m pytest tests/ -v --tb=short
 
 # View audit log
-cat data/helix_audit.jsonl | python -c "import sys,json; [print(json.dumps(json.loads(l), indent=2)) for l in sys.stdin]"
+cat data/phantom_audit.jsonl | python -c "import sys,json; [print(json.dumps(json.loads(l), indent=2)) for l in sys.stdin]"
 
 # View privacy metrics (from CLI mode 'stats' command)
-python helix_cli.py  # then type 'stats'
+python phantom_cli.py  # then type 'stats'
 
 # Backup ChromaDB manually
 python -c "from memory.chroma_manager import backup_chromadb; backup_chromadb('./data/chromadb')"
@@ -2589,3 +2589,111 @@ ollama pull llama3.2:3b
 python -c "from orchestrator.rate_limiter import gemini_rate_limiter; print(f'Calls in window: {len(gemini_rate_limiter._calls)}')"
 ```
 
+
+## 6. LATEST ARCHITECTURE UPDATES (Token Pre-flight, Async UI, ChromaDB)
+
+### API Rotation & Token Pre-flight
+- **Rate Limit Resilience:** Groq API limits (HTTP 429) are now caught cleanly in llm_call_node. The pipeline will seamlessly rotate through backup keys (GROQ_API_KEY_2, etc.) and instantly fail over to OpenRouter or Gemini without crashing the active stream.
+- **Token Limits:** Added a 	iktoken pre-flight check to llm_call_node. If context size exceeds 7000 tokens (near Groq's 8000 TPM limit), it automatically reroutes the prompt to a high-context provider (Gemini).
+
+### UI Architecture & Streaming
+- PhantomWorker (QThread) offloads LangGraph execution to prevent blocking the PyQt6 GUI.
+- **HITL Integration in GUI:** High-risk tools (e.g., delete_files) pause the graph. The worker thread emits hitl_requested and waits on a queue. The main GUI thread intercepts this, shows a QMessageBox, and pushes the user's decision back into the queue for seamless approval flow.
+
+### Memory Systems & ChromaDB
+- **ChromaDB Thread Lock Fix:** ChromaManager was rewritten to correctly handle multi-threaded instantiation. un_health_check and main.py both securely import the instantiated singleton _get_chroma() from phantom_graph.py rather than spawning conflicting settings.
+- **Active Memory:** A new write_memory tool allows the agent to selectively save specific user facts into persistent ChromaDB, reducing token overhead.
+
+## 7. FULL CODEBASE AUDIT (September 2026)
+
+A ground-up audit of every Python file, live-verified against real API calls
+(no mocks). Full methodology: map every file's real dependencies, verify the
+graph/router/memory architecture against this spec, run 10 live tests against
+the actual pipeline, fix everything found, then re-verify.
+
+### Critical fix — cross-session memory was silently broken
+Five ChromaDB collections existed on disk. Config pointed at `helix_session_memory` /
+`helix_persistent_memory`, which had been created *before* the code started
+passing `hnsw:space: cosine` to `get_or_create_collection()` — that call only
+applies the metric at creation time, so those two collections were permanently
+pinned to ChromaDB's default, L2. `cosine_distance_to_similarity()` assumed
+cosine distance (`1 - distance`) unconditionally; applied to an L2 distance
+this silently inverts the scale, e.g. a genuine match at `distance=1.34` scored
+`-0.34` and was discarded as noise below `MEMORY_SCORE_THRESHOLD`. Net effect:
+retrieval always returned nothing, in every session, and nothing in the logs
+signalled it.
+
+Fix: `ChromaManager.distance_space()` reads each collection's *real* configured
+metric live rather than assuming one; `cosine_distance_to_similarity()` takes
+that metric and applies the correct formula per space (`1 - d/2` for L2,
+`-d` for inner product, `1 - d` for cosine). `SESSION_COLLECTION` /
+`PERSISTENT_COLLECTION` in `utils/config.py` were repointed at the (already
+cosine) `phantom_session_memory` / `phantom_persistent_memory` collections,
+and all 81 existing rows were migrated across (re-embedded, not copied blind)
+so no memory was lost. Verified live: a fact stored in one thread is now
+recalled by a completely separate thread and process.
+
+### Critical fix — the last-resort LLM fallback was dead
+`phantom_graph.py`'s Groq → OpenRouter → Gemini failover chain called
+`gemini-2.0-flash`, which returns 404 ("no longer available") — verified
+live against the real API. A Groq outage plus an OpenRouter rate limit meant
+total failure with no working fallback left. Changed to `gemini-3.6-flash`
+(the model `llm_router.py` already uses and had verified working). This
+exposed a second, previously-latent bug on the same path: Gemini's
+`.content` is a list of structured parts, not a string, and it was being
+assigned straight into `llm_response` — fixed by routing it through
+`llm_router.safe_content()` before use, same as the router's own normalization.
+Also fixed: `provider_used` was hardcoded to the *intended* provider and
+never updated when a failover actually fired, mislabeling both the UI badge
+and the usage log after any failover.
+
+### Fixed — `memory_hits` was permanently reported as 0
+`run_memory_retrieve()` computed the retrieved-chunk count and discarded it;
+`parallel_preprocess_node()` never returned a `memory_hits` key at all. Now
+threaded through both, confirmed non-zero in a live full-pipeline trace.
+
+### Removed — two dead/duplicate routing systems
+`llm_call_node` has never called `PhantomRouter` — it has its own inline
+model selection, key rotation, and failover chain (this was already true and
+is a known architectural gap, not something this audit changed: `PhantomNode`,
+the LangGraph wrapper around `PhantomRouter`, is imported by nobody).
+`select_model_for_task()` took a `complexity` score from
+`providers.hybrid_router.compute_complexity()` and then ignored it entirely,
+always returning `"groq"` — that one discarded call was the only thing
+keeping the entire `providers/` package (11 files, including the DeepSeek
+provider removed from the router config in an earlier pass) in the live
+import graph. Removed the call and the parameter.
+
+### Removed — legacy `core/` and `providers/` packages (21 files)
+`core/` was the pre-LangGraph HELIX-era router/oracle/sentinel stack, already
+half-deleted (`core/oracle/cloud.py` was gone, leaving its only entry point,
+`launch_hud.py`, crashing on import with `ModuleNotFoundError`). Nothing in
+the live pipeline imported from `core/` or `providers/`; both were removed
+along with `launch_hud.py` and the two test files that only exercised
+`core/` (`tests/test_chains.py`, `tests/test_fastpath.py`). Confirmed via
+full regression (every remaining module still imports, the graph still
+compiles with the same 6 nodes, `/status` still returns 200) both before and
+after deletion.
+
+### Live test results (all verified against real provider APIs, real ChromaDB, separate OS processes where relevant)
+| Test | Result |
+|---|---|
+| Router selection (bulk→Gemini, stream→Groq) | PASS |
+| Gemini content normalization | PASS |
+| Injection guard through the full graph (blocked input writes zero usage-log lines) | PASS |
+| Cross-session memory recall | PASS (was FAIL before the fix above) |
+| Persistent checkpointing across two separate OS processes | PASS |
+| Context trimming to a provider's context limit | PASS |
+| Async concurrency (4 concurrent `ainvoke()`, genuinely parallel) | PASS |
+| Usage logging (correct entries, blocked calls logged as zero) | PASS |
+| `/status` endpoint over real HTTP | PASS |
+| Full pipeline, traced node by node | PASS |
+
+### Known gap, not fixed by this audit
+`phantom_node.py` (the `PhantomRouter`-backed LangGraph node, with
+`utils/context_trimmer.py` wired into it) is dead code — nothing imports it.
+The live path's own context management and provider failover in
+`llm_call_node` work, are tested, and are separate from `PhantomRouter`
+entirely. Wiring `PhantomRouter` into `llm_call_node` would remove the
+duplication but is an architectural change, not a surgical fix, so it was
+left for a deliberate decision rather than folded into this audit.

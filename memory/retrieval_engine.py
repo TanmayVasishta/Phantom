@@ -4,7 +4,12 @@ Retrieval Engine — cosine similarity + recency decay scoring.
 Original formula (Yukta's contribution):
   final_score = cosine_sim * exp(-λ * days_old)
   λ = MEMORY_RECENCY_LAMBDA = 0.1
-  Threshold: only return results with final_score > MEMORY_SCORE_THRESHOLD (0.65)
+  Threshold: only return results with final_score > MEMORY_SCORE_THRESHOLD
+
+  MEMORY_SCORE_THRESHOLD (utils/config.py) is 0.25, not the original 0.65.
+  Calibrated against real data — paraphrased summaries score 0.3-0.4 against
+  natural queries, not 0.6+ like raw text. Noise vectors score -0.04 to -0.24,
+  so 0.25 cleanly separates signal from noise.
 """
 
 from __future__ import annotations
@@ -15,11 +20,24 @@ import time
 from utils.config import MEMORY_RECENCY_LAMBDA, MEMORY_SCORE_THRESHOLD
 
 
-def cosine_distance_to_similarity(distance: float) -> float:
+def cosine_distance_to_similarity(distance: float, space: str = "cosine") -> float:
     """
-    ChromaDB returns cosine DISTANCE (0=identical, 2=opposite).
-    Convert to cosine SIMILARITY (1=identical, -1=opposite).
+    Convert a ChromaDB distance to cosine SIMILARITY (1=identical, -1=opposite).
+
+    `space` must be the collection's REAL metric. This is not academic: a
+    collection created before the code started passing hnsw:space keeps
+    ChromaDB's default of l2, and get_or_create_collection will not upgrade
+    it. Applying the cosine formula to an l2 distance silently inverts the
+    scale — a strong match at l2=1.34 became sim=-0.34 and was discarded as
+    noise, which is why cross-session recall was returning nothing at all.
+
+    For the unit-normalised vectors all-MiniLM-L6-v2 emits, ChromaDB's l2 is
+    squared euclidean, and ||a-b||^2 = 2 - 2*cos, hence cos = 1 - d/2.
     """
+    if space == "l2":
+        return 1.0 - (distance / 2.0)
+    if space == "ip":
+        return -distance
     return 1.0 - distance
 
 
@@ -76,7 +94,7 @@ class RetrievalEngine:
         scored: list[tuple[float, str, dict]] = []
         for entry in raw:
             distance = entry.get("distance", 1.0)
-            cosine_sim = cosine_distance_to_similarity(distance)
+            cosine_sim = cosine_distance_to_similarity(distance, entry.get("space", "cosine"))
             cosine_sim = max(0.0, cosine_sim)  # clamp to [0, 1]
 
             meta = entry.get("metadata", {})
@@ -84,6 +102,9 @@ class RetrievalEngine:
             days_old = _days_since(timestamp) if timestamp else 0.0
 
             final = recency_score(cosine_sim, days_old)
+            # Calibrated against real data — paraphrased summaries score 0.3-0.4
+            # against natural queries, not 0.6+ like raw text. Noise vectors
+            # score -0.04 to -0.24, so 0.25 cleanly separates signal from noise.
             if final >= MEMORY_SCORE_THRESHOLD:
                 scored.append((final, entry.get("document", ""), meta))
 

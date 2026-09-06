@@ -1,0 +1,204 @@
+/* ============================================================
+   PHANTOM Dark Theme — styles.qss
+   All application-wide QSS in one file.
+   Loaded once at startup via app.setStyleSheet().
+   ============================================================ */
+
+/* ── Application-wide defaults ─────────────────────────────── */
+QWidget {
+    background-color: #1a1a1a;
+    color: #d4d4d4;
+    font-family: "Segoe UI", "Segoe UI Variable", Arial, sans-serif;
+}
+
+/* ── Main overlay window container ─────────────────────────── */
+QWidget#PhantomWindow {
+    background-color: #1a1a1a;
+    border-radius: 16px;
+    border: 1px solid #2e2e2e;
+}
+
+/* ── Query input field ─────────────────────────────────────── */
+QLineEdit#QueryInput {
+    background: transparent;
+    border: none;
+    color: #f5f5f5;
+    font-size: 15px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    padding: 0px 12px;
+    selection-background-color: #3b82f6;
+}
+
+QLineEdit#QueryInput::placeholder {
+    color: #4b4b4b;
+}
+
+/* ── Response area ─────────────────────────────────────────── */
+QTextEdit#ResponseArea {
+    background: transparent;
+    border: none;
+    color: #d4d4d4;
+    font-size: 14px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    padding: 0px 16px 12px 16px;
+    selection-background-color: #3b82f6;
+}
+
+/* ── Scrollbar inside response area ───────────────────────── */
+QScrollBar:vertical {
+    background: transparent;
+    width: 6px;
+    border: none;
+}
+
+QScrollBar::handle:vertical {
+    background: #3f3f3f;
+    border-radius: 3px;
+    min-height: 20px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar::up-arrow:vertical,
+QScrollBar::down-arrow:vertical,
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+/* ── Status bar ────────────────────────────────────────────── */
+QWidget#StatusBar {
+    background-color: #111111;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+}
+
+QLabel#StatusText {
+    color: #6b6b6b;
+    font-size: 11px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    padding: 0px 4px;
+    background: transparent;
+}
+
+/* ── HITL modal ────────────────────────────────────────────── */
+QWidget#HITLModal {
+    background-color: #1f1f1f;
+    border: 1px solid #ef4444;
+    border-radius: 12px;
+}
+
+/* ── Approve / Reject buttons ──────────────────────────────── */
+QPushButton#ApproveBtn {
+    background-color: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 24px;
+    font-weight: bold;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 12px;
+}
+
+QPushButton#ApproveBtn:hover {
+    background-color: #16a34a;
+}
+
+QPushButton#ApproveBtn:pressed {
+    background-color: #15803d;
+}
+
+QPushButton#ApproveBtn:disabled {
+    background-color: #1a3a2a;
+    color: #4b4b4b;
+}
+
+QPushButton#RejectBtn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 24px;
+    font-weight: bold;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 12px;
+}
+
+QPushButton#RejectBtn:hover {
+    background-color: #dc2626;
+}
+
+QPushButton#RejectBtn:pressed {
+    background-color: #b91c1c;
+}
+
+QPushButton#RejectBtn:disabled {
+    background-color: #3a1a1a;
+    color: #4b4b4b;
+}
+
+/* ── Privacy Report dialog ─────────────────────────────────── */
+QDialog#PrivacyReport {
+    background-color: #1a1a1a;
+    border: 1px solid #2e2e2e;
+    border-radius: 12px;
+}
+
+/* ── System tray context menu ──────────────────────────────── */
+QMenu {
+    background-color: #1a1a1a;
+    color: #d4d4d4;
+    border: 1px solid #2e2e2e;
+    border-radius: 8px;
+    padding: 4px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+}
+
+QMenu::item {
+    padding: 6px 20px;
+    border-radius: 4px;
+}
+
+QMenu::item:selected {
+    background-color: #2e2e2e;
+}
+
+QMenu::separator {
+    height: 1px;
+    background: #2e2e2e;
+    margin: 4px 8px;
+}
+
+/* ── Progress bar (provider chart) ─────────────────────────── */
+QProgressBar {
+    background-color: #2e2e2e;
+    border-radius: 4px;
+    border: none;
+}
+
+QProgressBar::chunk {
+    border-radius: 4px;
+}
+
+/* ── Generic close / action buttons ───────────────────────── */
+QPushButton {
+    background-color: #2e2e2e;
+    color: #d4d4d4;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+}
+
+QPushButton:hover {
+    background-color: #3f3f3f;
+}
+
+QPushButton:pressed {
+    background-color: #1f1f1f;
+}

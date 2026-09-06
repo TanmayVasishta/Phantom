@@ -80,6 +80,14 @@ class SentinelNode:
         """Call Ollama with structured output, retrying up to max_retries times."""
         import ollama
 
+        from utils.ollama_health import is_available, mark_down
+
+        # Fast path when Ollama isn't running: three failed connection attempts
+        # cost ~12s and were being paid on *every* query. The breaker turns that
+        # into a sub-second probe, and re-checks once its cooldown lapses.
+        if not is_available():
+            raise SentinelError("Ollama unavailable (cached probe) — using fallback intent.")
+
         last_error: Exception | None = None
 
         for attempt in range(self._max_retries):
@@ -109,8 +117,10 @@ class SentinelNode:
 
         # Final fallback — return UNKNOWN with low confidence rather than crashing
         if last_error is not None:
-            # If Ollama is unreachable, propagate
+            # If Ollama is unreachable, trip the breaker so the next query
+            # doesn't repeat the same expensive round of failed connections.
             if "connect" in str(last_error).lower() or "refused" in str(last_error).lower():
+                mark_down()
                 raise SentinelError(
                     f"Ollama unavailable after {self._max_retries} retries: {last_error}"
                 )

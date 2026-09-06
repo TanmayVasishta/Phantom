@@ -46,7 +46,7 @@ class HITLWidget(QDialog):
         self.decision: HITLState = HITLState.REJECTED
         self.modified_command: str = ""
 
-        self.setWindowTitle("HELIX — Action Approval Required")
+        self.setWindowTitle("PHANTOM — Action Approval Required")
         self.setMinimumWidth(600)
         self.setMinimumHeight(400)
         self._build_ui()

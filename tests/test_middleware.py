@@ -1,5 +1,5 @@
 """
-HELIX Phase 2 — Middleware Tests
+PHANTOM Phase 2 — Middleware Tests
 Tests: blocked_commands, risk_classifier, rollback_stack, command_mapper.
 No external dependencies — all tests are fast and offline.
 Run: python -m pytest tests/test_middleware.py -v
@@ -201,7 +201,7 @@ class TestCommandMapper:
         assert isinstance(desc, str)
 
     def test_dry_run_mkdir_contains_create_info(self):
-        desc = dry_run_description("mkdir ~/projects/helix", "FILE_OP", ["helix"])
+        desc = dry_run_description("mkdir ~/projects/phantom", "FILE_OP", ["phantom"])
         assert isinstance(desc, str)
 
     def test_dry_run_long_command_truncated(self):

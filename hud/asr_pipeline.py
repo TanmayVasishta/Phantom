@@ -5,7 +5,7 @@ Varshitha's module. Key features:
 - Pre-warmed model on init (avoids 5–10s cold start on first voice command)
 - Bandpass filter (300–3400 Hz) + noise gate + RMS normalisation
 - No hardcoded language — Whisper detects English/Hindi/Hinglish automatically
-- initial_prompt primes Whisper for Indian-accented English and HELIX context
+- initial_prompt primes Whisper for Indian-accented English and PHANTOM context
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 _INITIAL_PROMPT = (
-    "HELIX AI assistant for local system management. "
+    "PHANTOM AI assistant for local system management. "
     "User is giving a command in English or Hinglish."
 )
 

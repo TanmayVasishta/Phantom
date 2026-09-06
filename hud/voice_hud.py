@@ -1,5 +1,5 @@
 """
-Voice HUD — main PyQt6 window for HELIX.
+Voice HUD — main PyQt6 window for PHANTOM.
 
 Varshitha's module.
 
@@ -109,7 +109,7 @@ class CommandInputWidget(QTextEdit):
 
 class VoiceHUD(QMainWindow):
     """
-    Main HELIX HUD window.
+    Main PHANTOM HUD window.
 
     Connects the full pipeline: text input → Sentinel → PII → route → response.
     Voice input is handled via the mic button (SoundDevice + Whisper).
@@ -126,7 +126,7 @@ class VoiceHUD(QMainWindow):
         self._metrics_timer.start(2000)  # Refresh metrics every 2s
 
         self._build_ui()
-        self.setWindowTitle("HELIX — Privacy-First AI OS")
+        self.setWindowTitle("PHANTOM — Privacy-First AI OS")
         self.resize(1100, 700)
 
     def _build_ui(self) -> None:
@@ -138,7 +138,7 @@ class VoiceHUD(QMainWindow):
         # ── Left: Chat panel ──────────────────────────────────────────────────
         left = QVBoxLayout()
 
-        self._status_label = QLabel("HELIX IDLE")
+        self._status_label = QLabel("PHANTOM IDLE")
         self._status_label.setStyleSheet(
             "color: #22c55e; font-weight: bold; font-size: 12px;"
         )
@@ -231,13 +231,13 @@ class VoiceHUD(QMainWindow):
         self._append_to_display("\n")
         self._state_machine.transition(HUDState.DISPLAYING)
         self._state_machine.transition(HUDState.IDLE)
-        self._status_label.setText("HELIX IDLE")
+        self._status_label.setText("PHANTOM IDLE")
         session_metrics.record_query("local", 0)
 
     def _on_stream_error(self, error: str) -> None:
         self._append_to_display(f"\n[Error: {error}]\n")
         self._state_machine.reset()
-        self._status_label.setText("HELIX IDLE — Error occurred")
+        self._status_label.setText("PHANTOM IDLE — Error occurred")
 
     # ── State machine listener ────────────────────────────────────────────────
 
@@ -255,7 +255,7 @@ class VoiceHUD(QMainWindow):
         self._status_label.setStyleSheet(
             f"color: {colour}; font-weight: bold; font-size: 12px;"
         )
-        self._status_label.setText(f"HELIX {new_state.value.upper().replace('_', ' ')}")
+        self._status_label.setText(f"PHANTOM {new_state.value.upper().replace('_', ' ')}")
 
     # ── Metrics refresh ───────────────────────────────────────────────────────
 
@@ -280,8 +280,8 @@ class VoiceHUD(QMainWindow):
         msg_text = "\n".join(msg_lines)
 
         dialog = QMessageBox(self)
-        dialog.setWindowTitle("HELIX Session Summary")
-        dialog.setText(f"Session complete.\n\n{msg_text}\n\nThank you for using HELIX.")
+        dialog.setWindowTitle("PHANTOM Session Summary")
+        dialog.setText(f"Session complete.\n\n{msg_text}\n\nThank you for using PHANTOM.")
         dialog.setIcon(QMessageBox.Icon.Information)
         dialog.exec()
         event.accept()

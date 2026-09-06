@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 class TaskOrchestrator:
     """
-    Central routing engine for HELIX.
+    Central routing engine for PHANTOM.
 
     Decision order:
     1. Check IntentCache (skip LLM if safe cached route exists).
@@ -135,7 +135,7 @@ class TaskOrchestrator:
 
         except Exception as e:
             logger.error(f"Execution error on route '{decision.target}': {e}")
-            response = f"[HELIX] Execution failed: {e}"
+            response = f"[PHANTOM] Execution failed: {e}"
 
         elapsed_ms = int(time.time() * 1000 - start_ms)
         audit.log_event(
@@ -171,7 +171,7 @@ class TaskOrchestrator:
         chroma = self._get_chroma()
         results = chroma.search(query, n_results=3)
         if not results:
-            return "[HELIX] No relevant past interactions found."
+            return "[PHANTOM] No relevant past interactions found."
         snippets = [r["document"] for r in results[:3]]
         return "From memory:\n" + "\n\n".join(f"- {s}" for s in snippets)
 

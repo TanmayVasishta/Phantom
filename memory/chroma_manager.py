@@ -2,8 +2,8 @@
 ChromaDB Memory Manager — two-collection persistent + session memory.
 
 Design (Yukta's original contribution):
-- helix_session_memory  : cleared each session
-- helix_persistent_memory: survives restarts; only HITL-approved entries
+- phantom_session_memory  : cleared each session
+- phantom_persistent_memory: survives restarts; only HITL-approved entries
 
 Write-back is outcome-gated:
 - Always write to session_memory.
@@ -26,6 +26,7 @@ from utils.config import (
     CHROMA_PERSIST_DIR,
     OLLAMA_MODEL,
     PERSISTENT_COLLECTION,
+    PROJECT_ROOT as _PROJECT_ROOT,
     SESSION_COLLECTION,
     get_best_available_model,
 )
@@ -33,7 +34,7 @@ from utils.exceptions import ChromaDBCorruptionError, MemoryWriteError
 
 
 class ChromaManager:
-    """Manages session and persistent ChromaDB collections for HELIX memory."""
+    """Manages session and persistent ChromaDB collections for PHANTOM memory."""
 
     def __init__(
         self,
@@ -45,7 +46,7 @@ class ChromaManager:
             persist_dir  : Path for PersistentClient (ignored when session_only=True).
             session_only : If True, use chromadb.Client() — in-memory, ephemeral,
                            session-scoped. No data survives process exit.
-                           Set via HELIX_SESSION_ONLY=true env var or this flag.
+                           Set via PHANTOM_SESSION_ONLY=true env var or this flag.
                            Default False keeps the existing file-backed behaviour.
         """
         self._session_only = session_only
@@ -69,30 +70,49 @@ class ChromaManager:
                 # In-memory ephemeral client — session-scoped, no disk writes
                 self._client = chromadb.Client()
             else:
-                self._client = chromadb.PersistentClient(
-                    path=self._persist_dir,
-                    settings=Settings(
-                        anonymized_telemetry=False,
-                        allow_reset=True,
-                    ),
+                settings = Settings(
+                    anonymized_telemetry=False,
+                    allow_reset=True,
                 )
+                try:
+                    self._client = chromadb.PersistentClient(
+                        path=self._persist_dir,
+                        settings=settings,
+                    )
+                except Exception as e:
+                    if "different settings" in str(e) or "already exists" in str(e):
+                        # Dev-mode auto-recovery: wipe and reinitialise cleanly
+                        import shutil
+                        import logging
+                        logging.getLogger(__name__).warning(
+                            "[ChromaDB] Settings conflict detected — wiping and reinitialising: %s", e
+                        )
+                        shutil.rmtree(self._persist_dir, ignore_errors=True)
+                        os.makedirs(self._persist_dir, exist_ok=True)
+                        self._client = chromadb.PersistentClient(
+                            path=self._persist_dir,
+                            settings=settings,
+                        )
+                    else:
+                        raise
 
             self._session_col = self._client.get_or_create_collection(
                 name=SESSION_COLLECTION,
                 metadata={
-                    "description": "HELIX session memory — cleared each session",
+                    "description": "PHANTOM session memory — cleared each session",
                     "hnsw:space": "cosine",
                 },
             )
             self._persistent_col = self._client.get_or_create_collection(
                 name=PERSISTENT_COLLECTION,
                 metadata={
-                    "description": "HELIX persistent memory — HITL-approved only",
+                    "description": "PHANTOM persistent memory — HITL-approved only",
                     "hnsw:space": "cosine",
                 },
             )
         except Exception as e:
             raise ChromaDBCorruptionError(f"ChromaDB init failed: {e}") from e
+
 
     def _get_embedder(self):
         """Lazy-load sentence-transformers embedder. Falls back to None if unavailable."""
@@ -125,6 +145,17 @@ class ChromaManager:
     ) -> None:
         """
         Store an interaction in ChromaDB.
+
+        SAFETY: never store restored PII in vector DB. `interaction_summary`
+        must be built from the pre-restoration LLM response (still holding
+        [PII_*] placeholders), never the post-restoration text with real
+        values substituted back in. This method's own summarizer
+        (_make_privacy_safe_summary) is a second privacy layer, but it
+        degrades to a 3-pattern regex fallback when Ollama is unreachable and
+        would miss PII types it doesn't cover — so the caller (currently
+        phantom_graph.py's pii_restore_node -> _write_to_memory) is the one
+        actually responsible for this guarantee; it must never pass restored
+        text here regardless of how good this method's own scrubbing is.
 
         Outcome-gated promotion (Yukta's original design):
         - Always writes to session_memory.
@@ -169,18 +200,42 @@ class ChromaManager:
 
     # ── Search / Retrieval ────────────────────────────────────────────────────
 
+    def distance_space(self, collection: str = "persistent") -> str:
+        """
+        The distance metric this collection actually uses ("cosine" | "l2" | "ip").
+
+        Read off the live collection rather than assumed: get_or_create_collection
+        only applies the requested hnsw:space when it CREATES the collection, so a
+        collection first created before that metadata was passed keeps ChromaDB's
+        default (l2) forever. Callers converting distance->similarity need the real
+        metric; assuming cosine against an l2 collection silently inverts scores.
+        """
+        col = self._persistent_col if collection == "persistent" else self._session_col
+        try:
+            cfg = getattr(col, "configuration_json", None) or {}
+            space = (cfg.get("hnsw") or {}).get("space")
+            if space:
+                return str(space)
+        except Exception:
+            pass
+        try:
+            return str((col.metadata or {}).get("hnsw:space", "l2"))
+        except Exception:
+            return "l2"
+
     def search(
         self, query: str, n_results: int = 5, collection: str = "persistent"
     ) -> list[dict]:
         """
         Search the specified collection for semantically similar documents.
 
-        Returns list of dicts with keys: id, document, metadata, distance.
+        Returns list of dicts with keys: id, document, metadata, distance, space.
         Uses embedding search if sentence-transformers is available,
         falls back to keyword-based (ChromaDB default) otherwise.
         """
         col = self._persistent_col if collection == "persistent" else self._session_col
         embedding = self._embed(query)
+        space = self.distance_space(collection)
 
         try:
             if embedding is not None:
@@ -209,6 +264,7 @@ class ChromaManager:
                         "document": doc,
                         "metadata": meta,
                         "distance": dist,
+                        "space": space,
                     }
                 )
             return entries
@@ -222,7 +278,7 @@ class ChromaManager:
             self._client.delete_collection(SESSION_COLLECTION)
             self._session_col = self._client.get_or_create_collection(
                 name=SESSION_COLLECTION,
-                metadata={"description": "HELIX session memory — cleared each session"},
+                metadata={"description": "PHANTOM session memory — cleared each session"},
             )
         except Exception:
             pass
@@ -233,7 +289,7 @@ class ChromaManager:
 
     # ── Backup ────────────────────────────────────────────────────────────────
 
-    def backup(self, backup_dir: str = "./data/backups") -> str:
+    def backup(self, backup_dir: str = os.path.join(_PROJECT_ROOT, "data", "backups")) -> str:
         """
         Create a timestamped backup of the ChromaDB directory.
         Keeps only the last 5 backups.
@@ -289,7 +345,7 @@ class ChromaManager:
             return clean[:300]
 
     def _is_pii_safe(self, text: str) -> bool:
-        """Quick check: does the text contain any HELIX PII placeholders or raw PII?"""
+        """Quick check: does the text contain any PHANTOM PII placeholders or raw PII?"""
         import re
 
         # If placeholders are present, PII was not fully resolved

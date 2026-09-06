@@ -81,15 +81,39 @@ def get_best_available_model() -> str:
 
 
 # ── ChromaDB ──────────────────────────────────────────────────────────────────
-CHROMA_PERSIST_DIR: str = _get("CHROMA_DB_PATH", _get("CHROMA_PERSIST_DIR", "./data/chromadb"))
-SESSION_COLLECTION: str = _get("SESSION_COLLECTION", "helix_session_memory")
-PERSISTENT_COLLECTION: str = _get("PERSISTENT_COLLECTION", "helix_persistent_memory")
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+def _make_absolute(path: str) -> str:
+    if path.startswith("./"):
+        return os.path.join(PROJECT_ROOT, path[2:])
+    if not os.path.isabs(path):
+        return os.path.join(PROJECT_ROOT, path)
+    return path
+
+CHROMA_PERSIST_DIR: str = _make_absolute(_get("CHROMA_DB_PATH", _get("CHROMA_PERSIST_DIR", "./data/chromadb")))
+# The helix_* collections these used to default to were created before the code
+# passed hnsw:space, so ChromaDB pinned them to l2 permanently. The phantom_*
+# collections are cosine. Existing helix_* rows were migrated across, so this is
+# a rename plus a metric fix, not a data reset.
+SESSION_COLLECTION: str = _get("SESSION_COLLECTION", "phantom_session_memory")
+PERSISTENT_COLLECTION: str = _get("PERSISTENT_COLLECTION", "phantom_persistent_memory")
 MAX_MEMORY_ENTRIES: int = int(_get("MAX_MEMORY_ENTRIES", "1000"))
 
 # ── Safety Thresholds ─────────────────────────────────────────────────────────
 RISK_THRESHOLD_HITL: int = int(_get("RISK_THRESHOLD_HITL", "40"))
 CONFIDENCE_THRESHOLD_CLARIFY: float = float(_get("CONFIDENCE_THRESHOLD_CLARIFY", "0.65"))
-MEMORY_SCORE_THRESHOLD: float = float(_get("MEMORY_SCORE_THRESHOLD", "0.65"))
+# 0.65 (the original CLAUDE.md spec value) was calibrated for cosine similarity
+# between two natural-language queries. In practice, stored documents are
+# LLM-generated 2-3 sentence SUMMARIES (privacy-safe design, see
+# chroma_manager.py), which embed with much lower cosine similarity against a
+# short follow-up question even when the match is exactly correct. Measured
+# empirically: a verbatim-correct recall scored 0.315 against a plain
+# question; unrelated entries scored -0.04 and -0.24 (opposite-direction
+# vectors). 0.25 admits real matches like the first case while still
+# rejecting genuine noise like the other two — the cross-encoder reranker
+# downstream (memory/reranker.py) does the real precision filtering on top
+# of this coarse recall-oriented cut.
+MEMORY_SCORE_THRESHOLD: float = float(_get("MEMORY_SCORE_THRESHOLD", "0.25"))
 MEMORY_RECENCY_LAMBDA: float = float(_get("MEMORY_RECENCY_LAMBDA", "0.1"))
 
 # ── Prompting ─────────────────────────────────────────────────────────────────

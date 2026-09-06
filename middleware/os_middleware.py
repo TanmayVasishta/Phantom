@@ -31,7 +31,7 @@ _IS_WINDOWS = platform.system() == "Windows"
 
 class OSMiddleware:
     """
-    Sandboxed command execution for HELIX local operations.
+    Sandboxed command execution for PHANTOM local operations.
 
     All commands pass through:
     1. Blocked pattern check (hard abort)

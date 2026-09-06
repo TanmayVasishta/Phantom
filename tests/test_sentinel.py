@@ -1,5 +1,5 @@
 """
-HELIX Phase 2 — Sentinel Node Tests
+PHANTOM Phase 2 — Sentinel Node Tests
 Tests the Phase 2 sentinel/sentinel_node.py (NOT the legacy core/sentinel).
 Requires Ollama running. All 7 intent types tested + confidence gate.
 Run: python -m pytest tests/test_sentinel.py -v

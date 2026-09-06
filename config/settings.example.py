@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────
-#  HELIX Configuration  (EXAMPLE FILE)
+#  PHANTOM Configuration  (EXAMPLE FILE)
 #  Copy this to settings.py and fill in your keys
 # ─────────────────────────────────────────
 from pathlib import Path
@@ -25,7 +25,7 @@ GEMINI_API_KEY = "YOUR_GEMINI_KEY"
 CHROMA_DB_PATH = "./data/chromadb"
 
 # Voice
-WAKE_WORD = "helix"
+WAKE_WORD = "phantom"
 
 # Safety
 CONFIRMATION_REQUIRED = True
@@ -34,6 +34,6 @@ CONFIRMATION_REQUIRED = True
 LOG_LEVEL = "INFO"
 
 # ── Phase 4 -- Multi-Step Chains ────────────────────────
-CHAIN_OUTPUT_DIR = str(Path.home() / "Documents" / "HELIX_Outputs")
+CHAIN_OUTPUT_DIR = str(Path.home() / "Documents" / "PHANTOM_Outputs")
 CHAIN_MAX_TOKENS = 1500
 GMAIL_COMPOSE_URL = "https://mail.google.com/mail/?view=cm&fs=1&su={subject}&body={body}"

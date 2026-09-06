@@ -167,7 +167,7 @@ class GeminiOracle:
             session_metrics.record_query("cloud", 0, fallback=True)
             return response["response"]
         except Exception as e:
-            return f"[HELIX] Both cloud and local models unavailable: {e}"
+            return f"[PHANTOM] Both cloud and local models unavailable: {e}"
 
     # ── Lazy Init ─────────────────────────────────────────────────────────────
 

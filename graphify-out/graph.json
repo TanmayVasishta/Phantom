@@ -6,28 +6,28 @@
     {
       "label": "add_ffmpeg_path.ps1",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\add_ffmpeg_path.ps1",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\add_ffmpeg_path.ps1",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_add_ffmpeg_path_ps1",
+      "id": "c_users_tanma_phantom_add_ffmpeg_path_ps1",
       "community": 12,
       "norm_label": "add_ffmpeg_path.ps1"
     },
     {
       "label": "launch_hud.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\launch_hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\launch_hud.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_launch_hud_py",
+      "id": "c_users_tanma_phantom_launch_hud_py",
       "community": 1,
       "norm_label": "launch_hud.py"
     },
     {
-      "label": "HELIX \u2014 GUI Entry Point Launches the PyQt6 HUD with the full router connected. R",
+      "label": "PHANTOM \u2014 GUI Entry Point Launches the PyQt6 HUD with the full router connected. R",
       "file_type": "rationale",
       "source_file": "launch_hud.py",
       "source_location": "L1",
       "community": 1,
-      "norm_label": "helix \u2014 gui entry point launches the pyqt6 hud with the full router connected. r",
+      "norm_label": "phantom \u2014 gui entry point launches the pyqt6 hud with the full router connected. r",
       "id": "launch_hud_rationale_1"
     },
     {
@@ -58,36 +58,36 @@
       "norm_label": "main()"
     },
     {
-      "label": "HELIX -- Main Entry Point (Phase 3) CLI mode with Watchdog active on Downloads +",
+      "label": "PHANTOM -- Main Entry Point (Phase 3) CLI mode with Watchdog active on Downloads +",
       "file_type": "rationale",
       "source_file": "main.py",
       "source_location": "L1",
       "community": 6,
-      "norm_label": "helix -- main entry point (phase 3) cli mode with watchdog active on downloads +",
+      "norm_label": "phantom -- main entry point (phase 3) cli mode with watchdog active on downloads +",
       "id": "main_rationale_1"
     },
     {
-      "label": "Called by Watchdog threads -- printed inline during HELIX session.",
+      "label": "Called by Watchdog threads -- printed inline during PHANTOM session.",
       "file_type": "rationale",
       "source_file": "main.py",
       "source_location": "L37",
       "id": "main_rationale_37",
       "community": 6,
-      "norm_label": "called by watchdog threads -- printed inline during helix session."
+      "norm_label": "called by watchdog threads -- printed inline during phantom session."
     },
     {
       "label": "test_apis.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\test_apis.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\test_apis.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_test_apis_py",
+      "id": "c_users_tanma_phantom_test_apis_py",
       "community": 10,
       "norm_label": "test_apis.py"
     },
     {
       "label": "test_deepseek()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\test_apis.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\test_apis.py",
       "source_location": "L9",
       "id": "test_apis_test_deepseek",
       "community": 10,
@@ -96,7 +96,7 @@
     {
       "label": "test_groq()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\test_apis.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\test_apis.py",
       "source_location": "L28",
       "id": "test_apis_test_groq",
       "community": 10,
@@ -105,36 +105,36 @@
     {
       "label": "test_together()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\test_apis.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\test_apis.py",
       "source_location": "L47",
       "id": "test_apis_test_together",
       "community": 10,
       "norm_label": "test_together()"
     },
     {
-      "label": "Test all available free API alternatives for HELIX Cloud Oracle Run: python test",
+      "label": "Test all available free API alternatives for PHANTOM Cloud Oracle Run: python test",
       "file_type": "rationale",
       "source_file": "test_apis.py",
       "source_location": "L1",
       "community": 10,
-      "norm_label": "test all available free api alternatives for helix cloud oracle run: python test",
+      "norm_label": "test all available free api alternatives for phantom cloud oracle run: python test",
       "id": "test_apis_rationale_1"
     },
     {
       "label": "test_gemini.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\test_gemini.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\test_gemini.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_test_gemini_py",
+      "id": "c_users_tanma_phantom_test_gemini_py",
       "community": 13,
       "norm_label": "test_gemini.py"
     },
     {
       "label": "test_oracle.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\test_oracle.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\test_oracle.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_test_oracle_py",
+      "id": "c_users_tanma_phantom_test_oracle_py",
       "community": 14,
       "norm_label": "test_oracle.py"
     },
@@ -150,18 +150,18 @@
     {
       "label": "__init__.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\config\\__init__.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\config\\__init__.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_config_init_py",
+      "id": "c_users_tanma_phantom_config_init_py",
       "community": 16,
       "norm_label": "__init__.py"
     },
     {
       "label": "__init__.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\__init__.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\__init__.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_init_py",
+      "id": "c_users_tanma_phantom_core_init_py",
       "community": 17,
       "norm_label": "__init__.py"
     },
@@ -220,13 +220,13 @@
       "norm_label": ".open_gmail()"
     },
     {
-      "label": "HELIX -- Email Drafter (Phase 4) Privacy-safe Gmail drafting pipeline.  Flow:",
+      "label": "PHANTOM -- Email Drafter (Phase 4) Privacy-safe Gmail drafting pipeline.  Flow:",
       "file_type": "rationale",
       "source_file": "core\\chains\\email_drafter.py",
       "source_location": "L1",
       "id": "email_drafter_rationale_1",
       "community": 5,
-      "norm_label": "helix -- email drafter (phase 4) privacy-safe gmail drafting pipeline.  flow:"
+      "norm_label": "phantom -- email drafter (phase 4) privacy-safe gmail drafting pipeline.  flow:"
     },
     {
       "label": "Extract the email topic from the sanitized prompt.     e.g. \"draft an email abou",
@@ -283,20 +283,20 @@
       "norm_label": "_safe_filename()"
     },
     {
-      "label": "HelixChainRunner",
+      "label": "PhantomChainRunner",
       "file_type": "code",
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L94",
-      "id": "multi_step_helixchainrunner",
+      "id": "multi_step_phantomchainrunner",
       "community": 1,
-      "norm_label": "helixchainrunner"
+      "norm_label": "phantomchainrunner"
     },
     {
       "label": ".__init__()",
       "file_type": "code",
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L100",
-      "id": "multi_step_helixchainrunner_init",
+      "id": "multi_step_phantomchainrunner_init",
       "community": 1,
       "norm_label": ".__init__()"
     },
@@ -314,7 +314,7 @@
       "file_type": "code",
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L130",
-      "id": "multi_step_helixchainrunner_run",
+      "id": "multi_step_phantomchainrunner_run",
       "community": 1,
       "norm_label": ".run()"
     },
@@ -323,7 +323,7 @@
       "file_type": "code",
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L162",
-      "id": "multi_step_helixchainrunner_chain_research_and_save",
+      "id": "multi_step_phantomchainrunner_chain_research_and_save",
       "community": 3,
       "norm_label": "._chain_research_and_save()"
     },
@@ -332,18 +332,18 @@
       "file_type": "code",
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L229",
-      "id": "multi_step_helixchainrunner_chain_draft_email",
+      "id": "multi_step_phantomchainrunner_chain_draft_email",
       "community": 5,
       "norm_label": "._chain_draft_email()"
     },
     {
-      "label": "HELIX -- Multi-Step Chain Runner (Phase 4) LangChain-style sequential task autom",
+      "label": "PHANTOM -- Multi-Step Chain Runner (Phase 4) LangChain-style sequential task autom",
       "file_type": "rationale",
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L1",
       "id": "multi_step_rationale_1",
       "community": 4,
-      "norm_label": "helix -- multi-step chain runner (phase 4) langchain-style sequential task autom"
+      "norm_label": "phantom -- multi-step chain runner (phase 4) langchain-style sequential task autom"
     },
     {
       "label": "Convert a topic string to a safe filename.",
@@ -411,64 +411,64 @@
     {
       "label": "audit_log.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_logging_audit_log_py",
+      "id": "c_users_tanma_phantom_core_logging_audit_log_py",
       "community": 1,
       "norm_label": "audit_log.py"
     },
     {
-      "label": "HelixAuditLog",
+      "label": "PhantomAuditLog",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L25",
-      "id": "audit_log_helixauditlog",
+      "id": "audit_log_phantomauditlog",
       "community": 1,
-      "norm_label": "helixauditlog"
+      "norm_label": "phantomauditlog"
     },
     {
       "label": ".__init__()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L27",
-      "id": "audit_log_helixauditlog_init",
+      "id": "audit_log_phantomauditlog_init",
       "community": 1,
       "norm_label": ".__init__()"
     },
     {
       "label": ".log_event()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L30",
-      "id": "audit_log_helixauditlog_log_event",
+      "id": "audit_log_phantomauditlog_log_event",
       "community": 1,
       "norm_label": ".log_event()"
     },
     {
       "label": ".query_log()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L60",
-      "id": "audit_log_helixauditlog_query_log",
+      "id": "audit_log_phantomauditlog_query_log",
       "community": 8,
       "norm_label": ".query_log()"
     },
     {
       "label": ".summary_stats()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L85",
-      "id": "audit_log_helixauditlog_summary_stats",
+      "id": "audit_log_phantomauditlog_summary_stats",
       "community": 8,
       "norm_label": ".summary_stats()"
     },
     {
-      "label": "HELIX -- Structured Audit Log (Phase 3 Major Feature) Append-only JSON-lines aud",
+      "label": "PHANTOM -- Structured Audit Log (Phase 3 Major Feature) Append-only JSON-lines aud",
       "file_type": "rationale",
       "source_file": "core\\logging\\audit_log.py",
       "source_location": "L1",
       "community": 1,
-      "norm_label": "helix -- structured audit log (phase 3 major feature) append-only json-lines aud",
+      "norm_label": "phantom -- structured audit log (phase 3 major feature) append-only json-lines aud",
       "id": "audit_log_rationale_1"
     },
     {
@@ -492,73 +492,73 @@
     {
       "label": "__init__.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\__init__.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\__init__.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_logging_init_py",
+      "id": "c_users_tanma_phantom_core_logging_init_py",
       "community": 19,
       "norm_label": "__init__.py"
     },
     {
       "label": "memory.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_memory_memory_py",
+      "id": "c_users_tanma_phantom_core_memory_memory_py",
       "community": 1,
       "norm_label": "memory.py"
     },
     {
-      "label": "HelixMemory",
+      "label": "PhantomMemory",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L14",
-      "id": "memory_helixmemory",
+      "id": "memory_phantommemory",
       "community": 1,
-      "norm_label": "helixmemory"
+      "norm_label": "phantommemory"
     },
     {
       "label": ".__init__()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L15",
-      "id": "memory_helixmemory_init",
+      "id": "memory_phantommemory_init",
       "community": 1,
       "norm_label": ".__init__()"
     },
     {
       "label": ".store()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L24",
-      "id": "memory_helixmemory_store",
+      "id": "memory_phantommemory_store",
       "community": 1,
       "norm_label": ".store()"
     },
     {
       "label": ".retrieve()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L35",
-      "id": "memory_helixmemory_retrieve",
+      "id": "memory_phantommemory_retrieve",
       "community": 3,
       "norm_label": ".retrieve()"
     },
     {
       "label": ".clear()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L51",
-      "id": "memory_helixmemory_clear",
+      "id": "memory_phantommemory_clear",
       "community": 2,
       "norm_label": ".clear()"
     },
     {
-      "label": "HELIX \u2014 Memory Module ChromaDB persistent vector store. Uses chromadb directly (",
+      "label": "PHANTOM \u2014 Memory Module ChromaDB persistent vector store. Uses chromadb directly (",
       "file_type": "rationale",
       "source_file": "core\\memory\\memory.py",
       "source_location": "L1",
       "community": 1,
-      "norm_label": "helix \u2014 memory module chromadb persistent vector store. uses chromadb directly (",
+      "norm_label": "phantom \u2014 memory module chromadb persistent vector store. uses chromadb directly (",
       "id": "memory_rationale_1"
     },
     {
@@ -573,9 +573,9 @@
     {
       "label": "__init__.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\__init__.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\__init__.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_memory_init_py",
+      "id": "c_users_tanma_phantom_core_memory_init_py",
       "community": 20,
       "norm_label": "__init__.py"
     },
@@ -778,13 +778,13 @@
       "norm_label": "._nl_to_glob()"
     },
     {
-      "label": "HelixWatcher",
+      "label": "PhantomWatcher",
       "file_type": "code",
       "source_file": "core\\middleware\\file_manager.py",
       "source_location": "L619",
-      "id": "file_manager_helixwatcher",
+      "id": "file_manager_phantomwatcher",
       "community": 6,
-      "norm_label": "helixwatcher"
+      "norm_label": "phantomwatcher"
     },
     {
       "label": "FileSystemEventHandler",
@@ -800,7 +800,7 @@
       "file_type": "code",
       "source_file": "core\\middleware\\file_manager.py",
       "source_location": "L624",
-      "id": "file_manager_helixwatcher_init",
+      "id": "file_manager_phantomwatcher_init",
       "community": 6,
       "norm_label": ".__init__()"
     },
@@ -809,7 +809,7 @@
       "file_type": "code",
       "source_file": "core\\middleware\\file_manager.py",
       "source_location": "L627",
-      "id": "file_manager_helixwatcher_on_created",
+      "id": "file_manager_phantomwatcher_on_created",
       "community": 6,
       "norm_label": ".on_created()"
     },
@@ -818,7 +818,7 @@
       "file_type": "code",
       "source_file": "core\\middleware\\file_manager.py",
       "source_location": "L632",
-      "id": "file_manager_helixwatcher_on_moved",
+      "id": "file_manager_phantomwatcher_on_moved",
       "community": 6,
       "norm_label": ".on_moved()"
     },
@@ -832,12 +832,12 @@
       "norm_label": "start_watcher()"
     },
     {
-      "label": "HELIX -- File Management Middleware (Phase 3) Regex fast-path + NL action dispat",
+      "label": "PHANTOM -- File Management Middleware (Phase 3) Regex fast-path + NL action dispat",
       "file_type": "rationale",
       "source_file": "core\\middleware\\file_manager.py",
       "source_location": "L1",
       "community": 6,
-      "norm_label": "helix -- file management middleware (phase 3) regex fast-path + nl action dispat",
+      "norm_label": "phantom -- file management middleware (phase 3) regex fast-path + nl action dispat",
       "id": "file_manager_rationale_1"
     },
     {
@@ -906,9 +906,9 @@
     {
       "label": "__init__.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\middleware\\__init__.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\middleware\\__init__.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_middleware_init_py",
+      "id": "c_users_tanma_phantom_core_middleware_init_py",
       "community": 21,
       "norm_label": "__init__.py"
     },
@@ -976,12 +976,12 @@
       "norm_label": ".status()"
     },
     {
-      "label": "HELIX -- Cloud Oracle (Multi-Provider) Tries providers in order: Groq -> DeepSee",
+      "label": "PHANTOM -- Cloud Oracle (Multi-Provider) Tries providers in order: Groq -> DeepSee",
       "file_type": "rationale",
       "source_file": "core\\oracle\\cloud.py",
       "source_location": "L1",
       "community": 3,
-      "norm_label": "helix -- cloud oracle (multi-provider) tries providers in order: groq -> deepsee",
+      "norm_label": "phantom -- cloud oracle (multi-provider) tries providers in order: groq -> deepsee",
       "id": "cloud_rationale_1"
     },
     {
@@ -1057,13 +1057,13 @@
       "norm_label": ".execute_parsed()"
     },
     {
-      "label": "HELIX -- Cloud Command Parser (Phase 4 Enhancement) Uses Cloud Oracle to interpr",
+      "label": "PHANTOM -- Cloud Command Parser (Phase 4 Enhancement) Uses Cloud Oracle to interpr",
       "file_type": "rationale",
       "source_file": "core\\oracle\\command_parser.py",
       "source_location": "L1",
       "id": "command_parser_rationale_1",
       "community": 1,
-      "norm_label": "helix -- cloud command parser (phase 4 enhancement) uses cloud oracle to interpr"
+      "norm_label": "phantom -- cloud command parser (phase 4 enhancement) uses cloud oracle to interpr"
     },
     {
       "label": "Sends unrecognised local OS commands to the Cloud Oracle for NLP parsing.     Re",
@@ -1095,25 +1095,25 @@
     {
       "label": "__init__.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\oracle\\__init__.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\oracle\\__init__.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_oracle_init_py",
+      "id": "c_users_tanma_phantom_core_oracle_init_py",
       "community": 22,
       "norm_label": "__init__.py"
     },
     {
       "label": "profiles.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\profiles\\profiles.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\profiles\\profiles.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_profiles_profiles_py",
+      "id": "c_users_tanma_phantom_core_profiles_profiles_py",
       "community": 0,
       "norm_label": "profiles.py"
     },
     {
       "label": "ProfileManager",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\profiles\\profiles.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\profiles\\profiles.py",
       "source_location": "L49",
       "id": "profiles_profilemanager",
       "community": 0,
@@ -1122,7 +1122,7 @@
     {
       "label": ".__init__()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\profiles\\profiles.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\profiles\\profiles.py",
       "source_location": "L51",
       "id": "profiles_profilemanager_init",
       "community": 0,
@@ -1131,7 +1131,7 @@
     {
       "label": ".run()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\profiles\\profiles.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\profiles\\profiles.py",
       "source_location": "L54",
       "id": "profiles_profilemanager_run",
       "community": 0,
@@ -1140,27 +1140,27 @@
     {
       "label": ".list_profiles()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\profiles\\profiles.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\profiles\\profiles.py",
       "source_location": "L79",
       "id": "profiles_profilemanager_list_profiles",
       "community": 0,
       "norm_label": ".list_profiles()"
     },
     {
-      "label": "HELIX -- Workflow Profiles (Phase 3) Trigger phrases like \"code mode\" launch a f",
+      "label": "PHANTOM -- Workflow Profiles (Phase 3) Trigger phrases like \"code mode\" launch a f",
       "file_type": "rationale",
       "source_file": "core\\profiles\\profiles.py",
       "source_location": "L1",
       "community": 0,
-      "norm_label": "helix -- workflow profiles (phase 3) trigger phrases like \"code mode\" launch a f",
+      "norm_label": "phantom -- workflow profiles (phase 3) trigger phrases like \"code mode\" launch a f",
       "id": "profiles_rationale_1"
     },
     {
       "label": "__init__.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\profiles\\__init__.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\profiles\\__init__.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_profiles_init_py",
+      "id": "c_users_tanma_phantom_core_profiles_init_py",
       "community": 23,
       "norm_label": "__init__.py"
     },
@@ -1174,20 +1174,20 @@
       "norm_label": "router.py"
     },
     {
-      "label": "HelixRouter",
+      "label": "PhantomRouter",
       "file_type": "code",
       "source_file": "core\\router\\router.py",
       "source_location": "L30",
-      "id": "router_helixrouter",
+      "id": "router_phantomrouter",
       "community": 1,
-      "norm_label": "helixrouter"
+      "norm_label": "phantomrouter"
     },
     {
       "label": ".__init__()",
       "file_type": "code",
       "source_file": "core\\router\\router.py",
       "source_location": "L31",
-      "id": "router_helixrouter_init",
+      "id": "router_phantomrouter_init",
       "community": 1,
       "norm_label": ".__init__()"
     },
@@ -1196,7 +1196,7 @@
       "file_type": "code",
       "source_file": "core\\router\\router.py",
       "source_location": "L43",
-      "id": "router_helixrouter_process",
+      "id": "router_phantomrouter_process",
       "community": 8,
       "norm_label": ".process()"
     },
@@ -1205,7 +1205,7 @@
       "file_type": "code",
       "source_file": "core\\router\\router.py",
       "source_location": "L182",
-      "id": "router_helixrouter_confirm_destructive",
+      "id": "router_phantomrouter_confirm_destructive",
       "community": 8,
       "norm_label": "._confirm_destructive()"
     },
@@ -1214,7 +1214,7 @@
       "file_type": "code",
       "source_file": "core\\router\\router.py",
       "source_location": "L191",
-      "id": "router_helixrouter_log",
+      "id": "router_phantomrouter_log",
       "community": 1,
       "norm_label": "._log()"
     },
@@ -1223,59 +1223,59 @@
       "file_type": "code",
       "source_file": "core\\router\\router.py",
       "source_location": "L203",
-      "id": "router_helixrouter_get_chain_runner",
+      "id": "router_phantomrouter_get_chain_runner",
       "community": 1,
       "norm_label": "._get_chain_runner()"
     },
     {
-      "label": "HELIX -- Router (Phase 3) Full pipeline with:   - Regex fast-path (0ms for obvio",
+      "label": "PHANTOM -- Router (Phase 3) Full pipeline with:   - Regex fast-path (0ms for obvio",
       "file_type": "rationale",
       "source_file": "core\\router\\router.py",
       "source_location": "L1",
       "community": 1,
-      "norm_label": "helix -- router (phase 3) full pipeline with:   - regex fast-path (0ms for obvio",
+      "norm_label": "phantom -- router (phase 3) full pipeline with:   - regex fast-path (0ms for obvio",
       "id": "router_rationale_1"
     },
     {
-      "label": "Full HELIX pipeline:         0.  Special command shortcuts (audit log, stats)",
+      "label": "Full PHANTOM pipeline:         0.  Special command shortcuts (audit log, stats)",
       "file_type": "rationale",
       "source_file": "core\\router\\router.py",
       "source_location": "L44",
       "id": "router_rationale_44",
       "community": 8,
-      "norm_label": "full helix pipeline:         0.  special command shortcuts (audit log, stats)"
+      "norm_label": "full phantom pipeline:         0.  special command shortcuts (audit log, stats)"
     },
     {
-      "label": "Lazy-initialize HelixChainRunner on first chain use.",
+      "label": "Lazy-initialize PhantomChainRunner on first chain use.",
       "file_type": "rationale",
       "source_file": "core\\router\\router.py",
       "source_location": "L204",
       "id": "router_rationale_204",
       "community": 1,
-      "norm_label": "lazy-initialize helixchainrunner on first chain use."
+      "norm_label": "lazy-initialize phantomchainrunner on first chain use."
     },
     {
       "label": "__init__.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\router\\__init__.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\router\\__init__.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_router_init_py",
+      "id": "c_users_tanma_phantom_core_router_init_py",
       "community": 24,
       "norm_label": "__init__.py"
     },
     {
       "label": "node.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_sentinel_node_py",
+      "id": "c_users_tanma_phantom_core_sentinel_node_py",
       "community": 7,
       "norm_label": "node.py"
     },
     {
       "label": "SentinelNode",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L99",
       "id": "node_sentinelnode",
       "community": 7,
@@ -1284,7 +1284,7 @@
     {
       "label": ".__init__()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L100",
       "id": "node_sentinelnode_init",
       "community": 7,
@@ -1293,7 +1293,7 @@
     {
       "label": ".classify_intent()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L115",
       "id": "node_sentinelnode_classify_intent",
       "community": 7,
@@ -1302,7 +1302,7 @@
     {
       "label": ".redact_pii()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L143",
       "id": "node_sentinelnode_redact_pii",
       "community": 7,
@@ -1311,19 +1311,19 @@
     {
       "label": ".llm_raw()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L152",
       "id": "node_sentinelnode_llm_raw",
       "community": 8,
       "norm_label": ".llm_raw()"
     },
     {
-      "label": "HELIX -- Sentinel Node (Phase 3 -- Few-Shot Edition) Local qwen3.5:2b via direct",
+      "label": "PHANTOM -- Sentinel Node (Phase 3 -- Few-Shot Edition) Local qwen3.5:2b via direct",
       "file_type": "rationale",
       "source_file": "core\\sentinel\\node.py",
       "source_location": "L1",
       "community": 7,
-      "norm_label": "helix -- sentinel node (phase 3 -- few-shot edition) local qwen3.5:2b via direct",
+      "norm_label": "phantom -- sentinel node (phase 3 -- few-shot edition) local qwen3.5:2b via direct",
       "id": "node_rationale_1"
     },
     {
@@ -1356,9 +1356,9 @@
     {
       "label": "__init__.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\__init__.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\__init__.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_core_sentinel_init_py",
+      "id": "c_users_tanma_phantom_core_sentinel_init_py",
       "community": 25,
       "norm_label": "__init__.py"
     },
@@ -1444,54 +1444,54 @@
       "norm_label": "test_safe_filename()"
     },
     {
-      "label": "HELIX Phase 4 -- Fast-Path Test Suite for Chains Tests that don't require Ollama",
+      "label": "PHANTOM Phase 4 -- Fast-Path Test Suite for Chains Tests that don't require Ollama",
       "file_type": "rationale",
       "source_file": "tests\\test_chains.py",
       "source_location": "L1",
       "id": "test_chains_rationale_1",
       "community": 4,
-      "norm_label": "helix phase 4 -- fast-path test suite for chains tests that don't require ollama"
+      "norm_label": "phantom phase 4 -- fast-path test suite for chains tests that don't require ollama"
     },
     {
       "label": "test_fastpath.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_fastpath.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_fastpath.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_tests_test_fastpath_py",
+      "id": "c_users_tanma_phantom_tests_test_fastpath_py",
       "community": 11,
       "norm_label": "test_fastpath.py"
     },
     {
       "label": "check()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_fastpath.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_fastpath.py",
       "source_location": "L18",
       "id": "test_fastpath_check",
       "community": 11,
       "norm_label": "check()"
     },
     {
-      "label": "HELIX Phase 3 -- Fast-Path Test Suite Tests that don't require Ollama -- pure di",
+      "label": "PHANTOM Phase 3 -- Fast-Path Test Suite Tests that don't require Ollama -- pure di",
       "file_type": "rationale",
       "source_file": "tests\\test_fastpath.py",
       "source_location": "L1",
       "community": 11,
-      "norm_label": "helix phase 3 -- fast-path test suite tests that don't require ollama -- pure di",
+      "norm_label": "phantom phase 3 -- fast-path test suite tests that don't require ollama -- pure di",
       "id": "test_fastpath_rationale_1"
     },
     {
       "label": "test_sentinel.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_sentinel.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_sentinel.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_tests_test_sentinel_py",
+      "id": "c_users_tanma_phantom_tests_test_sentinel_py",
       "community": 7,
       "norm_label": "test_sentinel.py"
     },
     {
       "label": "test_intent_local()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_sentinel.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_sentinel.py",
       "source_location": "L12",
       "id": "test_sentinel_test_intent_local",
       "community": 7,
@@ -1500,7 +1500,7 @@
     {
       "label": "test_intent_cloud()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_sentinel.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_sentinel.py",
       "source_location": "L22",
       "id": "test_sentinel_test_intent_cloud",
       "community": 7,
@@ -1509,38 +1509,38 @@
     {
       "label": "test_pii_redaction()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_sentinel.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_sentinel.py",
       "source_location": "L32",
       "id": "test_sentinel_test_pii_redaction",
       "community": 7,
       "norm_label": "test_pii_redaction()"
     },
     {
-      "label": "HELIX Phase 2 Test Suite \u2014 Sentinel Node Run: python tests/test_sentinel.py Olla",
+      "label": "PHANTOM Phase 2 Test Suite \u2014 Sentinel Node Run: python tests/test_sentinel.py Olla",
       "file_type": "rationale",
       "source_file": "tests\\test_sentinel.py",
       "source_location": "L1",
       "community": 7,
-      "norm_label": "helix phase 2 test suite \u2014 sentinel node run: python tests/test_sentinel.py olla",
+      "norm_label": "phantom phase 2 test suite \u2014 sentinel node run: python tests/test_sentinel.py olla",
       "id": "test_sentinel_rationale_1"
     },
     {
       "label": "hud.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_ui_hud_py",
+      "id": "c_users_tanma_phantom_ui_hud_py",
       "community": 2,
       "norm_label": "hud.py"
     },
     {
-      "label": "HelixWorker",
+      "label": "PhantomWorker",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L22",
-      "id": "hud_helixworker",
+      "id": "hud_phantomworker",
       "community": 2,
-      "norm_label": "helixworker"
+      "norm_label": "phantomworker"
     },
     {
       "label": "QObject",
@@ -1554,29 +1554,29 @@
     {
       "label": ".__init__()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L27",
-      "id": "hud_helixworker_init",
+      "id": "hud_phantomworker_init",
       "community": 2,
       "norm_label": ".__init__()"
     },
     {
       "label": ".run()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L32",
-      "id": "hud_helixworker_run",
+      "id": "hud_phantomworker_run",
       "community": 2,
       "norm_label": ".run()"
     },
     {
-      "label": "HelixHUD",
+      "label": "PhantomHUD",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L41",
-      "id": "hud_helixhud",
+      "id": "hud_phantomhud",
       "community": 2,
-      "norm_label": "helixhud"
+      "norm_label": "phantomhud"
     },
     {
       "label": "QMainWindow",
@@ -1590,91 +1590,91 @@
     {
       "label": ".__init__()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L42",
-      "id": "hud_helixhud_init",
+      "id": "hud_phantomhud_init",
       "community": 2,
       "norm_label": ".__init__()"
     },
     {
       "label": "._build_ui()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L49",
-      "id": "hud_helixhud_build_ui",
+      "id": "hud_phantomhud_build_ui",
       "community": 2,
       "norm_label": "._build_ui()"
     },
     {
       "label": "._on_submit()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L110",
-      "id": "hud_helixhud_on_submit",
+      "id": "hud_phantomhud_on_submit",
       "community": 2,
       "norm_label": "._on_submit()"
     },
     {
       "label": "._on_mic()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L119",
-      "id": "hud_helixhud_on_mic",
+      "id": "hud_phantomhud_on_mic",
       "community": 2,
       "norm_label": "._on_mic()"
     },
     {
       "label": "._run_in_thread()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L122",
-      "id": "hud_helixhud_run_in_thread",
+      "id": "hud_phantomhud_run_in_thread",
       "community": 2,
       "norm_label": "._run_in_thread()"
     },
     {
       "label": "._on_response()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L133",
-      "id": "hud_helixhud_on_response",
+      "id": "hud_phantomhud_on_response",
       "community": 2,
       "norm_label": "._on_response()"
     },
     {
       "label": "._on_error()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L137",
-      "id": "hud_helixhud_on_error",
+      "id": "hud_phantomhud_on_error",
       "community": 2,
       "norm_label": "._on_error()"
     },
     {
       "label": "._set_busy()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L141",
-      "id": "hud_helixhud_set_busy",
+      "id": "hud_phantomhud_set_busy",
       "community": 2,
       "norm_label": "._set_busy()"
     },
     {
       "label": "launch_hud()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L148",
       "id": "hud_launch_hud",
       "community": 2,
       "norm_label": "launch_hud()"
     },
     {
-      "label": "HELIX \u2014 Voice HUD (Phase 5 full implementation) PyQt6 non-blocking UI with async",
+      "label": "PHANTOM \u2014 Voice HUD (Phase 5 full implementation) PyQt6 non-blocking UI with async",
       "file_type": "rationale",
       "source_file": "ui\\hud.py",
       "source_location": "L1",
       "community": 2,
-      "norm_label": "helix \u2014 voice hud (phase 5 full implementation) pyqt6 non-blocking ui with async",
+      "norm_label": "phantom \u2014 voice hud (phase 5 full implementation) pyqt6 non-blocking ui with async",
       "id": "hud_rationale_1"
     },
     {
@@ -1689,25 +1689,25 @@
     {
       "label": "__init__.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\__init__.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\__init__.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_ui_init_py",
+      "id": "c_users_tanma_phantom_ui_init_py",
       "community": 26,
       "norm_label": "__init__.py"
     },
     {
       "label": "listener.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_voice_listener_py",
+      "id": "c_users_tanma_phantom_voice_listener_py",
       "community": 9,
       "norm_label": "listener.py"
     },
     {
       "label": "VoiceListener",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L28",
       "id": "listener_voicelistener",
       "community": 9,
@@ -1716,7 +1716,7 @@
     {
       "label": ".__init__()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L38",
       "id": "listener_voicelistener_init",
       "community": 9,
@@ -1725,7 +1725,7 @@
     {
       "label": "._check_mic()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L43",
       "id": "listener_voicelistener_check_mic",
       "community": 9,
@@ -1734,19 +1734,19 @@
     {
       "label": ".listen_once()",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L50",
       "id": "listener_voicelistener_listen_once",
       "community": 9,
       "norm_label": ".listen_once()"
     },
     {
-      "label": "HELIX \u2014 Voice Listener (Phase 5 full implementation) Uses sounddevice + SpeechRe",
+      "label": "PHANTOM \u2014 Voice Listener (Phase 5 full implementation) Uses sounddevice + SpeechRe",
       "file_type": "rationale",
       "source_file": "voice\\listener.py",
       "source_location": "L1",
       "community": 9,
-      "norm_label": "helix \u2014 voice listener (phase 5 full implementation) uses sounddevice + speechre",
+      "norm_label": "phantom \u2014 voice listener (phase 5 full implementation) uses sounddevice + speechre",
       "id": "listener_rationale_1"
     },
     {
@@ -1770,19 +1770,19 @@
     {
       "label": "__init__.py",
       "file_type": "code",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\__init__.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\__init__.py",
       "source_location": "L1",
-      "id": "c_users_tanma_helix_voice_init_py",
+      "id": "c_users_tanma_phantom_voice_init_py",
       "community": 27,
       "norm_label": "__init__.py"
     },
     {
-      "label": "Called by Watchdog threads -- printed inline during HELIX session.",
+      "label": "Called by Watchdog threads -- printed inline during PHANTOM session.",
       "file_type": "rationale",
       "source_file": "main.py",
       "source_location": "L34",
       "community": 1,
-      "norm_label": "called by watchdog threads -- printed inline during helix session.",
+      "norm_label": "called by watchdog threads -- printed inline during phantom session.",
       "id": "main_rationale_34"
     },
     {
@@ -1849,12 +1849,12 @@
       "id": "cloud_rationale_98"
     },
     {
-      "label": "Full HELIX pipeline:         1. Special command shortcuts (audit log, stats)",
+      "label": "Full PHANTOM pipeline:         1. Special command shortcuts (audit log, stats)",
       "file_type": "rationale",
       "source_file": "core\\router\\router.py",
       "source_location": "L39",
       "community": 30,
-      "norm_label": "full helix pipeline:         1. special command shortcuts (audit log, stats)",
+      "norm_label": "full phantom pipeline:         1. special command shortcuts (audit log, stats)",
       "id": "router_rationale_39"
     }
   ],
@@ -1862,12 +1862,12 @@
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\launch_hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\launch_hud.py",
       "source_location": "L1",
       "weight": 1.0,
       "_src": "launch_hud_rationale_1",
-      "_tgt": "c_users_tanma_helix_launch_hud_py",
-      "source": "c_users_tanma_helix_launch_hud_py",
+      "_tgt": "c_users_tanma_phantom_launch_hud_py",
+      "source": "c_users_tanma_phantom_launch_hud_py",
       "target": "launch_hud_rationale_1",
       "confidence_score": 1.0
     },
@@ -1878,10 +1878,10 @@
       "source_location": "L10",
       "weight": 0.8,
       "_src": "launch_hud_rationale_1",
-      "_tgt": "router_helixrouter",
+      "_tgt": "router_phantomrouter",
       "confidence_score": 0.5,
       "source": "launch_hud_rationale_1",
-      "target": "router_helixrouter"
+      "target": "router_phantomrouter"
     },
     {
       "relation": "contains",
@@ -1939,9 +1939,9 @@
       "source_location": "L43",
       "weight": 1.0,
       "_src": "main_main",
-      "_tgt": "router_helixrouter",
+      "_tgt": "router_phantomrouter",
       "source": "main_main",
-      "target": "router_helixrouter"
+      "target": "router_phantomrouter"
     },
     {
       "relation": "calls",
@@ -1963,9 +1963,9 @@
       "source_location": "L73",
       "weight": 1.0,
       "_src": "main_main",
-      "_tgt": "router_helixrouter_process",
+      "_tgt": "router_phantomrouter_process",
       "source": "main_main",
-      "target": "router_helixrouter_process"
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "uses",
@@ -1974,10 +1974,10 @@
       "source_location": "L9",
       "weight": 0.8,
       "_src": "main_rationale_1",
-      "_tgt": "router_helixrouter",
+      "_tgt": "router_phantomrouter",
       "confidence_score": 0.5,
       "source": "main_rationale_1",
-      "target": "router_helixrouter"
+      "target": "router_phantomrouter"
     },
     {
       "relation": "uses",
@@ -1986,56 +1986,56 @@
       "source_location": "L10",
       "weight": 0.8,
       "_src": "main_rationale_37",
-      "_tgt": "router_helixrouter",
+      "_tgt": "router_phantomrouter",
       "source": "main_rationale_37",
-      "target": "router_helixrouter",
+      "target": "router_phantomrouter",
       "confidence_score": 0.5
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\test_apis.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\test_apis.py",
       "source_location": "L9",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_test_apis_py",
+      "_src": "c_users_tanma_phantom_test_apis_py",
       "_tgt": "test_apis_test_deepseek",
-      "source": "c_users_tanma_helix_test_apis_py",
+      "source": "c_users_tanma_phantom_test_apis_py",
       "target": "test_apis_test_deepseek",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\test_apis.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\test_apis.py",
       "source_location": "L28",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_test_apis_py",
+      "_src": "c_users_tanma_phantom_test_apis_py",
       "_tgt": "test_apis_test_groq",
-      "source": "c_users_tanma_helix_test_apis_py",
+      "source": "c_users_tanma_phantom_test_apis_py",
       "target": "test_apis_test_groq",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\test_apis.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\test_apis.py",
       "source_location": "L47",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_test_apis_py",
+      "_src": "c_users_tanma_phantom_test_apis_py",
       "_tgt": "test_apis_test_together",
-      "source": "c_users_tanma_helix_test_apis_py",
+      "source": "c_users_tanma_phantom_test_apis_py",
       "target": "test_apis_test_together",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\test_apis.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\test_apis.py",
       "source_location": "L1",
       "weight": 1.0,
       "_src": "test_apis_rationale_1",
-      "_tgt": "c_users_tanma_helix_test_apis_py",
-      "source": "c_users_tanma_helix_test_apis_py",
+      "_tgt": "c_users_tanma_phantom_test_apis_py",
+      "source": "c_users_tanma_phantom_test_apis_py",
       "target": "test_apis_rationale_1",
       "confidence_score": 1.0
     },
@@ -2165,10 +2165,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L236",
       "weight": 0.8,
-      "_src": "multi_step_helixchainrunner",
+      "_src": "multi_step_phantomchainrunner",
       "_tgt": "email_drafter_emaildrafter",
       "source": "email_drafter_emaildrafter",
-      "target": "multi_step_helixchainrunner",
+      "target": "multi_step_phantomchainrunner",
       "confidence_score": 0.5
     },
     {
@@ -2262,10 +2262,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L239",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_chain_draft_email",
+      "_src": "multi_step_phantomchainrunner_chain_draft_email",
       "_tgt": "email_drafter_emaildrafter",
       "source": "email_drafter_emaildrafter",
-      "target": "multi_step_helixchainrunner_chain_draft_email"
+      "target": "multi_step_phantomchainrunner_chain_draft_email"
     },
     {
       "relation": "rationale_for",
@@ -2310,10 +2310,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L242",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_chain_draft_email",
+      "_src": "multi_step_phantomchainrunner_chain_draft_email",
       "_tgt": "email_drafter_emaildrafter_draft",
       "source": "email_drafter_emaildrafter_draft",
-      "target": "multi_step_helixchainrunner_chain_draft_email"
+      "target": "multi_step_phantomchainrunner_chain_draft_email"
     },
     {
       "relation": "rationale_for",
@@ -2334,10 +2334,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L277",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_chain_draft_email",
+      "_src": "multi_step_phantomchainrunner_chain_draft_email",
       "_tgt": "email_drafter_emaildrafter_open_gmail",
       "source": "email_drafter_emaildrafter_open_gmail",
-      "target": "multi_step_helixchainrunner_chain_draft_email"
+      "target": "multi_step_phantomchainrunner_chain_draft_email"
     },
     {
       "relation": "contains",
@@ -2358,9 +2358,9 @@
       "source_location": "L94",
       "weight": 1.0,
       "_src": "core_chains_multi_step_py",
-      "_tgt": "multi_step_helixchainrunner",
+      "_tgt": "multi_step_phantomchainrunner",
       "source": "core_chains_multi_step_py",
-      "target": "multi_step_helixchainrunner",
+      "target": "multi_step_phantomchainrunner",
       "confidence_score": 1.0
     },
     {
@@ -2393,10 +2393,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L202",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_chain_research_and_save",
+      "_src": "multi_step_phantomchainrunner_chain_research_and_save",
       "_tgt": "multi_step_safe_filename",
       "source": "multi_step_safe_filename",
-      "target": "multi_step_helixchainrunner_chain_research_and_save",
+      "target": "multi_step_phantomchainrunner_chain_research_and_save",
       "confidence_score": 1.0
     },
     {
@@ -2429,10 +2429,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L100",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner",
-      "_tgt": "multi_step_helixchainrunner_init",
-      "source": "multi_step_helixchainrunner",
-      "target": "multi_step_helixchainrunner_init",
+      "_src": "multi_step_phantomchainrunner",
+      "_tgt": "multi_step_phantomchainrunner_init",
+      "source": "multi_step_phantomchainrunner",
+      "target": "multi_step_phantomchainrunner_init",
       "confidence_score": 1.0
     },
     {
@@ -2441,10 +2441,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L130",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner",
-      "_tgt": "multi_step_helixchainrunner_run",
-      "source": "multi_step_helixchainrunner",
-      "target": "multi_step_helixchainrunner_run",
+      "_src": "multi_step_phantomchainrunner",
+      "_tgt": "multi_step_phantomchainrunner_run",
+      "source": "multi_step_phantomchainrunner",
+      "target": "multi_step_phantomchainrunner_run",
       "confidence_score": 1.0
     },
     {
@@ -2453,10 +2453,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L162",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner",
-      "_tgt": "multi_step_helixchainrunner_chain_research_and_save",
-      "source": "multi_step_helixchainrunner",
-      "target": "multi_step_helixchainrunner_chain_research_and_save",
+      "_src": "multi_step_phantomchainrunner",
+      "_tgt": "multi_step_phantomchainrunner_chain_research_and_save",
+      "source": "multi_step_phantomchainrunner",
+      "target": "multi_step_phantomchainrunner_chain_research_and_save",
       "confidence_score": 1.0
     },
     {
@@ -2465,10 +2465,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L229",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner",
-      "_tgt": "multi_step_helixchainrunner_chain_draft_email",
-      "source": "multi_step_helixchainrunner",
-      "target": "multi_step_helixchainrunner_chain_draft_email",
+      "_src": "multi_step_phantomchainrunner",
+      "_tgt": "multi_step_phantomchainrunner_chain_draft_email",
+      "source": "multi_step_phantomchainrunner",
+      "target": "multi_step_phantomchainrunner_chain_draft_email",
       "confidence_score": 1.0
     },
     {
@@ -2478,8 +2478,8 @@
       "source_location": "L95",
       "weight": 1.0,
       "_src": "multi_step_rationale_95",
-      "_tgt": "multi_step_helixchainrunner",
-      "source": "multi_step_helixchainrunner",
+      "_tgt": "multi_step_phantomchainrunner",
+      "source": "multi_step_phantomchainrunner",
       "target": "multi_step_rationale_95",
       "confidence_score": 1.0
     },
@@ -2489,10 +2489,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L206",
       "weight": 0.8,
-      "_src": "router_helixrouter",
-      "_tgt": "multi_step_helixchainrunner",
-      "source": "multi_step_helixchainrunner",
-      "target": "router_helixrouter",
+      "_src": "router_phantomrouter",
+      "_tgt": "multi_step_phantomchainrunner",
+      "source": "multi_step_phantomchainrunner",
+      "target": "router_phantomrouter",
       "confidence_score": 0.5
     },
     {
@@ -2502,8 +2502,8 @@
       "source_location": "L206",
       "weight": 0.8,
       "_src": "router_rationale_1",
-      "_tgt": "multi_step_helixchainrunner",
-      "source": "multi_step_helixchainrunner",
+      "_tgt": "multi_step_phantomchainrunner",
+      "source": "multi_step_phantomchainrunner",
       "target": "router_rationale_1",
       "confidence_score": 0.5
     },
@@ -2514,8 +2514,8 @@
       "source_location": "L206",
       "weight": 0.8,
       "_src": "router_rationale_204",
-      "_tgt": "multi_step_helixchainrunner",
-      "source": "multi_step_helixchainrunner",
+      "_tgt": "multi_step_phantomchainrunner",
+      "source": "multi_step_phantomchainrunner",
       "target": "router_rationale_204",
       "confidence_score": 0.5
     },
@@ -2526,8 +2526,8 @@
       "source_location": "L13",
       "weight": 0.8,
       "_src": "test_chains_rationale_1",
-      "_tgt": "multi_step_helixchainrunner",
-      "source": "multi_step_helixchainrunner",
+      "_tgt": "multi_step_phantomchainrunner",
+      "source": "multi_step_phantomchainrunner",
       "target": "test_chains_rationale_1",
       "confidence_score": 0.5
     },
@@ -2538,10 +2538,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L207",
       "weight": 1.0,
-      "_src": "router_helixrouter_get_chain_runner",
-      "_tgt": "multi_step_helixchainrunner",
-      "source": "multi_step_helixchainrunner",
-      "target": "router_helixrouter_get_chain_runner"
+      "_src": "router_phantomrouter_get_chain_runner",
+      "_tgt": "multi_step_phantomchainrunner",
+      "source": "multi_step_phantomchainrunner",
+      "target": "router_phantomrouter_get_chain_runner"
     },
     {
       "relation": "calls",
@@ -2550,10 +2550,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L72",
       "weight": 1.0,
-      "_src": "router_helixrouter_process",
+      "_src": "router_phantomrouter_process",
       "_tgt": "multi_step_detect",
       "source": "multi_step_detect",
-      "target": "router_helixrouter_process"
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "calls",
@@ -2609,10 +2609,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L138",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_run",
-      "_tgt": "multi_step_helixchainrunner_chain_research_and_save",
-      "source": "multi_step_helixchainrunner_run",
-      "target": "multi_step_helixchainrunner_chain_research_and_save",
+      "_src": "multi_step_phantomchainrunner_run",
+      "_tgt": "multi_step_phantomchainrunner_chain_research_and_save",
+      "source": "multi_step_phantomchainrunner_run",
+      "target": "multi_step_phantomchainrunner_chain_research_and_save",
       "confidence_score": 1.0
     },
     {
@@ -2621,10 +2621,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L140",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_run",
-      "_tgt": "multi_step_helixchainrunner_chain_draft_email",
-      "source": "multi_step_helixchainrunner_run",
-      "target": "multi_step_helixchainrunner_chain_draft_email",
+      "_src": "multi_step_phantomchainrunner_run",
+      "_tgt": "multi_step_phantomchainrunner_chain_draft_email",
+      "source": "multi_step_phantomchainrunner_run",
+      "target": "multi_step_phantomchainrunner_chain_draft_email",
       "confidence_score": 1.0
     },
     {
@@ -2634,8 +2634,8 @@
       "source_location": "L132",
       "weight": 1.0,
       "_src": "multi_step_rationale_132",
-      "_tgt": "multi_step_helixchainrunner_run",
-      "source": "multi_step_helixchainrunner_run",
+      "_tgt": "multi_step_phantomchainrunner_run",
+      "source": "multi_step_phantomchainrunner_run",
       "target": "multi_step_rationale_132",
       "confidence_score": 1.0
     },
@@ -2646,10 +2646,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L145",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_run",
-      "_tgt": "memory_helixmemory_store",
-      "source": "multi_step_helixchainrunner_run",
-      "target": "memory_helixmemory_store"
+      "_src": "multi_step_phantomchainrunner_run",
+      "_tgt": "memory_phantommemory_store",
+      "source": "multi_step_phantomchainrunner_run",
+      "target": "memory_phantommemory_store"
     },
     {
       "relation": "calls",
@@ -2658,10 +2658,10 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L147",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_run",
-      "_tgt": "audit_log_helixauditlog_log_event",
-      "source": "multi_step_helixchainrunner_run",
-      "target": "audit_log_helixauditlog_log_event"
+      "_src": "multi_step_phantomchainrunner_run",
+      "_tgt": "audit_log_phantomauditlog_log_event",
+      "source": "multi_step_phantomchainrunner_run",
+      "target": "audit_log_phantomauditlog_log_event"
     },
     {
       "relation": "rationale_for",
@@ -2670,8 +2670,8 @@
       "source_location": "L163",
       "weight": 1.0,
       "_src": "multi_step_rationale_163",
-      "_tgt": "multi_step_helixchainrunner_chain_research_and_save",
-      "source": "multi_step_helixchainrunner_chain_research_and_save",
+      "_tgt": "multi_step_phantomchainrunner_chain_research_and_save",
+      "source": "multi_step_phantomchainrunner_chain_research_and_save",
       "target": "multi_step_rationale_163",
       "confidence_score": 1.0
     },
@@ -2682,9 +2682,9 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L178",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_chain_research_and_save",
+      "_src": "multi_step_phantomchainrunner_chain_research_and_save",
       "_tgt": "node_sentinelnode_redact_pii",
-      "source": "multi_step_helixchainrunner_chain_research_and_save",
+      "source": "multi_step_phantomchainrunner_chain_research_and_save",
       "target": "node_sentinelnode_redact_pii"
     },
     {
@@ -2694,9 +2694,9 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L186",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_chain_research_and_save",
+      "_src": "multi_step_phantomchainrunner_chain_research_and_save",
       "_tgt": "cloud_cloudoracle_query",
-      "source": "multi_step_helixchainrunner_chain_research_and_save",
+      "source": "multi_step_phantomchainrunner_chain_research_and_save",
       "target": "cloud_cloudoracle_query"
     },
     {
@@ -2706,9 +2706,9 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L198",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_chain_research_and_save",
+      "_src": "multi_step_phantomchainrunner_chain_research_and_save",
       "_tgt": "file_manager_filemanager_resolve_path",
-      "source": "multi_step_helixchainrunner_chain_research_and_save",
+      "source": "multi_step_phantomchainrunner_chain_research_and_save",
       "target": "file_manager_filemanager_resolve_path"
     },
     {
@@ -2718,9 +2718,9 @@
       "source_file": "core\\chains\\multi_step.py",
       "source_location": "L214",
       "weight": 1.0,
-      "_src": "multi_step_helixchainrunner_chain_research_and_save",
+      "_src": "multi_step_phantomchainrunner_chain_research_and_save",
       "_tgt": "file_manager_filemanager_write_file",
-      "source": "multi_step_helixchainrunner_chain_research_and_save",
+      "source": "multi_step_phantomchainrunner_chain_research_and_save",
       "target": "file_manager_filemanager_write_file"
     },
     {
@@ -2730,81 +2730,81 @@
       "source_location": "L230",
       "weight": 1.0,
       "_src": "multi_step_rationale_230",
-      "_tgt": "multi_step_helixchainrunner_chain_draft_email",
-      "source": "multi_step_helixchainrunner_chain_draft_email",
+      "_tgt": "multi_step_phantomchainrunner_chain_draft_email",
+      "source": "multi_step_phantomchainrunner_chain_draft_email",
       "target": "multi_step_rationale_230",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L25",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_core_logging_audit_log_py",
-      "_tgt": "audit_log_helixauditlog",
-      "source": "c_users_tanma_helix_core_logging_audit_log_py",
-      "target": "audit_log_helixauditlog",
+      "_src": "c_users_tanma_phantom_core_logging_audit_log_py",
+      "_tgt": "audit_log_phantomauditlog",
+      "source": "c_users_tanma_phantom_core_logging_audit_log_py",
+      "target": "audit_log_phantomauditlog",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L1",
       "weight": 1.0,
       "_src": "audit_log_rationale_1",
-      "_tgt": "c_users_tanma_helix_core_logging_audit_log_py",
-      "source": "c_users_tanma_helix_core_logging_audit_log_py",
+      "_tgt": "c_users_tanma_phantom_core_logging_audit_log_py",
+      "source": "c_users_tanma_phantom_core_logging_audit_log_py",
       "target": "audit_log_rationale_1",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L27",
       "weight": 1.0,
-      "_src": "audit_log_helixauditlog",
-      "_tgt": "audit_log_helixauditlog_init",
-      "source": "audit_log_helixauditlog",
-      "target": "audit_log_helixauditlog_init",
+      "_src": "audit_log_phantomauditlog",
+      "_tgt": "audit_log_phantomauditlog_init",
+      "source": "audit_log_phantomauditlog",
+      "target": "audit_log_phantomauditlog_init",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L30",
       "weight": 1.0,
-      "_src": "audit_log_helixauditlog",
-      "_tgt": "audit_log_helixauditlog_log_event",
-      "source": "audit_log_helixauditlog",
-      "target": "audit_log_helixauditlog_log_event",
+      "_src": "audit_log_phantomauditlog",
+      "_tgt": "audit_log_phantomauditlog_log_event",
+      "source": "audit_log_phantomauditlog",
+      "target": "audit_log_phantomauditlog_log_event",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L60",
       "weight": 1.0,
-      "_src": "audit_log_helixauditlog",
-      "_tgt": "audit_log_helixauditlog_query_log",
-      "source": "audit_log_helixauditlog",
-      "target": "audit_log_helixauditlog_query_log",
+      "_src": "audit_log_phantomauditlog",
+      "_tgt": "audit_log_phantomauditlog_query_log",
+      "source": "audit_log_phantomauditlog",
+      "target": "audit_log_phantomauditlog_query_log",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L85",
       "weight": 1.0,
-      "_src": "audit_log_helixauditlog",
-      "_tgt": "audit_log_helixauditlog_summary_stats",
-      "source": "audit_log_helixauditlog",
-      "target": "audit_log_helixauditlog_summary_stats",
+      "_src": "audit_log_phantomauditlog",
+      "_tgt": "audit_log_phantomauditlog_summary_stats",
+      "source": "audit_log_phantomauditlog",
+      "target": "audit_log_phantomauditlog_summary_stats",
       "confidence_score": 1.0
     },
     {
@@ -2813,11 +2813,11 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L20",
       "weight": 0.8,
-      "_src": "audit_log_helixauditlog",
-      "_tgt": "router_helixrouter",
+      "_src": "audit_log_phantomauditlog",
+      "_tgt": "router_phantomrouter",
       "confidence_score": 0.5,
-      "source": "audit_log_helixauditlog",
-      "target": "router_helixrouter"
+      "source": "audit_log_phantomauditlog",
+      "target": "router_phantomrouter"
     },
     {
       "relation": "uses",
@@ -2825,10 +2825,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L20",
       "weight": 0.8,
-      "_src": "audit_log_helixauditlog",
+      "_src": "audit_log_phantomauditlog",
       "_tgt": "router_rationale_1",
       "confidence_score": 0.5,
-      "source": "audit_log_helixauditlog",
+      "source": "audit_log_phantomauditlog",
       "target": "router_rationale_1"
     },
     {
@@ -2838,8 +2838,8 @@
       "source_location": "L22",
       "weight": 0.8,
       "_src": "router_rationale_204",
-      "_tgt": "audit_log_helixauditlog",
-      "source": "audit_log_helixauditlog",
+      "_tgt": "audit_log_phantomauditlog",
+      "source": "audit_log_phantomauditlog",
       "target": "router_rationale_204",
       "confidence_score": 0.5
     },
@@ -2850,10 +2850,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L35",
       "weight": 1.0,
-      "_src": "audit_log_helixauditlog",
-      "_tgt": "router_helixrouter_init",
-      "source": "audit_log_helixauditlog",
-      "target": "router_helixrouter_init"
+      "_src": "audit_log_phantomauditlog",
+      "_tgt": "router_phantomrouter_init",
+      "source": "audit_log_phantomauditlog",
+      "target": "router_phantomrouter_init"
     },
     {
       "relation": "calls",
@@ -2862,20 +2862,20 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L151",
       "weight": 1.0,
-      "_src": "audit_log_helixauditlog_log_event",
-      "_tgt": "router_helixrouter_log",
-      "source": "audit_log_helixauditlog_log_event",
-      "target": "router_helixrouter_log"
+      "_src": "audit_log_phantomauditlog_log_event",
+      "_tgt": "router_phantomrouter_log",
+      "source": "audit_log_phantomauditlog_log_event",
+      "target": "router_phantomrouter_log"
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L61",
       "weight": 1.0,
       "_src": "audit_log_rationale_61",
-      "_tgt": "audit_log_helixauditlog_query_log",
-      "source": "audit_log_helixauditlog_query_log",
+      "_tgt": "audit_log_phantomauditlog_query_log",
+      "source": "audit_log_phantomauditlog_query_log",
       "target": "audit_log_rationale_61",
       "confidence_score": 1.0
     },
@@ -2886,20 +2886,20 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L56",
       "weight": 1.0,
-      "_src": "audit_log_helixauditlog_query_log",
-      "_tgt": "router_helixrouter_process",
-      "source": "audit_log_helixauditlog_query_log",
-      "target": "router_helixrouter_process"
+      "_src": "audit_log_phantomauditlog_query_log",
+      "_tgt": "router_phantomrouter_process",
+      "source": "audit_log_phantomauditlog_query_log",
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\logging\\audit_log.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\logging\\audit_log.py",
       "source_location": "L86",
       "weight": 1.0,
       "_src": "audit_log_rationale_86",
-      "_tgt": "audit_log_helixauditlog_summary_stats",
-      "source": "audit_log_helixauditlog_summary_stats",
+      "_tgt": "audit_log_phantomauditlog_summary_stats",
+      "source": "audit_log_phantomauditlog_summary_stats",
       "target": "audit_log_rationale_86",
       "confidence_score": 1.0
     },
@@ -2910,81 +2910,81 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L58",
       "weight": 1.0,
-      "_src": "audit_log_helixauditlog_summary_stats",
-      "_tgt": "router_helixrouter_process",
-      "source": "audit_log_helixauditlog_summary_stats",
-      "target": "router_helixrouter_process"
+      "_src": "audit_log_phantomauditlog_summary_stats",
+      "_tgt": "router_phantomrouter_process",
+      "source": "audit_log_phantomauditlog_summary_stats",
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L14",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_core_memory_memory_py",
-      "_tgt": "memory_helixmemory",
-      "source": "c_users_tanma_helix_core_memory_memory_py",
-      "target": "memory_helixmemory",
+      "_src": "c_users_tanma_phantom_core_memory_memory_py",
+      "_tgt": "memory_phantommemory",
+      "source": "c_users_tanma_phantom_core_memory_memory_py",
+      "target": "memory_phantommemory",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L1",
       "weight": 1.0,
       "_src": "memory_rationale_1",
-      "_tgt": "c_users_tanma_helix_core_memory_memory_py",
-      "source": "c_users_tanma_helix_core_memory_memory_py",
+      "_tgt": "c_users_tanma_phantom_core_memory_memory_py",
+      "source": "c_users_tanma_phantom_core_memory_memory_py",
       "target": "memory_rationale_1",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L15",
       "weight": 1.0,
-      "_src": "memory_helixmemory",
-      "_tgt": "memory_helixmemory_init",
-      "source": "memory_helixmemory",
-      "target": "memory_helixmemory_init",
+      "_src": "memory_phantommemory",
+      "_tgt": "memory_phantommemory_init",
+      "source": "memory_phantommemory",
+      "target": "memory_phantommemory_init",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L24",
       "weight": 1.0,
-      "_src": "memory_helixmemory",
-      "_tgt": "memory_helixmemory_store",
-      "source": "memory_helixmemory",
-      "target": "memory_helixmemory_store",
+      "_src": "memory_phantommemory",
+      "_tgt": "memory_phantommemory_store",
+      "source": "memory_phantommemory",
+      "target": "memory_phantommemory_store",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L35",
       "weight": 1.0,
-      "_src": "memory_helixmemory",
-      "_tgt": "memory_helixmemory_retrieve",
-      "source": "memory_helixmemory",
-      "target": "memory_helixmemory_retrieve",
+      "_src": "memory_phantommemory",
+      "_tgt": "memory_phantommemory_retrieve",
+      "source": "memory_phantommemory",
+      "target": "memory_phantommemory_retrieve",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L51",
       "weight": 1.0,
-      "_src": "memory_helixmemory",
-      "_tgt": "memory_helixmemory_clear",
-      "source": "memory_helixmemory",
-      "target": "memory_helixmemory_clear",
+      "_src": "memory_phantommemory",
+      "_tgt": "memory_phantommemory_clear",
+      "source": "memory_phantommemory",
+      "target": "memory_phantommemory_clear",
       "confidence_score": 1.0
     },
     {
@@ -2993,11 +2993,11 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L19",
       "weight": 0.8,
-      "_src": "memory_helixmemory",
-      "_tgt": "router_helixrouter",
+      "_src": "memory_phantommemory",
+      "_tgt": "router_phantomrouter",
       "confidence_score": 0.5,
-      "source": "memory_helixmemory",
-      "target": "router_helixrouter"
+      "source": "memory_phantommemory",
+      "target": "router_phantomrouter"
     },
     {
       "relation": "uses",
@@ -3005,10 +3005,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L19",
       "weight": 0.8,
-      "_src": "memory_helixmemory",
+      "_src": "memory_phantommemory",
       "_tgt": "router_rationale_1",
       "confidence_score": 0.5,
-      "source": "memory_helixmemory",
+      "source": "memory_phantommemory",
       "target": "router_rationale_1"
     },
     {
@@ -3018,8 +3018,8 @@
       "source_location": "L21",
       "weight": 0.8,
       "_src": "router_rationale_204",
-      "_tgt": "memory_helixmemory",
-      "source": "memory_helixmemory",
+      "_tgt": "memory_phantommemory",
+      "source": "memory_phantommemory",
       "target": "router_rationale_204",
       "confidence_score": 0.5
     },
@@ -3030,10 +3030,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L34",
       "weight": 1.0,
-      "_src": "memory_helixmemory",
-      "_tgt": "router_helixrouter_init",
-      "source": "memory_helixmemory",
-      "target": "router_helixrouter_init"
+      "_src": "memory_phantommemory",
+      "_tgt": "router_phantomrouter_init",
+      "source": "memory_phantommemory",
+      "target": "router_phantomrouter_init"
     },
     {
       "relation": "calls",
@@ -3042,20 +3042,20 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L81",
       "weight": 1.0,
-      "_src": "memory_helixmemory_store",
-      "_tgt": "router_helixrouter_process",
-      "source": "memory_helixmemory_store",
-      "target": "router_helixrouter_process"
+      "_src": "memory_phantommemory_store",
+      "_tgt": "router_phantomrouter_process",
+      "source": "memory_phantommemory_store",
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\memory\\memory.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\memory\\memory.py",
       "source_location": "L36",
       "weight": 1.0,
       "_src": "memory_rationale_36",
-      "_tgt": "memory_helixmemory_retrieve",
-      "source": "memory_helixmemory_retrieve",
+      "_tgt": "memory_phantommemory_retrieve",
+      "source": "memory_phantommemory_retrieve",
       "target": "memory_rationale_36",
       "confidence_score": 1.0
     },
@@ -3066,9 +3066,9 @@
       "source_file": "core\\memory\\memory.py",
       "source_location": "L41",
       "weight": 1.0,
-      "_src": "memory_helixmemory_retrieve",
+      "_src": "memory_phantommemory_retrieve",
       "_tgt": "cloud_cloudoracle_query",
-      "source": "memory_helixmemory_retrieve",
+      "source": "memory_phantommemory_retrieve",
       "target": "cloud_cloudoracle_query"
     },
     {
@@ -3078,10 +3078,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L88",
       "weight": 1.0,
-      "_src": "memory_helixmemory_retrieve",
-      "_tgt": "router_helixrouter_process",
-      "source": "memory_helixmemory_retrieve",
-      "target": "router_helixrouter_process"
+      "_src": "memory_phantommemory_retrieve",
+      "_tgt": "router_phantomrouter_process",
+      "source": "memory_phantommemory_retrieve",
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "calls",
@@ -3090,10 +3090,10 @@
       "source_file": "ui\\hud.py",
       "source_location": "L114",
       "weight": 1.0,
-      "_src": "memory_helixmemory_clear",
-      "_tgt": "hud_helixhud_on_submit",
-      "source": "memory_helixmemory_clear",
-      "target": "hud_helixhud_on_submit"
+      "_src": "memory_phantommemory_clear",
+      "_tgt": "hud_phantomhud_on_submit",
+      "source": "memory_phantommemory_clear",
+      "target": "hud_phantomhud_on_submit"
     },
     {
       "relation": "contains",
@@ -3114,9 +3114,9 @@
       "source_location": "L619",
       "weight": 1.0,
       "_src": "core_middleware_file_manager_py",
-      "_tgt": "file_manager_helixwatcher",
+      "_tgt": "file_manager_phantomwatcher",
       "source": "core_middleware_file_manager_py",
-      "target": "file_manager_helixwatcher",
+      "target": "file_manager_phantomwatcher",
       "confidence_score": 1.0
     },
     {
@@ -3402,10 +3402,10 @@
       "source_location": "L18",
       "weight": 0.8,
       "_src": "file_manager_filemanager",
-      "_tgt": "router_helixrouter",
+      "_tgt": "router_phantomrouter",
       "confidence_score": 0.5,
       "source": "file_manager_filemanager",
-      "target": "router_helixrouter"
+      "target": "router_phantomrouter"
     },
     {
       "relation": "uses",
@@ -3451,9 +3451,9 @@
       "source_location": "L33",
       "weight": 1.0,
       "_src": "file_manager_filemanager",
-      "_tgt": "router_helixrouter_init",
+      "_tgt": "router_phantomrouter_init",
       "source": "file_manager_filemanager",
-      "target": "router_helixrouter_init"
+      "target": "router_phantomrouter_init"
     },
     {
       "relation": "calls",
@@ -3487,9 +3487,9 @@
       "source_location": "L70",
       "weight": 1.0,
       "_src": "file_manager_filemanager_is_destructive",
-      "_tgt": "router_helixrouter_process",
+      "_tgt": "router_phantomrouter_process",
       "source": "file_manager_filemanager_is_destructive",
-      "target": "router_helixrouter_process"
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "rationale_for",
@@ -3511,9 +3511,9 @@
       "source_location": "L65",
       "weight": 1.0,
       "_src": "file_manager_filemanager_fast_path_match",
-      "_tgt": "router_helixrouter_process",
+      "_tgt": "router_phantomrouter_process",
       "source": "file_manager_filemanager_fast_path_match",
-      "target": "router_helixrouter_process"
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "calls",
@@ -3583,9 +3583,9 @@
       "source_location": "L78",
       "weight": 1.0,
       "_src": "file_manager_filemanager_execute",
-      "_tgt": "router_helixrouter_process",
+      "_tgt": "router_phantomrouter_process",
       "source": "file_manager_filemanager_execute",
-      "target": "router_helixrouter_process"
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "calls",
@@ -3919,9 +3919,9 @@
       "source_location": "L300",
       "weight": 1.0,
       "_src": "file_manager_filemanager_action_profile",
-      "_tgt": "hud_helixworker_run",
+      "_tgt": "hud_phantomworker_run",
       "source": "file_manager_filemanager_action_profile",
-      "target": "hud_helixworker_run"
+      "target": "hud_phantomworker_run"
     },
     {
       "relation": "rationale_for",
@@ -4025,9 +4025,9 @@
       "source_file": "core\\middleware\\file_manager.py",
       "source_location": "L619",
       "weight": 1.0,
-      "_src": "file_manager_helixwatcher",
+      "_src": "file_manager_phantomwatcher",
       "_tgt": "filesystemeventhandler",
-      "source": "file_manager_helixwatcher",
+      "source": "file_manager_phantomwatcher",
       "target": "filesystemeventhandler",
       "confidence_score": 1.0
     },
@@ -4037,10 +4037,10 @@
       "source_file": "core\\middleware\\file_manager.py",
       "source_location": "L624",
       "weight": 1.0,
-      "_src": "file_manager_helixwatcher",
-      "_tgt": "file_manager_helixwatcher_init",
-      "source": "file_manager_helixwatcher",
-      "target": "file_manager_helixwatcher_init",
+      "_src": "file_manager_phantomwatcher",
+      "_tgt": "file_manager_phantomwatcher_init",
+      "source": "file_manager_phantomwatcher",
+      "target": "file_manager_phantomwatcher_init",
       "confidence_score": 1.0
     },
     {
@@ -4049,10 +4049,10 @@
       "source_file": "core\\middleware\\file_manager.py",
       "source_location": "L627",
       "weight": 1.0,
-      "_src": "file_manager_helixwatcher",
-      "_tgt": "file_manager_helixwatcher_on_created",
-      "source": "file_manager_helixwatcher",
-      "target": "file_manager_helixwatcher_on_created",
+      "_src": "file_manager_phantomwatcher",
+      "_tgt": "file_manager_phantomwatcher_on_created",
+      "source": "file_manager_phantomwatcher",
+      "target": "file_manager_phantomwatcher_on_created",
       "confidence_score": 1.0
     },
     {
@@ -4061,10 +4061,10 @@
       "source_file": "core\\middleware\\file_manager.py",
       "source_location": "L632",
       "weight": 1.0,
-      "_src": "file_manager_helixwatcher",
-      "_tgt": "file_manager_helixwatcher_on_moved",
-      "source": "file_manager_helixwatcher",
-      "target": "file_manager_helixwatcher_on_moved",
+      "_src": "file_manager_phantomwatcher",
+      "_tgt": "file_manager_phantomwatcher_on_moved",
+      "source": "file_manager_phantomwatcher",
+      "target": "file_manager_phantomwatcher_on_moved",
       "confidence_score": 1.0
     },
     {
@@ -4074,8 +4074,8 @@
       "source_location": "L639",
       "weight": 1.0,
       "_src": "file_manager_start_watcher",
-      "_tgt": "file_manager_helixwatcher",
-      "source": "file_manager_helixwatcher",
+      "_tgt": "file_manager_phantomwatcher",
+      "source": "file_manager_phantomwatcher",
       "target": "file_manager_start_watcher",
       "confidence_score": 1.0
     },
@@ -4086,8 +4086,8 @@
       "source_location": "L620",
       "weight": 1.0,
       "_src": "file_manager_rationale_620",
-      "_tgt": "file_manager_helixwatcher",
-      "source": "file_manager_helixwatcher",
+      "_tgt": "file_manager_phantomwatcher",
+      "source": "file_manager_phantomwatcher",
       "target": "file_manager_rationale_620",
       "confidence_score": 1.0
     },
@@ -4097,10 +4097,10 @@
       "source_file": "core\\middleware\\file_manager.py",
       "source_location": "L298",
       "weight": 0.8,
-      "_src": "file_manager_helixwatcher",
+      "_src": "file_manager_phantomwatcher",
       "_tgt": "profiles_profilemanager",
       "confidence_score": 0.5,
-      "source": "file_manager_helixwatcher",
+      "source": "file_manager_phantomwatcher",
       "target": "profiles_profilemanager"
     },
     {
@@ -4326,10 +4326,10 @@
       "source_location": "L17",
       "weight": 0.8,
       "_src": "cloud_cloudoracle",
-      "_tgt": "router_helixrouter",
+      "_tgt": "router_phantomrouter",
       "confidence_score": 0.5,
       "source": "cloud_cloudoracle",
-      "target": "router_helixrouter"
+      "target": "router_phantomrouter"
     },
     {
       "relation": "uses",
@@ -4363,9 +4363,9 @@
       "source_location": "L32",
       "weight": 1.0,
       "_src": "cloud_cloudoracle",
-      "_tgt": "router_helixrouter_init",
+      "_tgt": "router_phantomrouter_init",
       "source": "cloud_cloudoracle",
-      "target": "router_helixrouter_init"
+      "target": "router_phantomrouter_init"
     },
     {
       "relation": "calls",
@@ -4411,9 +4411,9 @@
       "source_location": "L120",
       "weight": 1.0,
       "_src": "cloud_cloudoracle_query",
-      "_tgt": "router_helixrouter_process",
+      "_tgt": "router_phantomrouter_process",
       "source": "cloud_cloudoracle_query",
-      "target": "router_helixrouter_process"
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "contains",
@@ -4493,10 +4493,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L19",
       "weight": 0.8,
-      "_src": "router_helixrouter",
+      "_src": "router_phantomrouter",
       "_tgt": "command_parser_cloudcommandparser",
       "source": "command_parser_cloudcommandparser",
-      "target": "router_helixrouter",
+      "target": "router_phantomrouter",
       "confidence_score": 0.5
     },
     {
@@ -4530,10 +4530,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L35",
       "weight": 1.0,
-      "_src": "router_helixrouter_init",
+      "_src": "router_phantomrouter_init",
       "_tgt": "command_parser_cloudcommandparser",
       "source": "command_parser_cloudcommandparser",
-      "target": "router_helixrouter_init"
+      "target": "router_phantomrouter_init"
     },
     {
       "relation": "rationale_for",
@@ -4554,10 +4554,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L139",
       "weight": 1.0,
-      "_src": "router_helixrouter_process",
+      "_src": "router_phantomrouter_process",
       "_tgt": "command_parser_cloudcommandparser_parse",
       "source": "command_parser_cloudcommandparser_parse",
-      "target": "router_helixrouter_process"
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "rationale_for",
@@ -4578,39 +4578,39 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L142",
       "weight": 1.0,
-      "_src": "router_helixrouter_process",
+      "_src": "router_phantomrouter_process",
       "_tgt": "command_parser_cloudcommandparser_execute_parsed",
       "source": "command_parser_cloudcommandparser_execute_parsed",
-      "target": "router_helixrouter_process"
+      "target": "router_phantomrouter_process"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\profiles\\profiles.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\profiles\\profiles.py",
       "source_location": "L49",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_core_profiles_profiles_py",
+      "_src": "c_users_tanma_phantom_core_profiles_profiles_py",
       "_tgt": "profiles_profilemanager",
-      "source": "c_users_tanma_helix_core_profiles_profiles_py",
+      "source": "c_users_tanma_phantom_core_profiles_profiles_py",
       "target": "profiles_profilemanager",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\profiles\\profiles.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\profiles\\profiles.py",
       "source_location": "L1",
       "weight": 1.0,
       "_src": "profiles_rationale_1",
-      "_tgt": "c_users_tanma_helix_core_profiles_profiles_py",
-      "source": "c_users_tanma_helix_core_profiles_profiles_py",
+      "_tgt": "c_users_tanma_phantom_core_profiles_profiles_py",
+      "source": "c_users_tanma_phantom_core_profiles_profiles_py",
       "target": "profiles_rationale_1",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\profiles\\profiles.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\profiles\\profiles.py",
       "source_location": "L51",
       "weight": 1.0,
       "_src": "profiles_profilemanager",
@@ -4622,7 +4622,7 @@
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\profiles\\profiles.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\profiles\\profiles.py",
       "source_location": "L54",
       "weight": 1.0,
       "_src": "profiles_profilemanager",
@@ -4634,7 +4634,7 @@
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\profiles\\profiles.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\profiles\\profiles.py",
       "source_location": "L79",
       "weight": 1.0,
       "_src": "profiles_profilemanager",
@@ -4710,9 +4710,9 @@
       "source_location": "L30",
       "weight": 1.0,
       "_src": "core_router_router_py",
-      "_tgt": "router_helixrouter",
+      "_tgt": "router_phantomrouter",
       "source": "core_router_router_py",
-      "target": "router_helixrouter",
+      "target": "router_phantomrouter",
       "confidence_score": 1.0
     },
     {
@@ -4733,10 +4733,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L31",
       "weight": 1.0,
-      "_src": "router_helixrouter",
-      "_tgt": "router_helixrouter_init",
-      "source": "router_helixrouter",
-      "target": "router_helixrouter_init",
+      "_src": "router_phantomrouter",
+      "_tgt": "router_phantomrouter_init",
+      "source": "router_phantomrouter",
+      "target": "router_phantomrouter_init",
       "confidence_score": 1.0
     },
     {
@@ -4745,10 +4745,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L43",
       "weight": 1.0,
-      "_src": "router_helixrouter",
-      "_tgt": "router_helixrouter_process",
-      "source": "router_helixrouter",
-      "target": "router_helixrouter_process",
+      "_src": "router_phantomrouter",
+      "_tgt": "router_phantomrouter_process",
+      "source": "router_phantomrouter",
+      "target": "router_phantomrouter_process",
       "confidence_score": 1.0
     },
     {
@@ -4757,10 +4757,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L182",
       "weight": 1.0,
-      "_src": "router_helixrouter",
-      "_tgt": "router_helixrouter_confirm_destructive",
-      "source": "router_helixrouter",
-      "target": "router_helixrouter_confirm_destructive",
+      "_src": "router_phantomrouter",
+      "_tgt": "router_phantomrouter_confirm_destructive",
+      "source": "router_phantomrouter",
+      "target": "router_phantomrouter_confirm_destructive",
       "confidence_score": 1.0
     },
     {
@@ -4769,10 +4769,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L191",
       "weight": 1.0,
-      "_src": "router_helixrouter",
-      "_tgt": "router_helixrouter_log",
-      "source": "router_helixrouter",
-      "target": "router_helixrouter_log",
+      "_src": "router_phantomrouter",
+      "_tgt": "router_phantomrouter_log",
+      "source": "router_phantomrouter",
+      "target": "router_phantomrouter_log",
       "confidence_score": 1.0
     },
     {
@@ -4781,10 +4781,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L203",
       "weight": 1.0,
-      "_src": "router_helixrouter",
-      "_tgt": "router_helixrouter_get_chain_runner",
-      "source": "router_helixrouter",
-      "target": "router_helixrouter_get_chain_runner",
+      "_src": "router_phantomrouter",
+      "_tgt": "router_phantomrouter_get_chain_runner",
+      "source": "router_phantomrouter",
+      "target": "router_phantomrouter_get_chain_runner",
       "confidence_score": 1.0
     },
     {
@@ -4793,10 +4793,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L16",
       "weight": 0.8,
-      "_src": "router_helixrouter",
+      "_src": "router_phantomrouter",
       "_tgt": "node_sentinelnode",
       "confidence_score": 0.5,
-      "source": "router_helixrouter",
+      "source": "router_phantomrouter",
       "target": "node_sentinelnode"
     },
     {
@@ -4806,9 +4806,9 @@
       "source_location": "L9",
       "weight": 0.8,
       "_src": "main_rationale_34",
-      "_tgt": "router_helixrouter",
+      "_tgt": "router_phantomrouter",
       "confidence_score": 0.5,
-      "source": "router_helixrouter",
+      "source": "router_phantomrouter",
       "target": "main_rationale_34"
     },
     {
@@ -4818,9 +4818,9 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L31",
       "weight": 1.0,
-      "_src": "router_helixrouter_init",
+      "_src": "router_phantomrouter_init",
       "_tgt": "node_sentinelnode",
-      "source": "router_helixrouter_init",
+      "source": "router_phantomrouter_init",
       "target": "node_sentinelnode"
     },
     {
@@ -4829,10 +4829,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L75",
       "weight": 1.0,
-      "_src": "router_helixrouter_process",
-      "_tgt": "router_helixrouter_get_chain_runner",
-      "source": "router_helixrouter_process",
-      "target": "router_helixrouter_get_chain_runner",
+      "_src": "router_phantomrouter_process",
+      "_tgt": "router_phantomrouter_get_chain_runner",
+      "source": "router_phantomrouter_process",
+      "target": "router_phantomrouter_get_chain_runner",
       "confidence_score": 1.0
     },
     {
@@ -4841,10 +4841,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L87",
       "weight": 1.0,
-      "_src": "router_helixrouter_process",
-      "_tgt": "router_helixrouter_confirm_destructive",
-      "source": "router_helixrouter_process",
-      "target": "router_helixrouter_confirm_destructive",
+      "_src": "router_phantomrouter_process",
+      "_tgt": "router_phantomrouter_confirm_destructive",
+      "source": "router_phantomrouter_process",
+      "target": "router_phantomrouter_confirm_destructive",
       "confidence_score": 1.0
     },
     {
@@ -4853,10 +4853,10 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L90",
       "weight": 1.0,
-      "_src": "router_helixrouter_process",
-      "_tgt": "router_helixrouter_log",
-      "source": "router_helixrouter_process",
-      "target": "router_helixrouter_log",
+      "_src": "router_phantomrouter_process",
+      "_tgt": "router_phantomrouter_log",
+      "source": "router_phantomrouter_process",
+      "target": "router_phantomrouter_log",
       "confidence_score": 1.0
     },
     {
@@ -4866,8 +4866,8 @@
       "source_location": "L44",
       "weight": 1.0,
       "_src": "router_rationale_44",
-      "_tgt": "router_helixrouter_process",
-      "source": "router_helixrouter_process",
+      "_tgt": "router_phantomrouter_process",
+      "source": "router_phantomrouter_process",
       "target": "router_rationale_44",
       "confidence_score": 1.0
     },
@@ -4878,10 +4878,10 @@
       "source_file": "ui\\hud.py",
       "source_location": "L34",
       "weight": 1.0,
-      "_src": "router_helixrouter_process",
-      "_tgt": "hud_helixworker_run",
-      "source": "router_helixrouter_process",
-      "target": "hud_helixworker_run"
+      "_src": "router_phantomrouter_process",
+      "_tgt": "hud_phantomworker_run",
+      "source": "router_phantomrouter_process",
+      "target": "hud_phantomworker_run"
     },
     {
       "relation": "calls",
@@ -4890,9 +4890,9 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L95",
       "weight": 1.0,
-      "_src": "router_helixrouter_process",
+      "_src": "router_phantomrouter_process",
       "_tgt": "node_sentinelnode_classify_intent",
-      "source": "router_helixrouter_process",
+      "source": "router_phantomrouter_process",
       "target": "node_sentinelnode_classify_intent"
     },
     {
@@ -4902,9 +4902,9 @@
       "source_file": "core\\router\\router.py",
       "source_location": "L127",
       "weight": 1.0,
-      "_src": "router_helixrouter_process",
+      "_src": "router_phantomrouter_process",
       "_tgt": "node_sentinelnode_llm_raw",
-      "source": "router_helixrouter_process",
+      "source": "router_phantomrouter_process",
       "target": "node_sentinelnode_llm_raw"
     },
     {
@@ -4914,8 +4914,8 @@
       "source_location": "L204",
       "weight": 1.0,
       "_src": "router_rationale_204",
-      "_tgt": "router_helixrouter_get_chain_runner",
-      "source": "router_helixrouter_get_chain_runner",
+      "_tgt": "router_phantomrouter_get_chain_runner",
+      "source": "router_phantomrouter_get_chain_runner",
       "target": "router_rationale_204",
       "confidence_score": 1.0
     },
@@ -4946,31 +4946,31 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L99",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_core_sentinel_node_py",
+      "_src": "c_users_tanma_phantom_core_sentinel_node_py",
       "_tgt": "node_sentinelnode",
-      "source": "c_users_tanma_helix_core_sentinel_node_py",
+      "source": "c_users_tanma_phantom_core_sentinel_node_py",
       "target": "node_sentinelnode",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L1",
       "weight": 1.0,
       "_src": "node_rationale_1",
-      "_tgt": "c_users_tanma_helix_core_sentinel_node_py",
-      "source": "c_users_tanma_helix_core_sentinel_node_py",
+      "_tgt": "c_users_tanma_phantom_core_sentinel_node_py",
+      "source": "c_users_tanma_phantom_core_sentinel_node_py",
       "target": "node_rationale_1",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L100",
       "weight": 1.0,
       "_src": "node_sentinelnode",
@@ -4982,7 +4982,7 @@
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L115",
       "weight": 1.0,
       "_src": "node_sentinelnode",
@@ -4994,7 +4994,7 @@
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L143",
       "weight": 1.0,
       "_src": "node_sentinelnode",
@@ -5006,7 +5006,7 @@
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L152",
       "weight": 1.0,
       "_src": "node_sentinelnode",
@@ -5066,7 +5066,7 @@
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L116",
       "weight": 1.0,
       "_src": "node_rationale_116",
@@ -5102,7 +5102,7 @@
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L144",
       "weight": 1.0,
       "_src": "node_rationale_144",
@@ -5126,7 +5126,7 @@
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\core\\sentinel\\node.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\core\\sentinel\\node.py",
       "source_location": "L153",
       "weight": 1.0,
       "_src": "node_rationale_153",
@@ -5330,403 +5330,403 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_fastpath.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_fastpath.py",
       "source_location": "L18",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_tests_test_fastpath_py",
+      "_src": "c_users_tanma_phantom_tests_test_fastpath_py",
       "_tgt": "test_fastpath_check",
-      "source": "c_users_tanma_helix_tests_test_fastpath_py",
+      "source": "c_users_tanma_phantom_tests_test_fastpath_py",
       "target": "test_fastpath_check",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_fastpath.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_fastpath.py",
       "source_location": "L1",
       "weight": 1.0,
       "_src": "test_fastpath_rationale_1",
-      "_tgt": "c_users_tanma_helix_tests_test_fastpath_py",
-      "source": "c_users_tanma_helix_tests_test_fastpath_py",
+      "_tgt": "c_users_tanma_phantom_tests_test_fastpath_py",
+      "source": "c_users_tanma_phantom_tests_test_fastpath_py",
       "target": "test_fastpath_rationale_1",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_sentinel.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_sentinel.py",
       "source_location": "L12",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_tests_test_sentinel_py",
+      "_src": "c_users_tanma_phantom_tests_test_sentinel_py",
       "_tgt": "test_sentinel_test_intent_local",
-      "source": "c_users_tanma_helix_tests_test_sentinel_py",
+      "source": "c_users_tanma_phantom_tests_test_sentinel_py",
       "target": "test_sentinel_test_intent_local",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_sentinel.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_sentinel.py",
       "source_location": "L22",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_tests_test_sentinel_py",
+      "_src": "c_users_tanma_phantom_tests_test_sentinel_py",
       "_tgt": "test_sentinel_test_intent_cloud",
-      "source": "c_users_tanma_helix_tests_test_sentinel_py",
+      "source": "c_users_tanma_phantom_tests_test_sentinel_py",
       "target": "test_sentinel_test_intent_cloud",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_sentinel.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_sentinel.py",
       "source_location": "L32",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_tests_test_sentinel_py",
+      "_src": "c_users_tanma_phantom_tests_test_sentinel_py",
       "_tgt": "test_sentinel_test_pii_redaction",
-      "source": "c_users_tanma_helix_tests_test_sentinel_py",
+      "source": "c_users_tanma_phantom_tests_test_sentinel_py",
       "target": "test_sentinel_test_pii_redaction",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\tests\\test_sentinel.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\tests\\test_sentinel.py",
       "source_location": "L1",
       "weight": 1.0,
       "_src": "test_sentinel_rationale_1",
-      "_tgt": "c_users_tanma_helix_tests_test_sentinel_py",
-      "source": "c_users_tanma_helix_tests_test_sentinel_py",
+      "_tgt": "c_users_tanma_phantom_tests_test_sentinel_py",
+      "source": "c_users_tanma_phantom_tests_test_sentinel_py",
       "target": "test_sentinel_rationale_1",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L22",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_ui_hud_py",
-      "_tgt": "hud_helixworker",
-      "source": "c_users_tanma_helix_ui_hud_py",
-      "target": "hud_helixworker",
+      "_src": "c_users_tanma_phantom_ui_hud_py",
+      "_tgt": "hud_phantomworker",
+      "source": "c_users_tanma_phantom_ui_hud_py",
+      "target": "hud_phantomworker",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L41",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_ui_hud_py",
-      "_tgt": "hud_helixhud",
-      "source": "c_users_tanma_helix_ui_hud_py",
-      "target": "hud_helixhud",
+      "_src": "c_users_tanma_phantom_ui_hud_py",
+      "_tgt": "hud_phantomhud",
+      "source": "c_users_tanma_phantom_ui_hud_py",
+      "target": "hud_phantomhud",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L148",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_ui_hud_py",
+      "_src": "c_users_tanma_phantom_ui_hud_py",
       "_tgt": "hud_launch_hud",
-      "source": "c_users_tanma_helix_ui_hud_py",
+      "source": "c_users_tanma_phantom_ui_hud_py",
       "target": "hud_launch_hud",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L1",
       "weight": 1.0,
       "_src": "hud_rationale_1",
-      "_tgt": "c_users_tanma_helix_ui_hud_py",
-      "source": "c_users_tanma_helix_ui_hud_py",
+      "_tgt": "c_users_tanma_phantom_ui_hud_py",
+      "source": "c_users_tanma_phantom_ui_hud_py",
       "target": "hud_rationale_1",
       "confidence_score": 1.0
     },
     {
       "relation": "inherits",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L22",
       "weight": 1.0,
-      "_src": "hud_helixworker",
+      "_src": "hud_phantomworker",
       "_tgt": "qobject",
-      "source": "hud_helixworker",
+      "source": "hud_phantomworker",
       "target": "qobject",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L27",
       "weight": 1.0,
-      "_src": "hud_helixworker",
-      "_tgt": "hud_helixworker_init",
-      "source": "hud_helixworker",
-      "target": "hud_helixworker_init",
+      "_src": "hud_phantomworker",
+      "_tgt": "hud_phantomworker_init",
+      "source": "hud_phantomworker",
+      "target": "hud_phantomworker_init",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L32",
       "weight": 1.0,
-      "_src": "hud_helixworker",
-      "_tgt": "hud_helixworker_run",
-      "source": "hud_helixworker",
-      "target": "hud_helixworker_run",
+      "_src": "hud_phantomworker",
+      "_tgt": "hud_phantomworker_run",
+      "source": "hud_phantomworker",
+      "target": "hud_phantomworker_run",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L124",
       "weight": 1.0,
-      "_src": "hud_helixhud_run_in_thread",
-      "_tgt": "hud_helixworker",
-      "source": "hud_helixworker",
-      "target": "hud_helixhud_run_in_thread",
+      "_src": "hud_phantomhud_run_in_thread",
+      "_tgt": "hud_phantomworker",
+      "source": "hud_phantomworker",
+      "target": "hud_phantomhud_run_in_thread",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L23",
       "weight": 1.0,
       "_src": "hud_rationale_23",
-      "_tgt": "hud_helixworker",
-      "source": "hud_helixworker",
+      "_tgt": "hud_phantomworker",
+      "source": "hud_phantomworker",
       "target": "hud_rationale_23",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L28",
       "weight": 1.0,
-      "_src": "hud_helixworker_init",
-      "_tgt": "hud_helixhud_init",
-      "source": "hud_helixworker_init",
-      "target": "hud_helixhud_init",
+      "_src": "hud_phantomworker_init",
+      "_tgt": "hud_phantomhud_init",
+      "source": "hud_phantomworker_init",
+      "target": "hud_phantomhud_init",
       "confidence_score": 1.0
     },
     {
       "relation": "inherits",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L41",
       "weight": 1.0,
-      "_src": "hud_helixhud",
+      "_src": "hud_phantomhud",
       "_tgt": "qmainwindow",
-      "source": "hud_helixhud",
+      "source": "hud_phantomhud",
       "target": "qmainwindow",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L42",
       "weight": 1.0,
-      "_src": "hud_helixhud",
-      "_tgt": "hud_helixhud_init",
-      "source": "hud_helixhud",
-      "target": "hud_helixhud_init",
+      "_src": "hud_phantomhud",
+      "_tgt": "hud_phantomhud_init",
+      "source": "hud_phantomhud",
+      "target": "hud_phantomhud_init",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L49",
       "weight": 1.0,
-      "_src": "hud_helixhud",
-      "_tgt": "hud_helixhud_build_ui",
-      "source": "hud_helixhud",
-      "target": "hud_helixhud_build_ui",
+      "_src": "hud_phantomhud",
+      "_tgt": "hud_phantomhud_build_ui",
+      "source": "hud_phantomhud",
+      "target": "hud_phantomhud_build_ui",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L110",
       "weight": 1.0,
-      "_src": "hud_helixhud",
-      "_tgt": "hud_helixhud_on_submit",
-      "source": "hud_helixhud",
-      "target": "hud_helixhud_on_submit",
+      "_src": "hud_phantomhud",
+      "_tgt": "hud_phantomhud_on_submit",
+      "source": "hud_phantomhud",
+      "target": "hud_phantomhud_on_submit",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L119",
       "weight": 1.0,
-      "_src": "hud_helixhud",
-      "_tgt": "hud_helixhud_on_mic",
-      "source": "hud_helixhud",
-      "target": "hud_helixhud_on_mic",
+      "_src": "hud_phantomhud",
+      "_tgt": "hud_phantomhud_on_mic",
+      "source": "hud_phantomhud",
+      "target": "hud_phantomhud_on_mic",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L122",
       "weight": 1.0,
-      "_src": "hud_helixhud",
-      "_tgt": "hud_helixhud_run_in_thread",
-      "source": "hud_helixhud",
-      "target": "hud_helixhud_run_in_thread",
+      "_src": "hud_phantomhud",
+      "_tgt": "hud_phantomhud_run_in_thread",
+      "source": "hud_phantomhud",
+      "target": "hud_phantomhud_run_in_thread",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L133",
       "weight": 1.0,
-      "_src": "hud_helixhud",
-      "_tgt": "hud_helixhud_on_response",
-      "source": "hud_helixhud",
-      "target": "hud_helixhud_on_response",
+      "_src": "hud_phantomhud",
+      "_tgt": "hud_phantomhud_on_response",
+      "source": "hud_phantomhud",
+      "target": "hud_phantomhud_on_response",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L137",
       "weight": 1.0,
-      "_src": "hud_helixhud",
-      "_tgt": "hud_helixhud_on_error",
-      "source": "hud_helixhud",
-      "target": "hud_helixhud_on_error",
+      "_src": "hud_phantomhud",
+      "_tgt": "hud_phantomhud_on_error",
+      "source": "hud_phantomhud",
+      "target": "hud_phantomhud_on_error",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L141",
       "weight": 1.0,
-      "_src": "hud_helixhud",
-      "_tgt": "hud_helixhud_set_busy",
-      "source": "hud_helixhud",
-      "target": "hud_helixhud_set_busy",
+      "_src": "hud_phantomhud",
+      "_tgt": "hud_phantomhud_set_busy",
+      "source": "hud_phantomhud",
+      "target": "hud_phantomhud_set_busy",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L150",
       "weight": 1.0,
       "_src": "hud_launch_hud",
-      "_tgt": "hud_helixhud",
-      "source": "hud_helixhud",
+      "_tgt": "hud_phantomhud",
+      "source": "hud_phantomhud",
       "target": "hud_launch_hud",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L47",
       "weight": 1.0,
-      "_src": "hud_helixhud_init",
-      "_tgt": "hud_helixhud_build_ui",
-      "source": "hud_helixhud_init",
-      "target": "hud_helixhud_build_ui",
+      "_src": "hud_phantomhud_init",
+      "_tgt": "hud_phantomhud_build_ui",
+      "source": "hud_phantomhud_init",
+      "target": "hud_phantomhud_build_ui",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L115",
       "weight": 1.0,
-      "_src": "hud_helixhud_on_submit",
-      "_tgt": "hud_helixhud_set_busy",
-      "source": "hud_helixhud_on_submit",
-      "target": "hud_helixhud_set_busy",
+      "_src": "hud_phantomhud_on_submit",
+      "_tgt": "hud_phantomhud_set_busy",
+      "source": "hud_phantomhud_on_submit",
+      "target": "hud_phantomhud_set_busy",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L117",
       "weight": 1.0,
-      "_src": "hud_helixhud_on_submit",
-      "_tgt": "hud_helixhud_run_in_thread",
-      "source": "hud_helixhud_on_submit",
-      "target": "hud_helixhud_run_in_thread",
+      "_src": "hud_phantomhud_on_submit",
+      "_tgt": "hud_phantomhud_run_in_thread",
+      "source": "hud_phantomhud_on_submit",
+      "target": "hud_phantomhud_run_in_thread",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L135",
       "weight": 1.0,
-      "_src": "hud_helixhud_on_response",
-      "_tgt": "hud_helixhud_set_busy",
-      "source": "hud_helixhud_on_response",
-      "target": "hud_helixhud_set_busy",
+      "_src": "hud_phantomhud_on_response",
+      "_tgt": "hud_phantomhud_set_busy",
+      "source": "hud_phantomhud_on_response",
+      "target": "hud_phantomhud_set_busy",
       "confidence_score": 1.0
     },
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\ui\\hud.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\ui\\hud.py",
       "source_location": "L139",
       "weight": 1.0,
-      "_src": "hud_helixhud_on_error",
-      "_tgt": "hud_helixhud_set_busy",
-      "source": "hud_helixhud_on_error",
-      "target": "hud_helixhud_set_busy",
+      "_src": "hud_phantomhud_on_error",
+      "_tgt": "hud_phantomhud_set_busy",
+      "source": "hud_phantomhud_on_error",
+      "target": "hud_phantomhud_set_busy",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L28",
       "weight": 1.0,
-      "_src": "c_users_tanma_helix_voice_listener_py",
+      "_src": "c_users_tanma_phantom_voice_listener_py",
       "_tgt": "listener_voicelistener",
-      "source": "c_users_tanma_helix_voice_listener_py",
+      "source": "c_users_tanma_phantom_voice_listener_py",
       "target": "listener_voicelistener",
       "confidence_score": 1.0
     },
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L1",
       "weight": 1.0,
       "_src": "listener_rationale_1",
-      "_tgt": "c_users_tanma_helix_voice_listener_py",
-      "source": "c_users_tanma_helix_voice_listener_py",
+      "_tgt": "c_users_tanma_phantom_voice_listener_py",
+      "source": "c_users_tanma_phantom_voice_listener_py",
       "target": "listener_rationale_1",
       "confidence_score": 1.0
     },
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L38",
       "weight": 1.0,
       "_src": "listener_voicelistener",
@@ -5738,7 +5738,7 @@
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L43",
       "weight": 1.0,
       "_src": "listener_voicelistener",
@@ -5750,7 +5750,7 @@
     {
       "relation": "method",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L50",
       "weight": 1.0,
       "_src": "listener_voicelistener",
@@ -5762,7 +5762,7 @@
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L29",
       "weight": 1.0,
       "_src": "listener_rationale_29",
@@ -5774,7 +5774,7 @@
     {
       "relation": "calls",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L41",
       "weight": 1.0,
       "_src": "listener_voicelistener_init",
@@ -5786,7 +5786,7 @@
     {
       "relation": "rationale_for",
       "confidence": "EXTRACTED",
-      "source_file": "C:\\Users\\tanma\\HELIX\\voice\\listener.py",
+      "source_file": "C:\\Users\\tanma\\PHANTOM\\voice\\listener.py",
       "source_location": "L51",
       "weight": 1.0,
       "_src": "listener_rationale_51",

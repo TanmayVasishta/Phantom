@@ -7,6 +7,14 @@ import json
 import os
 import threading
 
+# Anchored to the project root, not the process's current working directory.
+# A bare relative default here would resolve against whatever directory the
+# process happened to be launched from (e.g. Streamlit started from a
+# different cwd) — on Windows that can land under a protected system path
+# and crash every query with a PermissionError on import.
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_DEFAULT_LOG_PATH = os.path.join(_PROJECT_ROOT, "data", "phantom_audit.jsonl")
+
 
 # Fields that must never appear in audit log entries
 _BANNED_FIELDS = frozenset({
@@ -30,7 +38,7 @@ class PrivacyAuditLogger:
     error_type, tier_used, model_name, from_cache.
     """
 
-    def __init__(self, log_path: str = "./data/helix_audit.jsonl"):
+    def __init__(self, log_path: str = _DEFAULT_LOG_PATH):
         os.makedirs(os.path.dirname(os.path.abspath(log_path)), exist_ok=True)
         self._log_path = log_path
         self._lock = threading.Lock()

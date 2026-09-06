@@ -1,51 +1,51 @@
-"""Custom exception hierarchy for Project HELIX."""
+"""Custom exception hierarchy for Project PHANTOM."""
 
 
-class HELIXBaseError(Exception):
-    """Base class for all HELIX exceptions."""
+class PHANTOMBaseError(Exception):
+    """Base class for all PHANTOM exceptions."""
     pass
 
 
-class PIILeakageError(HELIXBaseError):
+class PIILeakageError(PHANTOMBaseError):
     """Raised when raw PII is detected in a cloud-bound payload."""
     pass
 
 
-class SentinelError(HELIXBaseError):
+class SentinelError(PHANTOMBaseError):
     """Raised when Sentinel Node fails to classify after max retries."""
     pass
 
 
-class MemoryWriteError(HELIXBaseError):
+class MemoryWriteError(PHANTOMBaseError):
     """Raised when ChromaDB write-back fails."""
     pass
 
 
-class RouteError(HELIXBaseError):
+class RouteError(PHANTOMBaseError):
     """Raised when task orchestrator cannot determine a valid route."""
     pass
 
 
-class HITLTimeoutError(HELIXBaseError):
+class HITLTimeoutError(PHANTOMBaseError):
     """Raised when HITL approval times out on a medium-risk action."""
     pass
 
 
-class CommandBlockedError(HELIXBaseError):
+class CommandBlockedError(PHANTOMBaseError):
     """Raised when OS middleware detects a blocked command pattern."""
     pass
 
 
-class GeminiRateLimitError(HELIXBaseError):
+class GeminiRateLimitError(PHANTOMBaseError):
     """Raised when Gemini rate limit is exhausted and fallback is unavailable."""
     pass
 
 
-class OllamaUnavailableError(HELIXBaseError):
+class OllamaUnavailableError(PHANTOMBaseError):
     """Raised when Ollama service is not running."""
     pass
 
 
-class ChromaDBCorruptionError(HELIXBaseError):
+class ChromaDBCorruptionError(PHANTOMBaseError):
     """Raised when ChromaDB data cannot be loaded (possible corruption)."""
     pass
