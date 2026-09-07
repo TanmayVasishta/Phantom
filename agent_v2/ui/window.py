@@ -145,6 +145,26 @@ class PhantomAgent2Window(QWidget):
 
         self._build_ui()
         self._position()
+        self._build_focus_watcher()
+
+    def _build_focus_watcher(self) -> None:
+        """
+        Watch for a second launch of Agent 2.0 asking us to surface.
+
+        Same mechanism as Agent 1.0 but on its own "Phantom2" lock name, so
+        the two agents never contend with or surface each other.
+        """
+        from utils.instance_lock import InstanceLock
+
+        self._instance_lock = InstanceLock("Phantom2")
+        self._focus_timer = QTimer(self)
+        self._focus_timer.setInterval(500)
+        self._focus_timer.timeout.connect(self._check_focus_trigger)
+        self._focus_timer.start()
+
+    def _check_focus_trigger(self) -> None:
+        if self._instance_lock.consume_focus_trigger():
+            self.show_window()
 
     # ── construction ─────────────────────────────────────────────────────
     def _build_ui(self) -> None:

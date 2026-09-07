@@ -59,6 +59,28 @@ class PhantomAgentWindow(QWidget):
         self._build_animation()
         self._position_window()
         self._build_health_check()
+        self._build_focus_watcher()
+
+    def _build_focus_watcher(self) -> None:
+        """
+        Watch for a second launch asking us to surface.
+
+        When a second instance starts it cannot talk to us over Qt — it has no
+        QApplication and exits within milliseconds — so it touches a file and
+        we poll for it. 500ms is below the threshold where a user re-pressing
+        the hotkey would notice, and the check is a single os.path.exists.
+        """
+        from utils.instance_lock import InstanceLock
+
+        self._instance_lock = InstanceLock("Phantom")
+        self._focus_timer = QTimer(self)
+        self._focus_timer.setInterval(500)
+        self._focus_timer.timeout.connect(self._check_focus_trigger)
+        self._focus_timer.start()
+
+    def _check_focus_trigger(self) -> None:
+        if self._instance_lock.consume_focus_trigger():
+            self.show_window()
 
     def _build_health_check(self) -> None:
         self._net = QNetworkAccessManager(self)

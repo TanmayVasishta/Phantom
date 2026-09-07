@@ -48,6 +48,26 @@ def wait_for_api(timeout: int = 15) -> bool:
 
 def main():
     print("Entered main")
+
+    # Single instance, before anything expensive is built.
+    #
+    # Two live copies both open the same SQLite checkpoint DB and the same
+    # ChromaDB directory; the lock contention surfaces to the user as the
+    # agent "thinking" for 12-14s on a trivial query. This is deliberately
+    # inside main() rather than at module scope: under pythonw.exe (which is
+    # what the autostart registry entry uses) the block at the top of this
+    # file relaunches via launcher.vbs and exits, so module scope would take
+    # the lock in the bootstrap process and release it milliseconds later.
+    import atexit
+    from utils.instance_lock import InstanceLock
+
+    lock = InstanceLock("Phantom")
+    if not lock.acquire():
+        print("[PHANTOM] Already running. Bringing the existing window to focus.")
+        lock.signal_focus()
+        sys.exit(0)
+    atexit.register(lock.release)
+
     # High-DPI
     os.environ.setdefault('QT_ENABLE_HIGHDPI_SCALING', '1')
 

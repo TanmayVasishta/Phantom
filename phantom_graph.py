@@ -1093,7 +1093,12 @@ def _build_checkpointer():
         # that finds the lock held fails instantly with "database is locked"
         # instead of waiting. Cheap insurance for heavier contention than the
         # stress test covered.
-        conn.execute("PRAGMA busy_timeout=5000")
+        #
+        # 10s rather than 5s: this is the second line of defence behind the
+        # single-instance lock (utils/instance_lock.py). It only matters at all
+        # if that lock has already failed open, and in that case two agents are
+        # contending — waiting is strictly better than erroring out.
+        conn.execute("PRAGMA busy_timeout=10000")
         checkpointer = SqliteSaver(conn)
         checkpointer.setup()
 

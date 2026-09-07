@@ -126,6 +126,18 @@ def _tray_icon() -> QIcon:
 
 
 def main() -> int:
+    # Single instance — see utils/instance_lock.py. Agent 2.0 keeps its own
+    # lock name so it never contends with, or surfaces, Agent 1.0.
+    import atexit
+    from utils.instance_lock import InstanceLock
+
+    lock = InstanceLock("Phantom2")
+    if not lock.acquire():
+        print("[PHANTOM 2.0] Already running. Bringing the existing window to focus.")
+        lock.signal_focus()
+        return 0
+    atexit.register(lock.release)
+
     os.environ.setdefault("QT_ENABLE_HIGHDPI_SCALING", "1")
 
     app = QApplication(sys.argv)
