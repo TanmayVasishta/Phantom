@@ -33,9 +33,17 @@ def log_usage(
     window_tokens: int,
     window_limit: int,
     session_id: str = "unknown",
+    mode: str = "unknown",
     log_path: str = USAGE_LOG_PATH,
 ) -> None:
-    """Append one usage record. Silently degrades on any I/O failure."""
+    """
+    Append one usage record. Silently degrades on any I/O failure.
+
+    `mode` defaults to "unknown" rather than being required — callers below
+    phantom_graph.py's mode classification (llm_router.py's own internal
+    logging, used outside the graph too) have no mode to report and
+    shouldn't need updating just to keep logging.
+    """
     entry = {
         "ts": int(time.time()),
         "provider": provider,
@@ -44,6 +52,7 @@ def log_usage(
         "window_tokens": int(window_tokens),
         "window_limit": int(window_limit),
         "session_id": session_id or "unknown",
+        "mode": mode or "unknown",
     }
     try:
         os.makedirs(os.path.dirname(log_path), exist_ok=True)

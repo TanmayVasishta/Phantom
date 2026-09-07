@@ -9,7 +9,7 @@ unrelated test task hitting the identical error, including with /rl LIMITED,
 while a plain /sc ONCE task and this registry key both write fine from the
 same shell. This is the registry-based equivalent, matching the approach
 agent_v2/scripts/install_autostart.py already uses for Phantom 2.0 (registered
-there as "Phantom2" — this one registers as "Phantom1", so both agents can be
+there as "Phantom2" — this one registers as "Phantom", so both agents can be
 installed side by side without either overwriting the other).
 """
 import sys
@@ -17,7 +17,7 @@ import winreg
 from pathlib import Path
 
 RUN_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
-VALUE_NAME = "Phantom1"
+VALUE_NAME = "Phantom"
 
 
 def _target_command() -> str:

@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 
 import logging
+import threading
 import uuid
 from typing import Annotated, Any
 
@@ -65,8 +66,11 @@ def prewarm_pipeline():
         _get_pii_engine().redact("warm up the analyzer", intent_context="GENERAL_QA")
 
     def _warm_memory():
-        candidates = _get_retrieval().retrieve_relevant("warm up", top_k=1)
-        _get_reranker().rerank("warm up", candidates or [("warm", "warm up", 0.0)], top_k=1)
+        # Warms the layered manager (the live retrieval path) — opens all
+        # three collections and forces the embedder to load, so the first
+        # real query doesn't pay for it.
+        _get_layered().preload()
+        _get_layered().retrieve_layered_context("warm up", "warmup-session")
 
     def _warm_models():
         _get_sentinel()
@@ -86,6 +90,24 @@ def prewarm_pipeline():
 
     print(f'[PHANTOM] Pipeline pre-warmed in {time.time() - _t0:.1f}s.')
 # ── Lazy singletons (initialised once per process) ────────────────────────────
+# prewarm_pipeline() and parallel_preprocess_node() each run their own
+# ThreadPoolExecutor, and a query can land while prewarm's background thread is
+# still running — so two threads can call the same getter for its very first
+# time within milliseconds of each other. The bare `if _x is None: _x = ...`
+# check-then-act was not atomic: both threads would see None and both
+# construct a ChromaManager() (or any of the others) against the same state.
+# For ChromaDB specifically this doesn't just waste an object — two
+# PersistentClient constructions against the same path in one process corrupt
+# its internal Rust binding state, verified live: concurrent construction
+# reproduced a bare KeyError(path), an AttributeError on 'bindings', and a
+# "Could not connect to tenant default_tenant" error across four racing
+# threads, matching the exact "ChromaDB init failed: '<path>'" report.
+#
+# RLock (not Lock): _get_retrieval() calls _get_chroma(), and
+# _get_pii_engine()/_get_pii_restorer() call _get_pii_map() — the same thread
+# re-enters the lock while already holding it. A plain Lock would deadlock a
+# thread against itself on that nesting.
+_singleton_lock = threading.RLock()
 _pii_map = None
 _pii_engine = None
 _pii_restorer = None
@@ -98,65 +120,93 @@ _reranker = None
 def _get_pii_map():
     global _pii_map
     if _pii_map is None:
-        from sentinel.session_pii_map import SessionPIIMap
-        _pii_map = SessionPIIMap()
+        with _singleton_lock:
+            if _pii_map is None:
+                from sentinel.session_pii_map import SessionPIIMap
+                _pii_map = SessionPIIMap()
     return _pii_map
 
 
 def _get_pii_engine():
     global _pii_engine
     if _pii_engine is None:
-        from sentinel.pii_engine import PIIRedactionEngine
-        _pii_engine = PIIRedactionEngine(_get_pii_map())
+        with _singleton_lock:
+            if _pii_engine is None:
+                from sentinel.pii_engine import PIIRedactionEngine
+                _pii_engine = PIIRedactionEngine(_get_pii_map())
     return _pii_engine
 
 
 def _get_pii_restorer():
     global _pii_restorer
     if _pii_restorer is None:
-        from sentinel.pii_restorer import PIIRestorer
-        _pii_restorer = PIIRestorer(_get_pii_map())
+        with _singleton_lock:
+            if _pii_restorer is None:
+                from sentinel.pii_restorer import PIIRestorer
+                _pii_restorer = PIIRestorer(_get_pii_map())
     return _pii_restorer
 
 
 def _get_sentinel():
     global _sentinel
     if _sentinel is None:
-        from sentinel.sentinel_node import SentinelNode
-        _sentinel = SentinelNode()
+        with _singleton_lock:
+            if _sentinel is None:
+                from sentinel.sentinel_node import SentinelNode
+                _sentinel = SentinelNode()
     return _sentinel
 
 
 def _get_chroma():
     global _chroma
     if _chroma is None:
-        from memory.chroma_manager import ChromaManager
-        # session_only=True → in-memory (ephemeral, no cross-session leakage)
-        # session_only=False → PersistentClient (survives restarts, good for dev)
-        import os
-        session_only = os.environ.get("PHANTOM_SESSION_ONLY", "false").lower() == "true"
-        _chroma = ChromaManager(session_only=session_only)
+        with _singleton_lock:
+            if _chroma is None:
+                from memory.chroma_manager import ChromaManager
+                # session_only=True → in-memory (ephemeral, no cross-session leakage)
+                # session_only=False → PersistentClient (survives restarts, good for dev)
+                import os
+                session_only = os.environ.get("PHANTOM_SESSION_ONLY", "false").lower() == "true"
+                _chroma = ChromaManager(session_only=session_only)
     return _chroma
 
 
 def _get_retrieval():
     global _retrieval
     if _retrieval is None:
-        from memory.retrieval_engine import RetrievalEngine
-        _retrieval = RetrievalEngine(_get_chroma())
+        with _singleton_lock:
+            if _retrieval is None:
+                from memory.retrieval_engine import RetrievalEngine
+                _retrieval = RetrievalEngine(_get_chroma())
     return _retrieval
 
 
 def _get_reranker():
     global _reranker
     if _reranker is None:
-        from memory.reranker import MemoryReranker
-        _reranker = MemoryReranker()
+        with _singleton_lock:
+            if _reranker is None:
+                from memory.reranker import MemoryReranker
+                _reranker = MemoryReranker()
     return _reranker
 
 
+_layered = None
+
+
+def _get_layered():
+    """LayeredMemoryManager, sharing _get_chroma()'s single client."""
+    global _layered
+    if _layered is None:
+        with _singleton_lock:
+            if _layered is None:
+                from memory.layered_memory import LayeredMemoryManager
+                _layered = LayeredMemoryManager(_get_chroma())
+    return _layered
+
+
 from langgraph.graph.message import add_messages
-from langchain_core.messages import HumanMessage, AIMessage, ToolMessage
+from langchain_core.messages import HumanMessage, AIMessage, ToolMessage, SystemMessage
 
 class AgentState(TypedDict):
     """
@@ -180,6 +230,13 @@ class AgentState(TypedDict):
     tool_call_count: int
     blocked: bool
     block_reason: str
+    mode: str
+    agent_mode: bool
+    guardian_tier: str
+    guardian_reason: str
+    memory_layers_used: list[str]
+    turn_count: int
+    session_id: str
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -237,30 +294,117 @@ def run_memory_retrieve(raw: str) -> dict:
         logger.warning("[PREPROCESS] Retrieval error: %s", exc)
     return {"context": "", "hits": 0}
 
-def input_guard_node(state: AgentState) -> dict:
+def mode_classifier_node(state: AgentState) -> dict:
     """
-    First node in the graph. Screens raw user input for prompt-injection
-    patterns and short-circuits the whole pipeline before any LLM call,
-    tool call, or memory write can happen.
+    First node in the graph — Leon-style 3-mode routing, regex only, no LLM
+    call. Decides how much of the pipeline this query actually needs before
+    anything else runs.
     """
-    from utils.input_guard import check_injection
+    from utils.mode_classifier import classify_mode
 
     raw = (state.get("raw_input") or "").strip()
-    is_safe, reason = check_injection(raw)
+    mode = classify_mode(raw)
+    if mode != "smart":
+        logger.info("[MODE] %s -> %s", mode, raw[:60])
+    return {"mode": mode, "agent_mode": mode == "agent"}
 
-    if not is_safe:
-        logger.warning("[GUARD] Blocked input: %s | preview: %s", reason, raw[:60])
-        print(f"[GUARD] Blocked input: {reason} | preview: {raw[:60]}")
-        return {
-            "blocked": True,
-            "block_reason": reason,
-            "final_response": (
-                f"[PHANTOM] Request blocked by the input guard: {reason}. "
-                f"Rephrase without instruction-override phrasing."
-            ),
-        }
 
-    return {"blocked": False, "block_reason": ""}
+def route_after_mode(state: AgentState) -> str:
+    """Controlled commands skip the guard, sentinel and LLM entirely."""
+    return "deterministic_action_node" if state.get("mode") == "controlled" else "guardian_node"
+
+
+def deterministic_action_node(state: AgentState) -> dict:
+    """
+    Stub for controlled-mode execution. Not wired to real OS actions yet —
+    returns the fixed acknowledgement text instantly with zero API calls, no
+    sentinel, no LLM. Logged the same way an LLM call would be (provider
+    "none", zero tokens) so mode/provider distribution stays visible in
+    daily_summary()/`/status` without a special case there.
+    """
+    from utils.usage_logger import log_usage
+
+    command = (state.get("raw_input") or "").strip()
+    logger.info("[CONTROLLED] %s", command[:60])
+
+    try:
+        log_usage(
+            provider="none", model="none", tokens_used=0,
+            window_tokens=0, window_limit=0,
+            session_id="controlled", mode="controlled",
+        )
+    except Exception:
+        pass
+
+    return {
+        "final_response": f"Running: {command}",
+        "provider_used": "none",
+    }
+
+
+def guardian_node(state: AgentState) -> dict:
+    """
+    3-tier pre-execution risk gate (replaces the old binary input guard).
+
+      < 0.3   proceed on the local score alone
+      0.3-0.7 Guardian LLM reviews it; the two scores are averaged
+      >= 0.7  interrupt() for human approval before anything runs
+
+    Controlled mode skips the gate: those commands matched an anchored
+    deterministic pattern and never reach an LLM.
+    """
+    from utils.guardian import assess, HITL_THRESHOLD
+
+    raw = (state.get("raw_input") or "").strip()
+    mode = state.get("mode", "smart")
+
+    if mode == "controlled":
+        return {"blocked": False, "block_reason": "",
+                "risk_score": 0.0, "guardian_tier": "skipped", "guardian_reason": ""}
+
+    result = assess(raw, mode=mode, session_id=state.get("session_id", "guardian"))
+    logger.info("[GUARDIAN] score=%.2f tier=%s signals=%s",
+                result.score, result.tier_used, result.signals_fired)
+
+    base = {
+        "risk_score": result.score,
+        "guardian_tier": result.tier_used,
+        "guardian_reason": result.reason,
+        "blocked": False,
+        "block_reason": "",
+    }
+
+    if result.score < HITL_THRESHOLD:
+        return base
+
+    # Tier 3 — human approval required before this input goes anywhere.
+    decision = interrupt({
+        "action": raw[:200],
+        "raw_input": raw[:200],
+        "risk_score": round(result.score, 2),
+        "signals_fired": result.signals_fired,
+        "guardian_reason": result.reason,
+        "tier": "guardian",
+        "message": (
+            f"[PHANTOM] Guardian Review Required\n"
+            f"Risk score: {round(result.score * 100)}%\n"
+            f"Signals: {', '.join(result.signals_fired) or 'none'}\n"
+            f"{('Reason: ' + result.reason) if result.reason else ''}\n\n"
+            f"Type 'approve' to allow or 'reject' to cancel."
+        ),
+    })
+
+    if str(decision).strip().lower() in ("reject", "no", "n", "cancel"):
+        logger.warning("[GUARDIAN] Input REJECTED by user (score=%.2f).", result.score)
+        return {**base,
+                "blocked": True,
+                "block_reason": f"rejected by user at guardian tier 3 (risk {result.score:.2f})",
+                "hitl_required": True,
+                "hitl_decision": "reject",
+                "final_response": "Action blocked by user."}
+
+    logger.info("[GUARDIAN] Input APPROVED by user (score=%.2f).", result.score)
+    return {**base, "hitl_required": True, "hitl_decision": "approve"}
 
 
 def route_after_guard(state: AgentState) -> str:
@@ -286,28 +430,43 @@ def parallel_preprocess_node(state: AgentState) -> dict:
     # Pre-initialize singletons safely on the main thread before forking
     _get_pii_engine()
     _get_pii_map()
-    _get_retrieval()
-    _get_reranker()
+    _get_layered()
     _get_sentinel()
+
+    session_id = state.get("session_id") or "default"
+
+    def _layered_retrieve(query: str):
+        return _get_layered().retrieve_layered_context(query, session_id)
 
     with ThreadPoolExecutor(max_workers=3) as pool:
         # Submit all three simultaneously
         pii_future     = pool.submit(run_pii_scan, raw)
-        memory_future  = pool.submit(run_memory_retrieve, raw)
+        memory_future  = pool.submit(_layered_retrieve, raw)
         intent_future  = pool.submit(run_intent_classify, raw)
-        
+
         # Collect results (blocks until all done)
         pii_result     = pii_future.result(timeout=60)
-        memory_result  = memory_future.result(timeout=60)
+        layered        = memory_future.result(timeout=60)
         intent_result  = intent_future.result(timeout=60)
-    
-    # Return updates
+
+    # The layered context goes in as a SystemMessage ahead of the user turn,
+    # so the model reads durable facts -> session history -> recent turns
+    # before the question itself.
+    messages: list = []
+    if not layered.is_empty:
+        messages.append(SystemMessage(content=layered.text))
+        logger.info("[MEMORY] layers=%s (L1=%d L2=%d L3=%d) in %.0fms",
+                    layered.layers_used, layered.l1_count, layered.l2_count,
+                    layered.l3_count, layered.elapsed_ms)
+    messages.append(HumanMessage(content=pii_result["anonymized"]))
+
     return {
         "pii_map": pii_result["pii_map"],
-        "messages": [HumanMessage(content=pii_result["anonymized"])],
+        "messages": messages,
         "n_pii_redacted": pii_result["count"],
-        "memory_context": memory_result["context"],
-        "memory_hits": memory_result.get("hits", 0),
+        "memory_context": layered.text,
+        "memory_hits": layered.l1_count + layered.l2_count + layered.l3_count,
+        "memory_layers_used": layered.layers_used,
         "intent": intent_result["intent"],
         "error": intent_result.get("error", "")
     }
@@ -530,6 +689,7 @@ def llm_call_node(state: AgentState, config: RunnableConfig) -> dict:
             window_tokens=0,
             window_limit=0,
             session_id=str(config.get("configurable", {}).get("thread_id", "unknown")),
+            mode=state.get("mode", "smart"),
         )
     except Exception:
         pass
@@ -776,10 +936,38 @@ def pii_restore_node(state: AgentState) -> AgentState:
     # path runs.
     _write_to_memory(state, llm_response)
 
+    # Layered consolidation — L1 always, L3 on any durable fact, L2 every 5th
+    # turn. Fire-and-forget on a daemon thread: the response is already
+    # assembled at this point and must not wait on memory writes or on the
+    # summarisation call L2 makes.
+    turn_count = int(state.get("turn_count", 0)) + 1
+    try:
+        from memory.consolidator import consolidate_async
+
+        user_content = ""
+        for msg in reversed(state.get("messages", [])):
+            if getattr(msg, "type", "") == "human":
+                user_content = getattr(msg, "content", "")
+                break
+        # Pre-restoration text only, same rule as _write_to_memory above.
+        turn_text = f"{user_content} → {llm_response[:300]}".strip()
+        consolidate_async(
+            turn_text=turn_text,
+            session_id=state.get("session_id") or "default",
+            turn_count=turn_count,
+            layered=_get_layered(),
+            # L3 scans this alone — never the combined turn, or the model's
+            # own replies become permanent "user facts". See consolidate().
+            user_text=user_content,
+        )
+    except Exception as exc:
+        logger.warning("[CONSOLIDATE] dispatch failed: %s", exc)
+
     logger.info("[PII RESTORE] Complete. Final response: %d chars.", len(restored))
 
     return {
         "final_response": restored,
+        "turn_count": turn_count,
     }
 
 
@@ -1017,7 +1205,11 @@ def build_graph():
     Build and compile the PHANTOM LangGraph StateGraph.
 
     Updated Topology:
-    START → parallel_preprocess_node → llm_call_node
+    START → mode_classifier_node (regex only, no LLM call)
+        ├── controlled → deterministic_action_node → END
+        └── smart/agent → input_guard_node
+                ├── blocked → END
+                └── parallel_preprocess_node → llm_call_node
             ↓
     should_use_tool (conditional)
         ├── tool_node (safe tools) ────────┐ (loop back)
@@ -1033,17 +1225,28 @@ def build_graph():
     graph = StateGraph(AgentState)
 
     # Register nodes
-    graph.add_node("input_guard_node", input_guard_node)
+    graph.add_node("mode_classifier_node", mode_classifier_node)
+    graph.add_node("deterministic_action_node", deterministic_action_node)
+    graph.add_node("guardian_node", guardian_node)
     graph.add_node("parallel_preprocess_node", parallel_preprocess_node)
     graph.add_node("llm_call_node",      llm_call_node)
     graph.add_node("tool_node",          custom_tool_node)
     graph.add_node("hitl_check_node",    hitl_check_node)
     graph.add_node("pii_restore_node",   pii_restore_node)
 
-    # Wire edges — guard runs first and can short-circuit straight to END
-    graph.add_edge(START, "input_guard_node")
+    # Mode classification runs first — controlled commands skip straight to
+    # a deterministic stub and END; smart/agent fall through to the guard,
+    # which can still short-circuit straight to END on an injection match.
+    graph.add_edge(START, "mode_classifier_node")
     graph.add_conditional_edges(
-        "input_guard_node",
+        "mode_classifier_node",
+        route_after_mode,
+        {"deterministic_action_node": "deterministic_action_node", "guardian_node": "guardian_node"},
+    )
+    graph.add_edge("deterministic_action_node", END)
+
+    graph.add_conditional_edges(
+        "guardian_node",
         route_after_guard,
         {"parallel_preprocess_node": "parallel_preprocess_node", END: END},
     )
@@ -1124,6 +1327,9 @@ def _run_query_internal(
         "n_pii_redacted": 0,
         "error": "",
         "pending_tool_call": None,
+        # session_id drives per-session scoping for L1/L2 memory. thread_id is
+        # already the conversation identity here, so they are the same thing.
+        "session_id": thread_id,
     }
 
     final_state: dict = dict(initial_state)
@@ -1292,6 +1498,11 @@ def _build_result(
         "hitl_payload": pending_interrupt,
         "error": final_state.get("error", ""),
         "thread_id": thread_id,
+        "mode": final_state.get("mode", "smart"),
+        "guardian_tier": final_state.get("guardian_tier", ""),
+        "guardian_reason": final_state.get("guardian_reason", ""),
+        "memory_layers_used": final_state.get("memory_layers_used", []),
+        "turn_count": final_state.get("turn_count", 0),
     }
 
 

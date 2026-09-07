@@ -76,7 +76,7 @@ def main():
     tray.setup()
 
     hotkey = HotkeyListener()
-    hotkey.triggered.connect(window.show_window)
+    hotkey.triggered.connect(window.toggle_or_show)
     hotkey.start()
 
     # Hidden on launch — this is a Spotlight-style overlay, summoned only by

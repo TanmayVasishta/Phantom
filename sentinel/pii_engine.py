@@ -21,6 +21,7 @@ from sentinel.session_pii_map import SessionPIIMap
 from utils.config import OLLAMA_MODEL, PII_SENSITIVITY, get_best_available_model
 from utils.exceptions import PIILeakageError
 from utils.models import PIIEntity
+from utils.public_places import is_public_place_mention
 
 
 # ── Indian-context regex patterns (Tier 1) ────────────────────────────────────
@@ -156,6 +157,13 @@ class PIIRedactionEngine:
             original = text[result.start : result.end]
             # Skip if already replaced by Tier 1 (placeholder in the span)
             if original.startswith("[PII_"):
+                continue
+            # "what is the capital of Japan" was redacting to "...of [PII_
+            # LOCATION_1]", which the model then refused to answer since it
+            # could no longer see what was being asked. Countries/capitals/
+            # major cities are public unless used personally ("my hometown
+            # is Paris" still redacts — see utils/public_places.py).
+            if result.entity_type == "LOCATION" and is_public_place_mention(text, original):
                 continue
             placeholder = self._map.add(result.entity_type, original)
             entity = PIIEntity(

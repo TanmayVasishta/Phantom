@@ -7,6 +7,7 @@ local surrogate map (privacy/surrogate_map.py) and never reach this store.
 from __future__ import annotations
 
 import os
+import threading
 import time
 import uuid
 
@@ -23,27 +24,38 @@ class SessionStore:
         self.turns: list[dict] = []
         self._collection = None
         self._init_error = ""
+        # preload() runs on a background thread at startup; a query fired
+        # before it finishes calls this same getter from PhantomWorker's
+        # thread. Two concurrent chromadb.PersistentClient() constructions
+        # against the same path corrupt its internal state rather than just
+        # duplicating work — verified against the identical bug in the parent
+        # project's phantom_graph.py (phantom_graph.py's _singleton_lock
+        # comment has the full repro). Double-checked locking closes it.
+        self._collection_lock = threading.Lock()
 
     # ── ChromaDB ─────────────────────────────────────────────────────────
     def _get_collection(self):
         if self._collection is not None:
             return self._collection
-        try:
-            import chromadb
-            from chromadb.utils import embedding_functions
-            os.makedirs(CHROMA_PATH, exist_ok=True)
-            client = chromadb.PersistentClient(path=CHROMA_PATH)
-            embed = embedding_functions.SentenceTransformerEmbeddingFunction(
-                model_name="all-MiniLM-L6-v2"
-            )
-            self._collection = client.get_or_create_collection(
-                name=COLLECTION,
-                embedding_function=embed,
-                metadata={"hnsw:space": "cosine"},
-            )
-        except Exception as exc:
-            self._init_error = str(exc)
-            self._collection = None
+        with self._collection_lock:
+            if self._collection is not None:
+                return self._collection
+            try:
+                import chromadb
+                from chromadb.utils import embedding_functions
+                os.makedirs(CHROMA_PATH, exist_ok=True)
+                client = chromadb.PersistentClient(path=CHROMA_PATH)
+                embed = embedding_functions.SentenceTransformerEmbeddingFunction(
+                    model_name="all-MiniLM-L6-v2"
+                )
+                self._collection = client.get_or_create_collection(
+                    name=COLLECTION,
+                    embedding_function=embed,
+                    metadata={"hnsw:space": "cosine"},
+                )
+            except Exception as exc:
+                self._init_error = str(exc)
+                self._collection = None
         return self._collection
 
     def preload(self) -> str:

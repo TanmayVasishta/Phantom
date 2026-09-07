@@ -1,0 +1,87 @@
+"""
+Leon-style 3-mode execution classifier.
+
+Runs before anything else in the pipeline (regex only, no LLM call) to decide
+how much of the pipeline a query actually needs:
+
+  controlled — a deterministic OS command ("open Chrome", "volume up").
+               No LLM call is needed at all; skips straight to a stub action.
+  agent      — a multi-step task ("research X and Y", "step by step").
+               Runs the normal pipeline with state["agent_mode"] = True,
+               reserved for future multi-step planning.
+  smart      — everything else. The existing sentinel → LLM → save pipeline,
+               unchanged. This is the default: an ambiguous or borderline
+               query should fall through to the full pipeline rather than
+               risk a wrong deterministic action or a silently degraded
+               multi-step run.
+
+Ordering matters: controlled is checked first (it's the narrowest, most
+literal category and the one with the biggest payoff — zero API calls), then
+agent, and smart is whatever matches neither.
+"""
+from __future__ import annotations
+
+import re
+from typing import Literal
+
+Mode = Literal["controlled", "smart", "agent"]
+
+# ── Controlled: deterministic OS commands ────────────────────────────────────
+_APP_ACTION = re.compile(
+    r"^\s*(open|launch|start|close|quit|exit|kill|stop)\s+[\w .+#-]+\s*$",
+    re.IGNORECASE,
+)
+_VOLUME = re.compile(
+    r"^\s*(volume|sound)\s+(up|down|mute|unmute)\s*$"
+    r"|^\s*(set|turn)\s+(the\s+)?volume\s+(to\s+)?\d{1,3}%?\s*$"
+    r"|^\s*(mute|unmute)(\s+the\s+(volume|sound))?\s*$",
+    re.IGNORECASE,
+)
+_BRIGHTNESS = re.compile(
+    r"^\s*(brightness)\s+(up|down)\s*$"
+    r"|^\s*(increase|decrease|raise|lower)\s+(the\s+)?brightness\s*$"
+    r"|^\s*(set|turn)\s+(the\s+)?brightness\s+(to\s+)?\d{1,3}%?\s*$",
+    re.IGNORECASE,
+)
+_INPUT_SIM = re.compile(
+    r"^\s*(type|click|double[\s-]?click|right[\s-]?click|scroll)\b",
+    re.IGNORECASE,
+)
+
+CONTROLLED_PATTERNS: list[re.Pattern] = [_APP_ACTION, _VOLUME, _BRIGHTNESS, _INPUT_SIM]
+
+# ── Agent: multi-step tasks ───────────────────────────────────────────────────
+_RESEARCH_AND = re.compile(
+    r"\bresearch\b.+\band\b", re.IGNORECASE,
+)
+_STEP_BY_STEP = re.compile(r"\bstep[\s-]by[\s-]step\b", re.IGNORECASE)
+_CREATE_REPORT = re.compile(r"\b(create|write|generate|produce|compile)\b.+\breport\b", re.IGNORECASE)
+_MULTI_STEP_CONJUNCTION = re.compile(
+    r"\b(first|then|after that|next|finally)\b.*\b(then|after|finally|next)\b",
+    re.IGNORECASE,
+)
+
+AGENT_PATTERNS: list[re.Pattern] = [
+    _RESEARCH_AND, _STEP_BY_STEP, _CREATE_REPORT, _MULTI_STEP_CONJUNCTION,
+]
+
+
+def classify_mode(text: str) -> Mode:
+    """
+    Classify `text` into one of the three execution modes. Pure regex, no
+    LLM call — this has to be fast and free, since its whole purpose is
+    deciding whether an LLM call is needed at all.
+    """
+    text = (text or "").strip()
+    if not text:
+        return "smart"
+
+    for pattern in CONTROLLED_PATTERNS:
+        if pattern.search(text):
+            return "controlled"
+
+    for pattern in AGENT_PATTERNS:
+        if pattern.search(text):
+            return "agent"
+
+    return "smart"

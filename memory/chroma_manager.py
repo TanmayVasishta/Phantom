@@ -18,9 +18,15 @@ from __future__ import annotations
 import datetime
 import os
 import shutil
+import threading
 import time
 import uuid
 from typing import Optional
+
+# Serialises collection creation on the shared client. Concurrent
+# get_or_create_collection calls hit the same chromadb internal state that
+# concurrent client construction does.
+_CLIENT_LOCK = threading.RLock()
 
 from utils.config import (
     CHROMA_PERSIST_DIR,
@@ -286,6 +292,38 @@ class ChromaManager:
     def count(self, collection: str = "persistent") -> int:
         col = self._persistent_col if collection == "persistent" else self._session_col
         return col.count()
+
+    # ── Generic collection access (for LayeredMemoryManager) ──────────────────
+
+    def get_collection(self, name: str):
+        """
+        Get or create an arbitrary collection on THIS manager's existing client.
+
+        Deliberately reuses self._client rather than letting callers build their
+        own chromadb.PersistentClient: two PersistentClient constructions against
+        the same path in one process corrupt chromadb's internal Rust binding
+        state (reproduced live — bare KeyError(path), AttributeError on
+        'bindings', and a bogus tenant error across racing threads). Everything
+        that needs a collection here goes through the one client.
+
+        hnsw:space is set explicitly at creation because get_or_create_collection
+        only applies metadata when it CREATES the collection — a collection first
+        made without it stays pinned to chromadb's l2 default forever, which
+        silently inverts every similarity score computed against it.
+        """
+        with _CLIENT_LOCK:
+            return self._client.get_or_create_collection(
+                name=name,
+                metadata={"hnsw:space": "cosine"},
+            )
+
+    def embed(self, text: str):
+        """Public embedding accessor so layered memory reuses this one model."""
+        return self._embed(text)
+
+    @property
+    def client(self):
+        return self._client
 
     # ── Backup ────────────────────────────────────────────────────────────────
 

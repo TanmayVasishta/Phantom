@@ -15,11 +15,18 @@ overlap check meaningful.
 from __future__ import annotations
 
 import asyncio
+import os
 import re
+import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from typing import Any
+
+_PARENT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _PARENT not in sys.path:
+    sys.path.insert(0, _PARENT)
+from utils.public_places import is_public_place_mention  # noqa: E402
 
 # ── Tier 1: compiled once at import (spec: < 10ms per call) ──────────────────
 TIER1_PATTERNS: list[tuple[str, re.Pattern]] = [
@@ -144,11 +151,14 @@ def _tier2(text: str, taken: list[tuple[int, int]]) -> list[Detection]:
     for res in sorted(results, key=lambda r: (r.start, -r.score)):
         if _overlaps(res.start, res.end, taken):
             continue
+        value = text[res.start:res.end]
+        if res.entity_type == "LOCATION" and is_public_place_mention(text, value):
+            continue
         idx = counters.get(res.entity_type, 0)
         counters[res.entity_type] = idx + 1
         found.append(Detection(
             tag=f"<<TIER2_{res.entity_type}_{idx}>>",
-            original_value=text[res.start:res.end],
+            original_value=value,
             tier=2,
             entity_type=res.entity_type,
             offset=res.start,
@@ -166,6 +176,8 @@ def _tier3(text: str, taken: list[tuple[int, int]]) -> list[Detection]:
         if ent.label_ not in TIER3_ENTITIES:
             continue
         if _overlaps(ent.start_char, ent.end_char, taken):
+            continue
+        if ent.label_ in ("GPE", "LOC") and is_public_place_mention(text, ent.text):
             continue
         idx = counters.get(ent.label_, 0)
         counters[ent.label_] = idx + 1

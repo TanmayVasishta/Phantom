@@ -183,7 +183,7 @@ def main() -> int:
     preloader.start()
 
     hotkey = HotkeyListener()
-    hotkey.triggered.connect(window.show_window)
+    hotkey.triggered.connect(window.toggle_or_show)
     hotkey.start()
 
     return app.exec()

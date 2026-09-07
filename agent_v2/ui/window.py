@@ -7,16 +7,27 @@ before anything leaves the machine.
 """
 from __future__ import annotations
 
+import os
+import sys
 import time
 
 from PyQt6.QtCore import Qt, QThread, QTimer, QEvent, pyqtSignal
-from PyQt6.QtGui import QColor
+from PyQt6.QtGui import QColor, QCursor
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTextEdit, QGraphicsDropShadowEffect, QLayout, QSizePolicy,
 )
 
+_PARENT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _PARENT not in sys.path:
+    sys.path.insert(0, _PARENT)
+from utils.window_settings import WindowSettings  # noqa: E402
+
 ACCENT = "#7c3aed"
+SETTINGS_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "data", "settings.json",
+)
 STAGES = ["Sentinel", "Redact", "Surrogate", "Cloud", "Restore"]
 
 STATE_COLORS = {
@@ -129,6 +140,9 @@ class PhantomAgent2Window(QWidget):
         self._report_open = False
         self._t_start = 0.0
 
+        self._settings = WindowSettings(SETTINGS_PATH)
+        self._pinned = bool(self._settings.get("pinned", False))
+
         self._build_ui()
         self._position()
 
@@ -201,6 +215,15 @@ class PhantomAgent2Window(QWidget):
         glow.setOffset(0, 0)
         self._send.setGraphicsEffect(glow)
         row.addWidget(self._send)
+
+        self._pin_btn = QPushButton("📌")
+        self._pin_btn.setFixedSize(22, 22)
+        self._pin_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._pin_btn.setToolTip("Pin window (Ctrl+P)")
+        self._pin_btn.clicked.connect(self._toggle_pin)
+        row.addWidget(self._pin_btn)
+        self._update_pin_style()
+
         return row
 
     def _build_response_area(self) -> QWidget:
@@ -256,6 +279,53 @@ class PhantomAgent2Window(QWidget):
         self.move(screen.left() + (screen.width() - self.WIDTH) // 2,
                   screen.top() + int(screen.height() * 0.22))
 
+    # ── Pin ──────────────────────────────────────────────────────────────
+
+    def _update_pin_style(self) -> None:
+        if self._pinned:
+            self._pin_btn.setStyleSheet(f"""
+                QPushButton {{ background: {ACCENT}; border: none; border-radius: 11px;
+                               font-size: 11px; }}
+            """)
+        else:
+            self._pin_btn.setStyleSheet("""
+                QPushButton { background: transparent; border: none; border-radius: 11px;
+                              font-size: 11px; opacity: 0.5; }
+                QPushButton:hover { background: rgba(255,255,255,20); }
+            """)
+
+    def _toggle_pin(self) -> None:
+        self.set_pinned(not self._pinned)
+
+    def set_pinned(self, pinned: bool) -> None:
+        self._pinned = pinned
+        self._update_pin_style()
+        self._settings.set("pinned", pinned)
+
+    def _should_auto_hide(self) -> bool:
+        """
+        False (never auto-hide) while pinned, while the pipeline is running,
+        or while the cursor is anywhere over the window — see the identical
+        check in ui/phantom_window.py (v1) for why cursor position, not just
+        activation state, is what actually distinguishes an in-window
+        interaction (copy, scroll, text selection) from a genuine click-away.
+        """
+        if self._pinned or self._busy:
+            return False
+        return not self.geometry().contains(QCursor.pos())
+
+    def hide_window(self) -> None:
+        self.hide()
+
+    def toggle_or_show(self) -> None:
+        """Hotkey entry point: show if hidden, focus if pinned, else hide."""
+        if not self.isVisible():
+            self.show_window()
+        elif self._pinned:
+            QTimer.singleShot(0, self._input.setFocus)
+        else:
+            self.hide_window()
+
     # ── show / hide ──────────────────────────────────────────────────────
     def show_window(self) -> None:
         self._position()
@@ -280,13 +350,18 @@ class PhantomAgent2Window(QWidget):
     def keyPressEvent(self, event) -> None:
         if event.key() == Qt.Key.Key_Escape:
             self._input.clear()
-            self.hide()
+            self.hide_window()
+            return
+        if (event.key() == Qt.Key.Key_P
+                and event.modifiers() == Qt.KeyboardModifier.ControlModifier):
+            self._toggle_pin()
             return
         super().keyPressEvent(event)
 
     def changeEvent(self, event) -> None:
         if event.type() == QEvent.Type.ActivationChange and not self.isActiveWindow():
-            self.hide()
+            if self._should_auto_hide():
+                self.hide_window()
         super().changeEvent(event)
 
     # ── pipeline run ─────────────────────────────────────────────────────

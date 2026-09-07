@@ -6,12 +6,13 @@ every visual is a real Qt widget so there is no browser runtime involved.
 """
 from __future__ import annotations
 
+import os
 import uuid
 
 from PyQt6.QtCore import (
     Qt, QPropertyAnimation, QEasingCurve, QTimer, QEvent, QUrl,
 )
-from PyQt6.QtGui import QColor
+from PyQt6.QtGui import QColor, QCursor
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QTextEdit, QGraphicsDropShadowEffect, QSizePolicy, QLayout,
@@ -20,10 +21,15 @@ from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from ui.hitl_modal import HITLModal
 from ui.worker import PhantomWorker
+from utils.window_settings import WindowSettings
 
 ACCENT = "#7c3aed"
 HEALTH_URL = "http://127.0.0.1:8747/health"
 HEALTH_INTERVAL_MS = 30000
+SETTINGS_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "phantom_memory", "settings.json",
+)
 
 
 class PhantomAgentWindow(QWidget):
@@ -45,6 +51,9 @@ class PhantomAgentWindow(QWidget):
         self._worker: PhantomWorker | None = None
         self._busy = False
         self._typewriter_gen = 0
+
+        self._settings = WindowSettings(SETTINGS_PATH)
+        self._pinned = bool(self._settings.get("pinned", False))
 
         self._build_ui()
         self._build_animation()
@@ -147,6 +156,14 @@ class PhantomAgentWindow(QWidget):
         self._send_btn.installEventFilter(self)
         row.addWidget(self._send_btn)
 
+        self._pin_btn = QPushButton("📌")
+        self._pin_btn.setFixedSize(22, 22)
+        self._pin_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._pin_btn.setToolTip("Pin window (Ctrl+P)")
+        self._pin_btn.clicked.connect(self._toggle_pin)
+        row.addWidget(self._pin_btn)
+        self._update_pin_style()
+
         self._dot = QLabel()
         self._dot.setFixedSize(10, 10)
         self._set_dot("offline")
@@ -220,6 +237,42 @@ class PhantomAgentWindow(QWidget):
     def set_connected(self, connected: bool) -> None:
         self._set_dot("connected" if connected else "offline")
 
+    # ── Pin ──────────────────────────────────────────────────────────────
+
+    def _update_pin_style(self) -> None:
+        if self._pinned:
+            self._pin_btn.setStyleSheet(f"""
+                QPushButton {{ background: {ACCENT}; border: none; border-radius: 11px;
+                               font-size: 11px; }}
+            """)
+        else:
+            self._pin_btn.setStyleSheet("""
+                QPushButton { background: transparent; border: none; border-radius: 11px;
+                              font-size: 11px; opacity: 0.5; }
+                QPushButton:hover { background: rgba(255,255,255,20); }
+            """)
+
+    def _toggle_pin(self) -> None:
+        self.set_pinned(not self._pinned)
+
+    def set_pinned(self, pinned: bool) -> None:
+        self._pinned = pinned
+        self._update_pin_style()
+        self._settings.set("pinned", pinned)
+
+    def _should_auto_hide(self) -> bool:
+        """
+        False (never auto-hide) while pinned, while a query is in flight, or
+        while the cursor is anywhere over the window — the last case is what
+        keeps clicking the copy button, selecting response text, or
+        scrolling from dismissing the window: none of those move OS focus
+        away, but a transient native popup (e.g. a right-click context menu)
+        can, and this is what tells that apart from a genuine click-away.
+        """
+        if self._pinned or self._busy:
+            return False
+        return not self.geometry().contains(QCursor.pos())
+
     # ── Show / hide ──────────────────────────────────────────────────────
 
     def show_window(self) -> None:
@@ -231,6 +284,15 @@ class PhantomAgentWindow(QWidget):
 
     def hide_window(self) -> None:
         self.hide()
+
+    def toggle_or_show(self) -> None:
+        """Hotkey entry point: show if hidden, focus if pinned, else hide."""
+        if not self.isVisible():
+            self.show_window()
+        elif self._pinned:
+            QTimer.singleShot(0, self._input.setFocus)
+        else:
+            self.hide_window()
 
     def new_session(self) -> None:
         """Start a fresh conversation thread — clears the response area."""
@@ -382,18 +444,24 @@ class PhantomAgentWindow(QWidget):
         escaped = re.sub(r"\*\*(.*?)\*\*", r"<b>\1</b>", escaped)
         return escaped
 
-    # ── Dismiss: Escape, or the window losing OS focus ────────────────────
+    # ── Dismiss: Escape always; losing OS focus only if the cursor is
+    # actually outside the window, nothing is running, and it isn't pinned ──
 
     def keyPressEvent(self, event) -> None:
         if event.key() == Qt.Key.Key_Escape:
             self._input.clear()
             self.hide_window()
             return
+        if (event.key() == Qt.Key.Key_P
+                and event.modifiers() == Qt.KeyboardModifier.ControlModifier):
+            self._toggle_pin()
+            return
         super().keyPressEvent(event)
 
     def changeEvent(self, event) -> None:
         if event.type() == QEvent.Type.ActivationChange and not self.isActiveWindow():
-            self.hide_window()
+            if self._should_auto_hide():
+                self.hide_window()
         super().changeEvent(event)
 
     def eventFilter(self, obj, event) -> bool:

@@ -2697,3 +2697,93 @@ The live path's own context management and provider failover in
 entirely. Wiring `PhantomRouter` into `llm_call_node` would remove the
 duplication but is an architectural change, not a surgical fix, so it was
 left for a deliberate decision rather than folded into this audit.
+
+## 8. LAYERED MEMORY + GUARDIAN RISK GATE (September 2026)
+
+Three interlocking features. Flat ChromaDB memory became a three-layer
+hierarchy, the binary injection guard became a three-tier risk gate, and the
+graph was rewired so both feed the same turn.
+
+### Feature 1 — Layered memory (`memory/layered_memory.py`, `memory/consolidator.py`)
+
+| Layer | Collection | Holds | TTL | Caps | Priority |
+|---|---|---|---|---|---|
+| L1 working | `phantom_working_memory` | raw turns verbatim (surrogate text only) | 2 h hard, deleted at retrieval | 10/session, oldest evicted | highest, 3 retrieved |
+| L2 episodic | `phantom_episodic_memory` | LLM session summaries, every 5 turns | 7 d soft, marked + filtered | 20/session | medium, 2 retrieved |
+| L3 durable | `phantom_durable_memory` | extracted user facts | never | 100 global, no session scoping | lowest priority, highest permanence, 2 retrieved |
+
+`retrieve_layered_context()` runs all three concurrently (`asyncio.gather` over
+`run_in_executor`, since the Chroma calls are sync and CPU-bound) and assembles
+`[DURABLE FACTS] / [SESSION HISTORY] / [RECENT TURNS]` — recent turns newest
+last — as a single `SystemMessage` at position 0. Measured 26–56 ms end to end.
+
+`consolidator.py` runs on a daemon thread and never blocks the response:
+L1 write → durable-fact scan → L2 summarisation every 5th turn → L1 eviction.
+
+**L3 is scanned against the user's utterance alone, never the combined turn.**
+Scanning `"user → assistant"` lets the model's own reply write permanent user
+facts: `"who are you → I am an AI model. I never store your personal data."`
+extracts identity *"I am an AI model"* and preference *"I never store your
+personal data"*, both attributed to the user, in the one layer that never
+expires and is injected into every future session. `consolidate()` therefore
+takes `user_text` separately from `turn_text`; L1 keeps the full turn verbatim,
+L3 sees only what the user typed.
+
+**L2 falls back to recency when nothing clears the 0.25 similarity bar.** The
+`where` filter already scopes L2 to the current session, so similarity is only
+ranking within one conversation, not guarding against cross-session bleed —
+and `"what have we been talking about?"` is precisely the query that scores
+worst against a content summary (measured 0.205) while needing the layer most.
+
+### Migration (`migrate_from_legacy`)
+
+Session docs → L1 if inside the 2 h window, else L2. Persistent docs are
+scanned for durable patterns: extracted clauses → L3, anything with no fact in
+it → L2 as history. **Migrating persistent docs verbatim into L3 is wrong** —
+that collection holds whole transcripts (`"Hello there → Hello! How can I
+assist you today?"`), and 41 of them buried a genuine `"I'm a CS student at
+BMSCE"` fact out of the top-2 retrieval slots. Originals are renamed
+`*_legacy` rather than deleted; the presence of a `*_legacy` collection is what
+makes a second run skip instead of re-importing.
+
+### Feature 2 — Guardian (`utils/risk_scorer.py`, `utils/guardian.py`)
+
+Tier 1 is pure Python, no network, measured **0.04 ms**: injection +0.9,
+destructive command +0.8, destructive *intent* +0.4, path outside home +0.6,
+credentials +0.5, length +0.2, shouting +0.1, system-internals probe +0.3,
+known-safe −0.3, clamped to [0, 1]. Tier 2 (Groq, ~300 ms) reviews only the
+0.3–0.7 band. Tier 3 is `interrupt()` for human approval above 0.7.
+
+Two non-obvious details, both found by testing rather than reading:
+
+- `DESTRUCTIVE_COMMANDS` must not end in `\b`. `rm -rf` is `rm -r` followed by
+  `f`, so a trailing word boundary never matches and the whole signal silently
+  never fires — `rm -rf C:\Users\...` scored 0.00 until this was fixed.
+- The known-safe bonus applies **only when no other signal fired**. As a
+  blanket discount, `"what is my api key password"` buys back 0.3 and slips
+  under the review threshold purely for opening with "what is".
+
+### Fixed — averaging diluted the Guardian's verdict
+
+`assess()` originally averaged Tier 1 and Tier 2, as first specified. Because
+escalation needed `>= 0.7`, Tier 2 had to reach `1.4 − tier1` to force human
+approval — at Tier 1 = 0.3 that is 1.1, mathematically impossible. Observed
+live: `"delete the old log files in my downloads folder"` scored Tier 1 0.4,
+and the Guardian LLM independently returned 0.9 ("potentially destructive…
+could lead to data loss") — a correct, real escalation signal. Averaged with
+Tier 1 that became 0.65, under the bar, and the action would have proceeded
+with no human in the loop.
+
+Fixed to `combined = max(tier1.score, tier2.score)`: an escalation costs the
+user one approval click; a missed escalation lets an unapproved action run.
+For a safety gate the asymmetry favors the more cautious of the two opinions,
+not their mean.
+
+### Feature 3 — Wiring
+
+Graph is now `START → mode_classifier → guardian_node → parallel_preprocess →
+llm → save → END`. `guardian_node` replaces `input_guard_node`, skips
+controlled mode entirely, and adds `risk_score`, `guardian_tier`,
+`guardian_reason` to `AgentState`. `parallel_preprocess_node` injects the
+layered context and reports `memory_layers_used`; `pii_restore_node` fires
+`consolidate_async` (dispatch measured 0.7–1.2 ms) and increments `turn_count`.
