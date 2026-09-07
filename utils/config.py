@@ -64,10 +64,27 @@ OLLAMA_MODEL: str = _get("OLLAMA_MODEL", "llama3.2:3b")
 
 
 def get_best_available_model() -> str:
-    """Return the first model in SENTINEL_MODEL_PREFERENCE that is installed."""
+    """
+    Return the model to use for Sentinel intent classification.
+
+    An explicit OLLAMA_MODEL (.env or config/settings.py) wins if it's
+    actually installed — previously this function ignored that setting
+    unless nothing in SENTINEL_MODEL_PREFERENCE was installed, so a user
+    who explicitly configured e.g. "qwen3.5:2b" but had "llama3:latest"
+    also installed would silently get llama3:latest instead, because the
+    preference list ranks it higher. Only when the configured model isn't
+    installed does the preference list act as a fallback.
+    """
     try:
         import ollama as _ollama
         available = [m.model for m in _ollama.list().models]
+
+        if OLLAMA_MODEL:
+            base = OLLAMA_MODEL.split(":")[0]
+            match = next((a for a in available if base in a), None)
+            if match:
+                return match
+
         for preferred in SENTINEL_MODEL_PREFERENCE:
             base = preferred.split(":")[0]
             if any(base in a for a in available):

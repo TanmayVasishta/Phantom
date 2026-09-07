@@ -245,9 +245,25 @@ class AgentState(TypedDict):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
 
-executor = ThreadPoolExecutor(max_workers=4)
+from utils.intent_cache import intent_cache
+
+# Ollama intent classification measures 5.4-7.0s minimum on every model
+# installed on this machine — no locally-installed model makes a synchronous
+# wait for it viable. This pool is intentionally persistent (never
+# .shutdown()'d) rather than created per-request: the per-request
+# ThreadPoolExecutor used for PII/memory below is opened with `with`, and
+# exiting a `with ThreadPoolExecutor(...)` block calls shutdown(wait=True),
+# which blocks on EVERY submitted future regardless of any timeout already
+# passed to .result() on the way there — so an intent classification
+# submitted to that pool would still stall the node for the full 5-7s even
+# after "timing out". Dispatching to this separate, long-lived pool instead
+# means the slow Ollama call keeps running in the background after this
+# request has already moved on, and its eventual result still gets cached
+# for the next identical query (see _resolve_intent below).
+_INTENT_EXECUTOR = ThreadPoolExecutor(max_workers=4, thread_name_prefix="phantom-intent-bg")
+INTENT_TIMEOUT_SECONDS = 0.5
 
 def run_intent_classify(raw: str) -> dict:
     from utils.models import ClarificationRequest
@@ -262,6 +278,57 @@ def run_intent_classify(raw: str) -> dict:
     except Exception as exc:
         logger.error("[PREPROCESS] Classification error: %s", exc)
         return {"intent": "GENERAL_QA", "error": ""}
+
+
+def _dispatch_intent_classify(raw: str):
+    """
+    Cache hit -> the cached result dict directly, no Ollama call at all.
+    Cache miss -> a Future submitted to the persistent background pool,
+    which keeps running (and warms the cache) even if the caller gives up
+    on waiting for it.
+    """
+    cached = intent_cache.get(raw)
+    if cached is not None:
+        return cached
+
+    future = _INTENT_EXECUTOR.submit(run_intent_classify, raw)
+    future.add_done_callback(lambda f: _cache_intent_result(raw, f))
+    return future
+
+
+def _cache_intent_result(raw: str, future) -> None:
+    try:
+        intent_cache.set(raw, future.result())
+    except Exception:
+        pass  # a failed background classification just isn't cached
+
+
+def _resolve_intent(raw: str, dispatched) -> dict:
+    """
+    Wait up to INTENT_TIMEOUT_SECONDS for the dispatched classification.
+
+    mode_classifier already routed this query via fast regex before this
+    node ever ran, so the Ollama intent is secondary enrichment (used for
+    cloud model selection and logging), not a gate — proceeding without it
+    on timeout is safe, and matches run_intent_classify's own existing
+    fail-safe default on a real classification error.
+    """
+    if isinstance(dispatched, dict):
+        return dispatched  # cache hit — already resolved, nothing to wait on
+
+    try:
+        return dispatched.result(timeout=INTENT_TIMEOUT_SECONDS)
+    except (TimeoutError, FutureTimeoutError):
+        logger.info(
+            "[PREPROCESS] Intent classification exceeded %.1fs (Ollama) — "
+            "proceeding without it; result will still be cached for next time.",
+            INTENT_TIMEOUT_SECONDS,
+        )
+        return {"intent": "GENERAL_QA", "error": ""}
+    except Exception as exc:
+        logger.warning("[PREPROCESS] Intent dispatch failed: %s", exc)
+        return {"intent": "GENERAL_QA", "error": ""}
+
 
 def run_pii_scan(raw: str) -> dict:
     engine = _get_pii_engine()
@@ -416,9 +483,14 @@ def parallel_preprocess_node(state: AgentState) -> dict:
     """
     Parallel pre-processing (Fix D)
     Runs PII scan, Memory retrieval, and Intent classification concurrently.
+
+    Intent classification is dispatched (not submitted into the `with`
+    block below) so a slow Ollama response can never stall this node: see
+    _dispatch_intent_classify / _resolve_intent for why the two other
+    tasks and intent classification deliberately use different pools.
     """
     raw = state["raw_input"].strip()
-    
+
     if not raw:
         logger.warning("[PREPROCESS] Empty input received — aborting pipeline.")
         return {"error": "Empty input. Please type a query.", "intent": "UNKNOWN"}
@@ -438,16 +510,18 @@ def parallel_preprocess_node(state: AgentState) -> dict:
     def _layered_retrieve(query: str):
         return _get_layered().retrieve_layered_context(query, session_id)
 
-    with ThreadPoolExecutor(max_workers=3) as pool:
-        # Submit all three simultaneously
+    # Dispatch intent first so it gets a head start on the ~30ms that PII
+    # scan + memory retrieval take, even though we won't wait on it here.
+    intent_dispatched = _dispatch_intent_classify(raw)
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
         pii_future     = pool.submit(run_pii_scan, raw)
         memory_future  = pool.submit(_layered_retrieve, raw)
-        intent_future  = pool.submit(run_intent_classify, raw)
 
-        # Collect results (blocks until all done)
         pii_result     = pii_future.result(timeout=60)
         layered        = memory_future.result(timeout=60)
-        intent_result  = intent_future.result(timeout=60)
+
+    intent_result = _resolve_intent(raw, intent_dispatched)
 
     # The layered context goes in as a SystemMessage ahead of the user turn,
     # so the model reads durable facts -> session history -> recent turns
