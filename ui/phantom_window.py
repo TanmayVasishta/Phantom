@@ -50,6 +50,7 @@ class PhantomAgentWindow(QWidget):
         self.thread_id = str(uuid.uuid4())
         self._worker: PhantomWorker | None = None
         self._busy = False
+        self._revealing = False
         self._typewriter_gen = 0
 
         self._settings = WindowSettings(SETTINGS_PATH)
@@ -284,14 +285,23 @@ class PhantomAgentWindow(QWidget):
 
     def _should_auto_hide(self) -> bool:
         """
-        False (never auto-hide) while pinned, while a query is in flight, or
-        while the cursor is anywhere over the window — the last case is what
-        keeps clicking the copy button, selecting response text, or
-        scrolling from dismissing the window: none of those move OS focus
-        away, but a transient native popup (e.g. a right-click context menu)
-        can, and this is what tells that apart from a genuine click-away.
+        False (never auto-hide) while pinned, while a query is in flight,
+        while the typewriter reveal is still animating the answer onto
+        screen, or while the cursor is anywhere over the window — the last
+        case is what keeps clicking the copy button, selecting response
+        text, or scrolling from dismissing the window: none of those move
+        OS focus away, but a transient native popup (e.g. a right-click
+        context menu) can, and this is what tells that apart from a genuine
+        click-away.
+
+        _revealing is checked separately from _busy: _busy clears the
+        instant a response arrives (so the input re-enables immediately),
+        but _typewriter_reveal() then runs for len(words)*15ms — a real
+        response easily takes 1-3+ seconds to finish animating in. Without
+        this, a focus change landing in that window (the user alt-tabbing
+        away right as the answer comes back) hides the window mid-reveal.
         """
-        if self._pinned or self._busy:
+        if self._pinned or self._busy or self._revealing:
             return False
         return not self.geometry().contains(QCursor.pos())
 
@@ -372,6 +382,15 @@ class PhantomAgentWindow(QWidget):
         self._send_btn.setEnabled(True)
         self._hitl.hide_animated()
 
+        # If Escape or the hotkey hid this window while the query was still
+        # running (neither checks _busy today — see _submit and
+        # keyPressEvent), the answer would otherwise render into an
+        # invisible widget and never be seen. Measured live: this is exactly
+        # what was happening, not a crash — phantom_crash.log stayed empty
+        # through every reproduction, but the window never came back.
+        if not self.isVisible():
+            self.show_window()
+
         provider = result.get("provider_used") or ""
         if provider and provider != "—":
             self._provider_badge.setText(f"via {provider[:1].upper()}{provider[1:]}")
@@ -384,6 +403,14 @@ class PhantomAgentWindow(QWidget):
         self._typewriter_reveal(text)
 
     def _on_hitl(self, payload: dict, original_query: str) -> None:
+        # Same reasoning as _on_response: without this, a high-risk action
+        # could interrupt for approval while the window is hidden, and the
+        # worker thread then blocks for up to 5 minutes (see
+        # PhantomWorker._hitl_callback) waiting on a decision the user has
+        # no way to see the prompt for, let alone make.
+        if not self.isVisible():
+            self.show_window()
+
         action = payload.get("action") or payload.get("raw_input") or original_query
         intent = payload.get("intent", "")
         risk = payload.get("risk_score", 0.0)
@@ -413,6 +440,10 @@ class PhantomAgentWindow(QWidget):
         self._send_btn.setEnabled(True)
         self._provider_badge.setText("")
         self._hitl.hide_animated()
+
+        if not self.isVisible():
+            self.show_window()
+
         error_text = f"Phantom is offline: {message}"
         self._size_response_area(error_text)
         self._open_results()
@@ -438,14 +469,19 @@ class PhantomAgentWindow(QWidget):
     def _typewriter_reveal(self, text: str) -> None:
         self._typewriter_gen += 1
         gen = self._typewriter_gen
+        self._revealing = True
         words = text.split(" ")
         self._response_area.setPlainText("")
 
         def step(i=[0]):
             if gen != self._typewriter_gen:
+                # Superseded by a newer reveal (e.g. a HITL prompt or another
+                # response) — that one owns _revealing now; don't clear it
+                # out from under it.
                 return
             if i[0] >= len(words):
                 self._response_area.setHtml(self._render_markdown(text))
+                self._revealing = False
                 return
             cursor_text = self._response_area.toPlainText()
             sep = " " if cursor_text else ""

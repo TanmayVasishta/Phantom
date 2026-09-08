@@ -71,12 +71,21 @@ def main():
     # High-DPI
     os.environ.setdefault('QT_ENABLE_HIGHDPI_SCALING', '1')
 
+    # Before QApplication so a crash during Qt startup itself is still
+    # captured, not just once the event loop is running. Found nothing in
+    # three live reproductions of the reported disappearance (crash log
+    # stayed empty each time — the real bugs were logic bugs, fixed
+    # separately below), but this stays on permanently regardless.
+    from utils.crash_logger import install as install_crash_logger
+    install_crash_logger(os.path.join(os.path.dirname(os.path.abspath(__file__)), "phantom_crash.log"))
+
     from ui.phantom_window import PhantomAgentWindow
 
     print("Importing QApplication")
     from PyQt6.QtWidgets import QApplication
     print("Creating app")
     app = QApplication(sys.argv)
+
     app.setQuitOnLastWindowClosed(False)
     app.setApplicationName('PHANTOM')
     app.setApplicationDisplayName('PHANTOM — Privacy-First AI')

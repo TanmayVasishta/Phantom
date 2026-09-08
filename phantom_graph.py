@@ -1624,6 +1624,35 @@ def resume_query(decision: str, thread_id: str, token_callback=None) -> dict:
 
 import concurrent.futures
 
+# run_query() used to open `with concurrent.futures.ThreadPoolExecutor(1) as ex:`
+# per call. That looks like it enforces `timeout`, but it doesn't: when
+# future.result(timeout=timeout) raises TimeoutError, the `return` inside the
+# `with` block still has to run `ex.__exit__()` -> shutdown(wait=True) before
+# the function can actually return -- which blocks until the abandoned
+# _run_query_internal call finishes for real, however long that takes.
+# Measured live: a "Request timed out after 60s" message was delivered at
+# 82-92s wall-clock, not 60s, because the calling thread (PhantomWorker) was
+# stuck inside that shutdown the whole time. If the window is hidden during
+# that stretch (Escape, or the hotkey pressed again -- neither currently
+# checks _busy), the eventual response lands in an invisible widget with no
+# way to bring it back, and a second query attempt silently no-ops because
+# _busy never actually cleared. A persistent pool fixes the enforcement: the
+# calling thread can walk away after `timeout` and the abandoned call keeps
+# running in the true background rather than blocking whoever gave up on it.
+_QUERY_EXECUTOR = concurrent.futures.ThreadPoolExecutor(
+    max_workers=3, thread_name_prefix="phantom-query"
+)
+
+
+def _log_abandoned_query_outcome(future: concurrent.futures.Future) -> None:
+    """Best-effort visibility into a call nobody is waiting on any more."""
+    try:
+        future.result()
+        logger.info("[QUERY] Abandoned (timed-out) call completed after the fact.")
+    except Exception as exc:
+        logger.warning("[QUERY] Abandoned (timed-out) call failed after the fact: %s", exc)
+
+
 def run_query(user_input, thread_id=None, verbose=True, token_callback=None,
               hitl_callback=None, timeout=60, interactive=False):
     # In an interactive terminal the HITL prompt blocks on human input, which
@@ -1633,15 +1662,15 @@ def run_query(user_input, thread_id=None, verbose=True, token_callback=None,
             user_input, thread_id, verbose, token_callback, hitl_callback, interactive=True
         )
 
-    with concurrent.futures.ThreadPoolExecutor(1) as ex:
-        future = ex.submit(
-            _run_query_internal, user_input, thread_id, verbose, token_callback, hitl_callback, False
-        )
-        try:
-            return future.result(timeout=timeout)
-        except concurrent.futures.TimeoutError:
-            msg = f"Request timed out after {timeout}s. Groq API key may be missing or overloaded. Try again."
-            return {
+    future = _QUERY_EXECUTOR.submit(
+        _run_query_internal, user_input, thread_id, verbose, token_callback, hitl_callback, False
+    )
+    try:
+        return future.result(timeout=timeout)
+    except concurrent.futures.TimeoutError:
+        future.add_done_callback(_log_abandoned_query_outcome)
+        msg = f"Request timed out after {timeout}s. Groq API key may be missing or overloaded. Try again."
+        return {
                 "response": msg,
                 "final_response": msg,
                 "n_pii_redacted": 0,

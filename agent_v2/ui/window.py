@@ -136,6 +136,7 @@ class PhantomAgent2Window(QWidget):
         self._pipeline = pipeline
         self._worker: PhantomPipelineWorker | None = None
         self._busy = False
+        self._revealing = False
         self._typewriter_gen = 0
         self._report_open = False
         self._t_start = 0.0
@@ -325,12 +326,17 @@ class PhantomAgent2Window(QWidget):
     def _should_auto_hide(self) -> bool:
         """
         False (never auto-hide) while pinned, while the pipeline is running,
-        or while the cursor is anywhere over the window — see the identical
-        check in ui/phantom_window.py (v1) for why cursor position, not just
-        activation state, is what actually distinguishes an in-window
-        interaction (copy, scroll, text selection) from a genuine click-away.
+        while the typewriter reveal is still animating the answer onto
+        screen, or while the cursor is anywhere over the window — see the
+        identical check in ui/phantom_window.py (v1) for why cursor
+        position, not just activation state, is what actually distinguishes
+        an in-window interaction (copy, scroll, text selection) from a
+        genuine click-away, and why _revealing is tracked separately from
+        _busy (busy clears before the multi-second reveal animation
+        finishes, so without this a focus change landing during that
+        window hides the window mid-reveal).
         """
-        if self._pinned or self._busy:
+        if self._pinned or self._busy or self._revealing:
             return False
         return not self.geometry().contains(QCursor.pos())
 
@@ -417,6 +423,12 @@ class PhantomAgent2Window(QWidget):
         self._input.setEnabled(True)
         self._send.setEnabled(True)
 
+        # If Escape or the hotkey hid this window while the pipeline was
+        # still running (neither checks _busy today), the result would
+        # otherwise render into an invisible widget and never be seen.
+        if not self.isVisible():
+            self.show_window()
+
         elapsed = time.perf_counter() - self._t_start
         if result.blocked:
             self._badge.setText("⛔ Blocked locally")
@@ -451,6 +463,8 @@ class PhantomAgent2Window(QWidget):
         self._busy = False
         self._input.setEnabled(True)
         self._send.setEnabled(True)
+        if not self.isVisible():
+            self.show_window()
         self._summary.setText("Pipeline error")
         self._show_response(f"Error: {message}")
 
@@ -466,14 +480,16 @@ class PhantomAgent2Window(QWidget):
     def _typewriter(self, text: str) -> None:
         self._typewriter_gen += 1
         gen = self._typewriter_gen
+        self._revealing = True
         words = text.split(" ")
         self._response.setPlainText("")
         idx = [0]
 
         def step():
             if gen != self._typewriter_gen:
-                return
+                return  # superseded by a newer reveal; that one owns _revealing now
             if idx[0] >= len(words):
+                self._revealing = False
                 return
             cur = self._response.toPlainText()
             self._response.setPlainText((cur + " " + words[idx[0]]).strip())

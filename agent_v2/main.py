@@ -140,6 +140,12 @@ def main() -> int:
 
     os.environ.setdefault("QT_ENABLE_HIGHDPI_SCALING", "1")
 
+    # Before QApplication — see utils/crash_logger.py and the identical
+    # placement in phantom_ui.py (v1). Same threading architecture, same
+    # diagnostic added for parity.
+    from utils.crash_logger import install as install_crash_logger
+    install_crash_logger(os.path.join(_HERE, "phantom_crash.log"))
+
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
     app.setApplicationName("PHANTOM 2.0")
