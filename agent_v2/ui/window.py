@@ -7,9 +7,12 @@ before anything leaves the machine.
 """
 from __future__ import annotations
 
+import logging
 import os
 import sys
 import time
+
+logger = logging.getLogger(__name__)
 
 from PyQt6.QtCore import Qt, QThread, QTimer, QEvent, pyqtSignal
 from PyQt6.QtGui import QColor, QCursor
@@ -439,9 +442,13 @@ class PhantomAgent2Window(QWidget):
             self._badge.setText("🔒 PII Protected")
             self._badge.setStyleSheet("color: #4ade80; font-size: 11px; font-weight: 600;"
                                       "background: transparent; border: none;")
+            # "via Phantom ⬡" branding only — never the real backend
+            # (Groq/Gemini/OpenRouter/...). Which cloud actually served
+            # this is an implementation detail, not something a
+            # privacy-first agent should surface.
             self._summary.setText(
                 f"🛡 {result.entity_count} entities redacted · "
-                f"via {result.provider or '—'} · {elapsed:.1f}s"
+                f"via Phantom ⬡ · {elapsed:.1f}s"
             )
 
         # Privacy report: entity TYPES only. Original values are never rendered
@@ -453,7 +460,7 @@ class PhantomAgent2Window(QWidget):
             f"Entities detected: {types}\n"
             f"Surrogates used: {result.surrogate_count}\n"
             f"Sentinel risk: {risk}\n"
-            f"Provider: {result.provider or '—'}\n"
+            f"Processed: {'Phantom Cloud' if result.provider else '—'}\n"
             f"Tiers run: {result.tiers_run}  ·  skipped: {result.tiers_skipped}"
         )
 
@@ -466,7 +473,11 @@ class PhantomAgent2Window(QWidget):
         if not self.isVisible():
             self.show_window()
         self._summary.setText("Pipeline error")
-        self._show_response(f"Error: {message}")
+        # Never interpolate the raw exception (str(exc) has no guarantee of
+        # staying provider-name-free) — logged internally by the worker
+        # already; the user only ever sees this generic line.
+        logger.debug("[UI] pipeline failed: %s", message)
+        self._show_response("Unable to process request. Please try again.")
 
     # ── response rendering ───────────────────────────────────────────────
     def _show_response(self, text: str) -> None:

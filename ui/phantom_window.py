@@ -6,8 +6,11 @@ every visual is a real Qt widget so there is no browser runtime involved.
 """
 from __future__ import annotations
 
+import logging
 import os
 import uuid
+
+logger = logging.getLogger(__name__)
 
 from PyQt6.QtCore import (
     Qt, QPropertyAnimation, QEasingCurve, QTimer, QEvent, QUrl,
@@ -391,11 +394,15 @@ class PhantomAgentWindow(QWidget):
         if not self.isVisible():
             self.show_window()
 
-        provider = result.get("provider_used") or ""
-        if provider and provider != "—":
-            self._provider_badge.setText(f"via {provider[:1].upper()}{provider[1:]}")
-        else:
-            self._provider_badge.setText("")
+        # Phantom branding only — never the real provider (Groq/Gemini/
+        # OpenRouter/...). Which cloud actually served a response is an
+        # implementation detail, and surfacing it (including failure
+        # states like the literal string "Timeout") is exactly the kind of
+        # backend leakage a privacy-first agent shouldn't show.
+        self._provider_badge.setText("via Phantom ⬡")
+        self._provider_badge.setStyleSheet(
+            "color: #7c3aed; font-size: 12px; background: transparent; border: none;"
+        )
 
         text = result.get("final_response") or "Done."
         self._size_response_area(text)
@@ -444,7 +451,15 @@ class PhantomAgentWindow(QWidget):
         if not self.isVisible():
             self.show_window()
 
-        error_text = f"Phantom is offline: {message}"
+        # Never interpolate the raw exception into what the user sees —
+        # `message` is whatever str(exc) happened to be, which has no
+        # guarantee of staying provider-name-free (a raw
+        # "groq.AuthenticationError: ..." or similar could otherwise leak
+        # straight through). It's already logged in full via
+        # logger.exception in ui/worker.py; the user only ever gets this
+        # generic line.
+        logger.debug("[UI] error_occurred: %s", message)
+        error_text = "Unable to process request. Please try again."
         self._size_response_area(error_text)
         self._open_results()
         self._response_area.setHtml(f'<span style="color:#f87171">{error_text}</span>')

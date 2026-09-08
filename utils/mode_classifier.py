@@ -47,8 +47,22 @@ _INPUT_SIM = re.compile(
     r"^\s*(type|click|double[\s-]?click|right[\s-]?click|scroll)\b",
     re.IGNORECASE,
 )
+# Read-only duplicate-file scanning only — anchored to the whole input like
+# every other controlled pattern here, not a bare substring match, so
+# "find duplicate handling logic in my code" (about code, not files) does
+# not get hijacked into a filesystem scan. Deliberately does NOT include
+# "remove"/"delete duplicate" phrasings: controlled mode skips guardian_node
+# entirely (see route_after_mode), so a destructive action routed through it
+# would run with zero risk-scoring and zero HITL approval — exactly what
+# HIGH_RISK_TOOLS (delete_all_duplicates is one) exists to prevent. Deletion
+# stays on the normal smart-mode path where that gate actually runs.
+_FIND_DUPLICATES = re.compile(
+    r"^\s*(find|scan|check|look\s+for)\s+(for\s+)?(duplicate|duplicates|dupes)"
+    r"(\s+files?)?(\s+in\s+.+)?\s*$",
+    re.IGNORECASE,
+)
 
-CONTROLLED_PATTERNS: list[re.Pattern] = [_APP_ACTION, _VOLUME, _BRIGHTNESS, _INPUT_SIM]
+CONTROLLED_PATTERNS: list[re.Pattern] = [_APP_ACTION, _VOLUME, _BRIGHTNESS, _INPUT_SIM, _FIND_DUPLICATES]
 
 # ── Agent: multi-step tasks ───────────────────────────────────────────────────
 _RESEARCH_AND = re.compile(

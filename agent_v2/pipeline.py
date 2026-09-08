@@ -200,13 +200,19 @@ class PhantomPipeline:
         result.tokens_used = cloud["tokens_used"]
 
         if cloud["error"]:
+            # cloud["error"] is str(exc) from whichever provider PhantomRouter
+            # last tried (cloud_router.ask()'s except-clause) — real
+            # diagnostic value, but no guarantee of staying free of a raw
+            # provider name, so it's kept in result.error (internal / not
+            # rendered anywhere) and never interpolated into anything shown
+            # to the user.
             result.error = cloud["error"]
-            emit("Cloud", "error", cloud["error"][:80])
+            emit("Cloud", "error", "cloud request failed")
             emit("Restore", "skipped", "")
-            result.restored_response = f"[PHANTOM 2.0] Cloud call failed: {cloud['error']}"
+            result.restored_response = "[PHANTOM 2.0] Unable to process request. Please try again."
             result.total_ms = (time.perf_counter() - t_start) * 1000
             return result
-        emit("Cloud", "done", f"via {cloud['provider']}")
+        emit("Cloud", "done", "via Phantom")
 
         # ── STAGE 5: Restoration ─────────────────────────────────────────
         emit("Restore", "running", "")
