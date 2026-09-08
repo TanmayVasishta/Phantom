@@ -11,6 +11,7 @@ HITL approval gate before they execute.
 
 from langchain_core.tools import tool
 import os
+import re
 from pathlib import Path
 
 # ── Path handling ─────────────────────────────────────────────────────────────
@@ -394,7 +395,7 @@ def search_files(
 
 @tool
 def find_duplicates(path: str) -> dict:
-    """Find Windows-style duplicate files (e.g. 'report (1).pdf') in a folder."""
+    """Find duplicate files in a folder by content (byte-for-byte), regardless of name."""
     try:
         p_obj = resolve_path(path)
     except ValueError as e:
@@ -404,7 +405,7 @@ def find_duplicates(path: str) -> dict:
     if err:
         return err
 
-    duplicates = _get_duplicates_list(path)
+    duplicates, scan_complete, skipped_folders = _get_duplicates_list(path)
 
     total_wasted = 0
     paths = []
@@ -415,13 +416,24 @@ def find_duplicates(path: str) -> dict:
             pass
         paths.append(str(d))
 
+    note = (
+        f"Scan stopped after {_DUPLICATE_SCAN_BUDGET_SECONDS:.0f}s to stay responsive — "
+        f"these subfolders weren't fully checked: {', '.join(skipped_folders[:5])}"
+        f"{'…' if len(skipped_folders) > 5 else ''}. Results above are still real "
+        f"duplicates, just not necessarily all of them. Ask to scan one of those "
+        f"subfolders directly for a complete check of it."
+    ) if not scan_complete else None
+
     if not paths:
-        return {
+        result = {
             "total_duplicates_found": 0,
             "message": f"No duplicate files found in {p_obj}.",
         }
+        if note:
+            result["incomplete_scan"] = note
+        return result
 
-    return {
+    result = {
         "paths_to_delete_sample": paths[:10],
         "total_duplicates_found": len(paths),
         "wasted_human": f"{total_wasted / 1024 / 1024:.1f} MB",
@@ -430,6 +442,9 @@ def find_duplicates(path: str) -> dict:
             "list to delete_files, that would blow the token budget."
         ),
     }
+    if note:
+        result["incomplete_scan"] = note
+    return result
 
 
 @tool
@@ -631,59 +646,241 @@ def create_folder(path: str) -> dict:
 
 # ── Duplicate detection ───────────────────────────────────────────────────────
 
-def _get_duplicates_list(path: str) -> list[Path]:
-    import re
+_COPY_SUFFIX = re.compile(r"(\s*\(\d+\)|[\s_-]+-?\s*copy(\s*\d+)?)$", re.IGNORECASE)
+_COPY_PREFIX = re.compile(r"^copy\s+of\s+", re.IGNORECASE)
+
+
+def _looks_like_copy(stem: str) -> bool:
+    """
+    Best-effort recognition of common "this is a copy" naming conventions
+    — " (1)", " - Copy", " - Copy - Copy", "file copy 2", "Copy of file".
+
+    Used ONLY as a tiebreaker for which file in an already content-confirmed
+    duplicate group to keep. Never used to decide whether two files ARE
+    duplicates — that decision belongs to _get_duplicates_list's content
+    hash alone, since naming conventions vary too much to enumerate (this
+    list already needed 4 patterns for ONE Downloads folder) and pattern
+    matching alone gets false positives too: "Budget (2024).pdf" would
+    wrongly group with "Budget.pdf" under a naming-only check even with
+    completely unrelated content.
+    """
+    return bool(_COPY_SUFFIX.search(stem) or _COPY_PREFIX.match(stem))
+
+
+_DUPLICATE_SCAN_BUDGET_SECONDS = 10.0  # keeps this comfortably under run_query's 60s timeout
+
+
+def _get_duplicates_list(path: str) -> tuple[list[Path], bool, list[str]]:
+    """
+    Find duplicate files by CONTENT, not filename pattern.
+
+    The previous implementation only recognised the Windows "(N)" copy
+    suffix (e.g. "report (1).pdf"). Verified live against a real Downloads
+    folder: multiple genuine duplicate sets instead used " - Copy" /
+    " - Copy - Copy" suffixes (e.g. "23CS7PCMNE.pdf" / "23CS7PCMNE -
+    Copy.pdf" / "23CS7PCMNE - Copy - Copy.pdf", all three byte-identical)
+    and were silently missed — including a 467MB installer duplicated in
+    full. There is no one fixed naming convention: it depends on the OS,
+    the browser, and how the copy was made, and pattern-matching also risks
+    the opposite mistake (see _looks_like_copy's docstring).
+
+    Content hashing sidesteps both problems: two files are duplicates iff
+    their bytes are identical, regardless of what either is named. Files
+    are grouped by size first — free, just a stat call — so only files
+    that already share a size with something else ever get hashed, and a
+    file with no size-twin never touches the disk for this at all.
+
+    Returns (duplicates_to_delete, scan_complete, skipped_folders).
+    scan_complete is False only if the RECURSIVE pass below ran out of its
+    time budget; direct children of `path` are always fully covered (see
+    the two-phase walk below for why).
+
+    Two-phase walk, not one rglob() over everything:
+    Measured live on a real Downloads folder: a full recursive scan across
+    ~44,000 files (several nested extracted project clones, one of which
+    turned out to exist as two full copies) took over three minutes —
+    comfortably past run_query()'s 60s timeout. A single time-boxed cutoff
+    over one rglob() pass isn't safe either: OS directory enumeration order
+    is not reliably alphabetical, so on this exact run a naive 25s cutoff
+    would have missed a real 467MB duplicate installer that only got
+    reached at the 26.6s mark. Scanning immediate children first (always
+    completes — a folder would need an implausible number of DIRECT files
+    for this alone to take long) and only THEN recursing into subfolders
+    under the time budget guarantees top-level duplicates — what someone
+    asking "check my downloads for duplicates" most likely means — are
+    never missed, while deeper ones are best-effort and honestly reported
+    if the scan had to stop partway.
+    """
+    import hashlib
+    import time
     from collections import defaultdict
 
     try:
         path_obj = resolve_path(path)
     except ValueError:
-        return []
+        return [], True, []
     if not is_safe_path(path_obj) or not path_obj.exists() or not path_obj.is_dir():
-        return []
+        return [], True, []
 
-    # Matches exactly ONE trailing " (N)" copy-suffix at the end of a stem.
-    # Applied iteratively below — a file can legitimately carry more than
-    # one, e.g. Windows saves a second copy of "Report (2).pdf" as
-    # "Report (2) (1).pdf". Only stripping one suffix made that file's
-    # "original" resolve to "Report.pdf" (which may not exist) while
-    # "Report (2).pdf" also stripped to "Report.pdf" — the two never landed
-    # in the same group, so neither was ever reported as a duplicate.
-    suffix_pattern = re.compile(r"^(.*?)\s*\((\d+)\)$")
-    groups = defaultdict(list)
-
-    for f in path_obj.rglob("*"):
-        try:
-            if not f.is_file():
+    def _bucket(entries) -> dict[int, list[Path]]:
+        sizes: dict[int, list[Path]] = defaultdict(list)
+        for f in entries:
+            try:
+                if not f.is_file():
+                    continue
+                size = f.stat().st_size
+            except OSError:
                 continue
+            if size == 0:
+                continue  # empty files aren't meaningfully "duplicates" of each other
+            sizes[size].append(f)
+        return sizes
+
+    def _partial_hash(fp: Path) -> str | None:
+        """First+last 64KB only. Two files that already share a size and
+        differ here cannot be equal, so this rules out non-duplicates
+        without reading the rest — the deciding cost for a folder like this
+        one, which has two 467MB installers as well as several videos: same
+        size does not necessarily mean duplicate, and there is no reason to
+        read the full file to find that out."""
+        h = hashlib.sha256()
+        try:
+            size = fp.stat().st_size
+            with open(fp, "rb") as fh:
+                head = fh.read(1 << 16)
+                h.update(head)
+                if size > len(head):
+                    fh.seek(-min(1 << 16, size), os.SEEK_END)
+                    h.update(fh.read(1 << 16))
+            return h.hexdigest()
         except OSError:
-            continue
+            return None
 
-        stem = f.stem
-        strip_count = 0
-        last_num = 0
-        while True:
-            m = suffix_pattern.match(stem)
-            if not m:
+    def _content_hash(fp: Path) -> str | None:
+        h = hashlib.sha256()
+        try:
+            with open(fp, "rb") as fh:
+                for chunk in iter(lambda: fh.read(1 << 20), b""):
+                    h.update(chunk)
+            return h.hexdigest()
+        except OSError:
+            return None
+
+    def _find_dupes(by_size: dict[int, list[Path]], deadline: float | None) -> tuple[list[Path], bool]:
+        """Hash-and-group one size-map. `deadline` is checked once per
+        size-group (coarse, not per-file — groups here are typically small,
+        so this bounds overshoot to roughly one group's worth of I/O)."""
+        found: list[Path] = []
+        complete = True
+        for size, files in by_size.items():
+            if len(files) <= 1:
+                continue
+            if deadline is not None and time.perf_counter() >= deadline:
+                complete = False
                 break
-            stem = m.group(1)
-            last_num = int(m.group(2))
-            strip_count += 1
 
-        canonical_name = stem + f.suffix
-        groups[(f.parent, canonical_name)].append((f, strip_count, last_num))
+            # Cheap pass first: only files that ALSO share a partial hash
+            # can possibly be true duplicates, so a full read is skipped
+            # for anything already ruled out by its first+last 64KB.
+            by_partial: dict[str, list[Path]] = defaultdict(list)
+            for f in files:
+                p_digest = _partial_hash(f)
+                if p_digest is not None:
+                    by_partial[p_digest].append(f)
 
-    duplicates_to_delete = []
-    for _key, entries in groups.items():
-        if len(entries) <= 1:
+            by_hash: dict[str, list[Path]] = defaultdict(list)
+            for candidates in by_partial.values():
+                if len(candidates) <= 1:
+                    continue
+                for f in candidates:
+                    digest = _content_hash(f)
+                    if digest is not None:
+                        by_hash[digest].append(f)
+
+            for group in by_hash.values():
+                if len(group) <= 1:
+                    continue
+                # Keep whichever name doesn't look like a copy (the likely
+                # original); ties — including "none of them look like a
+                # copy" — fall back to oldest mtime, since the first one
+                # created is the most plausible original.
+                def _sort_key(f: Path):
+                    try:
+                        mtime = f.stat().st_mtime
+                    except OSError:
+                        mtime = 0.0
+                    return (_looks_like_copy(f.stem), mtime)
+                group.sort(key=_sort_key)
+                found.extend(group[1:])
+        return found, complete
+
+    # Phase 1 — immediate children only, hashed with NO deadline. This is
+    # what makes top-level duplicates an architectural guarantee rather
+    # than "probably fine in practice": a folder would need an implausible
+    # number of same-size DIRECT files for this alone to threaten the
+    # budget, and it runs to completion regardless before phase 2 even
+    # starts walking anything.
+    subdirs: list[Path] = []
+    top_level_files: list[Path] = []
+    try:
+        for entry in path_obj.iterdir():
+            try:
+                if entry.is_dir():
+                    subdirs.append(entry)
+                    continue
+            except OSError:
+                continue
+            top_level_files.append(entry)
+    except OSError:
+        pass
+
+    duplicates_to_delete, _ = _find_dupes(_bucket(top_level_files), deadline=None)
+
+    # Phase 2 — recurse into each subfolder, budgeted for both the walk
+    # AND the hashing of whatever it finds (a fast walk doesn't help if
+    # hashing its results still blows the budget). A folder is only
+    # reported "skipped" if it wasn't fully walked or fully hashed.
+    deadline = time.perf_counter() + _DUPLICATE_SCAN_BUDGET_SECONDS
+    scan_complete = True
+    skipped_folders: list[str] = []
+    for sub in subdirs:
+        if time.perf_counter() >= deadline:
+            scan_complete = False
+            skipped_folders.append(sub.name)
             continue
-        # Keep the "most original": fewest stripped suffixes (an exact
-        # canonical match has 0), then lowest copy number as tiebreaker.
-        entries.sort(key=lambda e: (e[1], e[2]))
-        for f, _sc, _n in entries[1:]:
-            duplicates_to_delete.append(f)
 
-    return duplicates_to_delete
+        # Stat inline during the walk (checking the deadline before each
+        # file, not after collecting a possibly-huge list) rather than
+        # collect-then-_bucket() as a separate pass — collecting first and
+        # bucketing after meant a folder with tens of thousands of entries
+        # could blow well past the deadline during the "just append to a
+        # list" step alone, since nothing bounded how many got collected
+        # before the walk noticed time was up.
+        by_size_sub: dict[int, list[Path]] = defaultdict(list)
+        walked_fully = True
+        try:
+            for f in sub.rglob("*"):
+                if time.perf_counter() >= deadline:
+                    walked_fully = False
+                    break
+                try:
+                    if not f.is_file():
+                        continue
+                    size = f.stat().st_size
+                except OSError:
+                    continue
+                if size:  # empty files aren't meaningfully "duplicates"
+                    by_size_sub[size].append(f)
+        except OSError:
+            pass
+
+        deep_dupes, hashed_fully = _find_dupes(by_size_sub, deadline=deadline)
+        duplicates_to_delete.extend(deep_dupes)
+        if not (walked_fully and hashed_fully):
+            scan_complete = False
+            skipped_folders.append(sub.name)
+
+    return duplicates_to_delete, scan_complete, skipped_folders
 
 
 # ── Write / destructive tools (HITL-gated) ────────────────────────────────────
@@ -831,8 +1028,9 @@ def delete_files(file_paths: list[str]) -> dict:
 @tool
 def delete_all_duplicates(path: str) -> dict:
     """
-    Delete all Windows-style numbered duplicates (e.g. 'file (1).txt') in a
-    folder, keeping the original of each. Requires HITL approval.
+    Delete all content-duplicate files in a folder (byte-identical to
+    another file present, regardless of naming), keeping one original per
+    group. Requires HITL approval.
     """
     try:
         p_obj = resolve_path(path)
@@ -843,9 +1041,15 @@ def delete_all_duplicates(path: str) -> dict:
     if err:
         return err
 
-    duplicates = _get_duplicates_list(path)
+    duplicates, scan_complete, skipped_folders = _get_duplicates_list(path)
     if not duplicates:
-        return {"message": f"No duplicates found in {p_obj}.", "deleted_count": 0}
+        result = {"message": f"No duplicates found in {p_obj}.", "deleted_count": 0}
+        if not scan_complete:
+            result["incomplete_scan"] = (
+                f"Scan stopped after {_DUPLICATE_SCAN_BUDGET_SECONDS:.0f}s — "
+                f"not fully checked: {', '.join(skipped_folders[:5])}"
+            )
+        return result
 
     deleted, failed, freed = [], [], 0
     for p in duplicates:
@@ -859,13 +1063,20 @@ def delete_all_duplicates(path: str) -> dict:
         except OSError as e:
             failed.append({"path": str(p), "error": str(e)})
 
-    return {
+    result = {
         "deleted_count": len(deleted),
         "deleted_sample": deleted[:10],
         "failed_count": len(failed),
         "failed": failed[:5],
         "freed_space": f"{freed / 1024 / 1024:.1f} MB",
     }
+    if not scan_complete:
+        result["incomplete_scan"] = (
+            f"Scan stopped after {_DUPLICATE_SCAN_BUDGET_SECONDS:.0f}s — these "
+            f"subfolders weren't fully checked and may still contain duplicates: "
+            f"{', '.join(skipped_folders[:5])}{'…' if len(skipped_folders) > 5 else ''}"
+        )
+    return result
 
 
 @tool
