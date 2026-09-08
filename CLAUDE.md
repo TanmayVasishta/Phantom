@@ -2787,3 +2787,85 @@ controlled mode entirely, and adds `risk_score`, `guardian_tier`,
 `guardian_reason` to `AgentState`. `parallel_preprocess_node` injects the
 layered context and reports `memory_layers_used`; `pii_restore_node` fires
 `consolidate_async` (dispatch measured 0.7–1.2 ms) and increments `turn_count`.
+
+## 9. LLM ROTATION, PROVIDER-NAME LEAKAGE, CONTROLLED-MODE DUPLICATE SCAN (September 2026)
+
+### Rotation never triggered on a stall, only on a fast error
+
+`llm_call_node` has its own inline fallback cascade (backup Groq keys →
+openrouter → gemini) and has never called `PhantomRouter` — confirmed
+again this session; `_invoke_with_rotation` and `agentic_weight` do not
+exist anywhere in this codebase. The cascade itself was correct. The bug
+was that it only runs on an **exception**, and none of the four LLM
+clients (`ChatGroq`, `ChatGoogleGenerativeAI`, `ChatOpenAI`, `ChatOllama`)
+had a request-level timeout — a client that stalls rather than erroring
+fast never raises, so nothing ever rotates, and the only backstop was
+`run_query()`'s own 60s ceiling, which doesn't retry.
+
+Fixed with two layers, because one alone isn't trustworthy: `request_timeout`/
+`timeout` set on every cloud client, **plus** a calling-side
+executor-enforced timeout around every cascade attempt. Verified live —
+`ChatGroq`'s `request_timeout` is genuinely honored (a 0.001s setting
+raised in 1.855s); `ChatGoogleGenerativeAI`'s `timeout=` is **not**
+reliably honored for a stalled connection (the same 0.001s setting took
+34.183s, stuck in the TLS handshake phase specifically). Since Gemini is
+the last link in the chain, trusting its own field alone would leave the
+exact failure mode this was meant to fix unfixed for that one provider.
+
+Two more things found while measuring the cascade end-to-end, not by
+inspection:
+- When every provider genuinely fails, the code used to re-raise the
+  *original* raw exception (e.g. `groq.AuthenticationError: Invalid API
+  Key`), propagating as an unhandled graph node exception that would
+  surface raw provider text straight to the user. Now returns a clean
+  generic message through the normal return path.
+- `_get_fallback_llm("openrouter")` / `("gemini")` took **13.4s / 5.1s just
+  to construct** — one-time Python import cost for `langchain_openai` /
+  `langchain_google_genai`, paid on first use. Those are only reached from
+  the fallback path, which normally never runs — so the first real Groq
+  outage was also the first time those packages had ever been imported,
+  adding ~18s of pure import latency on top of the actual retry, at
+  exactly the moment the user is already waiting on a failure. Now
+  pre-constructed during `prewarm_pipeline()`.
+
+Verified: Groq forced to fail with an invalid key on a warm process →
+cascades through a real live OpenRouter 429 → succeeds via Gemini,
+correct answer, 18.71s total.
+
+### Provider names must never reach the user
+
+Removed from every UI surface, not just the "via Groq" badge asked about:
+v1's badge always showed the literal `provider_used` (including `"via
+Timeout"` on failure) — now always `"via Phantom ⬡"`. Both v1's
+`_on_error` and v2's `_on_failed` interpolated the raw exception string
+from the worker thread directly into user-visible text; `str(exc)` has no
+guarantee of staying provider-name-free (confirmed: a raw
+`groq.AuthenticationError` was one exception away from reaching exactly
+this code path before the source-level fix above landed), so both are now
+fixed generic messages regardless of what the exception says. The worst
+one was live, not latent: `agent_v2/pipeline.py`'s `cloud["error"]`
+flowed straight into `result.restored_response` — the actual answer text
+shown to the user, not a debug label.
+
+### Controlled-mode duplicate scan
+
+Added a narrowly-anchored pattern to `CONTROLLED_PATTERNS` (matched
+against the whole input, like every other pattern there — not a bare
+substring, so "find duplicate handling logic in my code" isn't hijacked
+into a filesystem scan) and wired `deterministic_action_node` to handle
+it: the first real action in what was previously a pure
+acknowledgement-only stub.
+
+Deliberately excludes "remove/delete duplicate" — controlled mode skips
+`guardian_node` entirely (see `route_after_mode`), so a destructive action
+routed through it would run with zero risk-scoring and zero HITL, exactly
+what `delete_all_duplicates` being in `HIGH_RISK_TOOLS` exists to prevent.
+Deletion stays on the normal smart-mode path where that gate runs.
+
+Deliberately reuses `find_duplicates()` from §8's fix rather than
+reimplementing scanning with a naive full-file-hash approach — that would
+regress to the >180s runtime the content-hash-plus-budget design was
+built to fix on this same real Downloads folder (two 467MB files alone).
+The original ask's "<5s" target isn't achievable here without cutting
+real completeness; verified 13–20s through the live app, which is what
+honest, bounded coverage of this folder costs.
