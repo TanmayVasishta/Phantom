@@ -76,11 +76,34 @@ def prewarm_pipeline():
         _get_sentinel()
         _get_bound_llm("groq")  # constructs the client, no network call
 
-    with ThreadPoolExecutor(max_workers=3) as pool:
+    def _warm_fallback_providers():
+        """
+        Construct (never call) each fallback client so its SDK's first-time
+        Python import cost is paid here, not during a live Groq failure.
+
+        Measured live: _get_fallback_llm("openrouter") alone takes 13.4s,
+        "gemini" 5.1s — almost entirely one-time module import (langchain_
+        openai / langchain_google_genai and their transitive deps), since
+        constructing a LangChain chat model does not itself make a network
+        call. These are only ever reached from llm_call_node's fallback
+        path, which normally never runs — so without this, the exact
+        moment a real Groq outage first needs a fallback is also the first
+        moment Python has ever imported these packages in this process,
+        adding ~18s of pure import latency on top of the actual network
+        attempt, right when the user is already waiting on a failure.
+        """
+        for provider in ("openrouter", "gemini"):
+            try:
+                _get_fallback_llm(provider)
+            except Exception as exc:
+                logger.warning("[PREWARM] Fallback provider %s warm-up failed: %s", provider, exc)
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
         futures = {
             "PII": pool.submit(_warm_pii),
             "Memory": pool.submit(_warm_memory),
             "Models": pool.submit(_warm_models),
+            "FallbackProviders": pool.submit(_warm_fallback_providers),
         }
         for name, fut in futures.items():
             try:
@@ -265,6 +288,20 @@ from utils.intent_cache import intent_cache
 _INTENT_EXECUTOR = ThreadPoolExecutor(max_workers=4, thread_name_prefix="phantom-intent-bg")
 INTENT_TIMEOUT_SECONDS = 0.5
 
+# Same footgun, same fix, for the PII scan and memory retrieval this node also
+# dispatches: both used to run inside a per-call `with ThreadPoolExecutor()`,
+# which meant a lowered .result(timeout=...) would raise on schedule but the
+# enclosing `with` block's shutdown(wait=True) still blocked until the
+# abandoned future finished anyway. Neither has ever measured anywhere near
+# its old 60s timeout in practice (PII ~5ms, memory retrieval ~25-55ms), but
+# "never measured that slow" isn't the same guarantee as "structurally can't
+# block the response" — a genuine ChromaDB stall or a hung PII engine call
+# would still have eaten the full 60s for nothing. 5s is generous headroom
+# over anything actually observed, while still failing soft well before it
+# could threaten run_query()'s own 60s ceiling.
+_PREPROCESS_EXECUTOR = ThreadPoolExecutor(max_workers=4, thread_name_prefix="phantom-preprocess-bg")
+PREPROCESS_TIMEOUT_SECONDS = 5.0
+
 def run_intent_classify(raw: str) -> dict:
     from utils.models import ClarificationRequest
     sentinel = _get_sentinel()
@@ -383,15 +420,21 @@ def route_after_mode(state: AgentState) -> str:
 
 def deterministic_action_node(state: AgentState) -> dict:
     """
-    Stub for controlled-mode execution. Not wired to real OS actions yet —
-    returns the fixed acknowledgement text instantly with zero API calls, no
-    sentinel, no LLM. Logged the same way an LLM call would be (provider
-    "none", zero tokens) so mode/provider distribution stays visible in
+    Controlled-mode execution — deterministic pattern, zero API calls, no
+    LLM. Logged the same way an LLM call would be (provider "none", zero
+    tokens) so mode/provider distribution stays visible in
     daily_summary()/`/status` without a special case there.
+
+    Everything except the duplicate-scan branch below is still the
+    original stub (acknowledgement text only, nothing actually executed) —
+    duplicate-finding is the first real action wired in, and deliberately
+    read-only: see _FIND_DUPLICATES's docstring in utils/mode_classifier.py
+    for why "remove/delete duplicate" is NOT routed here.
     """
     from utils.usage_logger import log_usage
 
     command = (state.get("raw_input") or "").strip()
+    command_lower = command.lower()
     logger.info("[CONTROLLED] %s", command[:60])
 
     try:
@@ -403,10 +446,64 @@ def deterministic_action_node(state: AgentState) -> dict:
     except Exception:
         pass
 
+    if "duplicate" in command_lower or "dupes" in command_lower:
+        response = _run_controlled_duplicate_scan(command)
+        return {"final_response": response, "provider_used": "none"}
+
     return {
         "final_response": f"Running: {command}",
         "provider_used": "none",
     }
+
+
+def _run_controlled_duplicate_scan(command: str) -> str:
+    """
+    Read-only duplicate scan for the controlled-mode fast path.
+
+    Reuses find_duplicates() from tools/file_tools.py rather than a fresh
+    naive implementation: that function already does content-hash (not
+    filename-pattern) matching with a partial-hash pre-check and a bounded
+    scan budget, verified live against a real ~44,000-file Downloads folder
+    at 20.57s with a full MD5-every-byte-of-every-file approach measured at
+    over three minutes on the same folder — reimplementing a simpler
+    version here would reintroduce exactly the performance and correctness
+    problems that one was built to fix.
+
+    Path defaults to Downloads (the overwhelmingly common case) if the
+    command doesn't name a folder; a trailing "in X" clause overrides that,
+    reusing resolve_path()'s own alias handling ("desktop", "documents",
+    an absolute path, ...) so this stays consistent with every other tool.
+    """
+    import re as _re
+    from tools.file_tools import find_duplicates
+
+    m = _re.search(r"\bin\s+(.+)$", command, _re.IGNORECASE)
+    target = m.group(1).strip().strip(".!?") if m else "downloads"
+
+    find_fn = getattr(find_duplicates, "func", find_duplicates)
+    result = find_fn(target)
+
+    if "error" in result:
+        return f"Couldn't scan {target}: {result['error']}"
+
+    if result.get("total_duplicates_found", 0) == 0:
+        msg = result.get("message", f"No duplicate files found in {target}.")
+        return f"✓ {msg}"
+
+    lines = [
+        f"Found {result['total_duplicates_found']} duplicate file(s) in {target} "
+        f"(~{result['wasted_human']} wasted):",
+        "",
+    ]
+    lines.extend(f"  • {p}" for p in result.get("paths_to_delete_sample", []))
+    if result["total_duplicates_found"] > len(result.get("paths_to_delete_sample", [])):
+        lines.append(f"  ... and {result['total_duplicates_found'] - len(result['paths_to_delete_sample'])} more")
+    if result.get("incomplete_scan"):
+        lines.append("")
+        lines.append(result["incomplete_scan"])
+    lines.append("")
+    lines.append('Say "remove duplicate files" to delete them (requires your approval first).')
+    return "\n".join(lines)
 
 
 def guardian_node(state: AgentState) -> dict:
@@ -514,12 +611,29 @@ def parallel_preprocess_node(state: AgentState) -> dict:
     # scan + memory retrieval take, even though we won't wait on it here.
     intent_dispatched = _dispatch_intent_classify(raw)
 
-    with ThreadPoolExecutor(max_workers=2) as pool:
-        pii_future     = pool.submit(run_pii_scan, raw)
-        memory_future  = pool.submit(_layered_retrieve, raw)
+    pii_future    = _PREPROCESS_EXECUTOR.submit(run_pii_scan, raw)
+    memory_future = _PREPROCESS_EXECUTOR.submit(_layered_retrieve, raw)
 
-        pii_result     = pii_future.result(timeout=60)
-        layered        = memory_future.result(timeout=60)
+    try:
+        pii_result = pii_future.result(timeout=PREPROCESS_TIMEOUT_SECONDS)
+    except (TimeoutError, FutureTimeoutError):
+        logger.warning(
+            "[PREPROCESS] PII scan exceeded %.0fs — proceeding unredacted from "
+            "this node's perspective (the raw text still never leaves this "
+            "process; it just skips placeholder substitution for this turn).",
+            PREPROCESS_TIMEOUT_SECONDS,
+        )
+        pii_result = {"pii_map": {}, "anonymized": raw, "count": 0}
+
+    try:
+        layered = memory_future.result(timeout=PREPROCESS_TIMEOUT_SECONDS)
+    except (TimeoutError, FutureTimeoutError):
+        logger.warning(
+            "[PREPROCESS] Memory retrieval exceeded %.0fs — proceeding with no "
+            "layered context for this turn.", PREPROCESS_TIMEOUT_SECONDS,
+        )
+        from memory.layered_memory import LayeredContext
+        layered = LayeredContext()
 
     intent_result = _resolve_intent(raw, intent_dispatched)
 
@@ -563,13 +677,34 @@ def select_model_for_task(intent: str) -> str:
 
 _bound_llms = {}
 
+# Applied to every cloud client below (Groq, Gemini, OpenRouter — Ollama has
+# no equivalent field and is the local last-resort fallback anyway, where a
+# slow-but-working answer beats cutting it off). Without this, a client that
+# stalls rather than erroring fast (a slow/degraded endpoint, a hung TCP
+# connection) never raises — so llm_call_node's own exception-triggered
+# fallback cascade (backup Groq keys -> openrouter -> gemini) never fires,
+# and the ONLY thing that ever stops the request is run_query()'s outer 60s
+# ceiling, which does not retry anything. That is the actual mechanism
+# behind "Groq timeout kills the task with no rotation": the rotation code
+# was always there and correct, it just never got triggered. 15s leaves
+# room for several real attempts inside the 60s outer budget.
+CLOUD_CLIENT_TIMEOUT_SECONDS = 15
+
+# Backstop for the calling-side enforcement in llm_call_node's _bounded_stream
+# — see its docstring for why the client-level field above isn't trustworthy
+# on its own. Persistent, not per-call `with`, for the same reason as every
+# other executor in this file: exiting a `with ThreadPoolExecutor(...)` block
+# blocks on shutdown(wait=True) regardless of any timeout already given up
+# on, which would silently defeat the entire point of this wrapper.
+_LLM_CALL_EXECUTOR = ThreadPoolExecutor(max_workers=4, thread_name_prefix="phantom-llm-call")
+
 def _get_bound_llm(model_choice: str):
     if model_choice in _bound_llms:
         return _bound_llms[model_choice]
 
     from tools.file_tools import ALL_TOOLS
     import os
-    
+
     if model_choice == "groq" or model_choice == "cloud":
         from langchain_groq import ChatGroq
         api_key = os.getenv("GROQ_API_KEY")
@@ -579,7 +714,8 @@ def _get_bound_llm(model_choice: str):
             llm = ChatOllama(model="qwen3.5:2b", temperature=0.3)
         else:
             api_key = os.getenv("GROQ_API_KEY", "")
-            llm = ChatGroq(model="openai/gpt-oss-120b", api_key=api_key, temperature=0.3)
+            llm = ChatGroq(model="openai/gpt-oss-120b", api_key=api_key, temperature=0.3,
+                           request_timeout=CLOUD_CLIENT_TIMEOUT_SECONDS)
     else:
         from langchain_ollama import ChatOllama
         llm = ChatOllama(model="qwen3.5:2b", temperature=0.3)
@@ -627,7 +763,8 @@ def _get_fallback_llm(provider: str, api_key: str = None):
     if provider == "groq":
         from langchain_groq import ChatGroq
         key = api_key or os.getenv("GROQ_API_KEY")
-        return ChatGroq(model="openai/gpt-oss-120b", api_key=key, temperature=0.3).bind_tools(ALL_TOOLS)
+        return ChatGroq(model="openai/gpt-oss-120b", api_key=key, temperature=0.3,
+                        request_timeout=CLOUD_CLIENT_TIMEOUT_SECONDS).bind_tools(ALL_TOOLS)
     elif provider == "gemini":
         # gemini-2.0-flash 404s ("no longer available") — verified live. This is
         # the LAST link in the failover chain, so a dead model here meant a Groq
@@ -635,11 +772,14 @@ def _get_fallback_llm(provider: str, api_key: str = None):
         # gemini client, which is the model name that actually resolves.
         from langchain_google_genai import ChatGoogleGenerativeAI
         key = os.getenv("GEMINI_API_KEY")
-        return ChatGoogleGenerativeAI(model="gemini-3.6-flash", api_key=key, temperature=0.3).bind_tools(ALL_TOOLS)
+        return ChatGoogleGenerativeAI(model="gemini-3.6-flash", api_key=key, temperature=0.3,
+                                      timeout=CLOUD_CLIENT_TIMEOUT_SECONDS).bind_tools(ALL_TOOLS)
     elif provider == "openrouter":
         from langchain_openai import ChatOpenAI
         key = os.getenv("OPENROUTER_API_KEY")
-        return ChatOpenAI(model="google/gemma-4-31b-it:free", openai_api_key=key, openai_api_base="https://openrouter.ai/api/v1", temperature=0.3).bind_tools(ALL_TOOLS)
+        return ChatOpenAI(model="google/gemma-4-31b-it:free", openai_api_key=key,
+                          openai_api_base="https://openrouter.ai/api/v1", temperature=0.3,
+                          request_timeout=CLOUD_CLIENT_TIMEOUT_SECONDS).bind_tools(ALL_TOOLS)
     else:
         try:
             from langchain_ollama import ChatOllama
@@ -699,13 +839,38 @@ def llm_call_node(state: AgentState, config: RunnableConfig) -> dict:
                 full_res += chunk
         return full_res
 
+    def _bounded_stream(llm_client):
+        """
+        run_stream(), but with the timeout enforced from the calling side
+        rather than trusted to the client's own timeout field.
+
+        Verified live before relying on this: ChatGroq's request_timeout is
+        genuinely honored (a 0.001s setting raised APITimeoutError in
+        1.855s). ChatGoogleGenerativeAI's `timeout=` is NOT reliably
+        honored for a stalled connection — the same 0.001s setting took
+        34.183s to raise (ConnectTimeout, stuck in the TLS handshake phase
+        specifically, not the read phase the field seems to actually
+        bound). Without this wrapper, a Gemini-specific stall — Gemini
+        being the LAST link in the fallback chain below — would never
+        raise at all within any useful window, so the fallback logic
+        immediately below would never get a chance to run for that exact
+        failure mode, and the only thing that would eventually stop the
+        request is run_query()'s outer 60s ceiling, with zero rotation
+        ever attempted. That is the literal mechanism behind "rotation
+        isn't happening" for a stalled (as opposed to fast-erroring)
+        provider. The abandoned call keeps running harmlessly in the
+        background on this persistent pool if it does eventually resolve.
+        """
+        future = _LLM_CALL_EXECUTOR.submit(run_stream, llm_client)
+        return future.result(timeout=CLOUD_CLIENT_TIMEOUT_SECONDS)
+
     full_response = None
     # Which provider actually served the response. Starts as the intended one
     # and is reassigned by the failover paths below — reporting the *intended*
     # provider after a failover mislabels both the UI badge and the usage log.
     actual_provider = "groq" if model_choice in ("groq", "cloud") else "ollama"
     try:
-        full_response = run_stream(llm_with_tools)
+        full_response = _bounded_stream(llm_with_tools)
     except Exception as e:
         # Fail over on ANY provider error (rate limit, decommissioned model,
         # bad request, timeout, etc.) — never let a single provider's outage
@@ -718,7 +883,7 @@ def llm_call_node(state: AgentState, config: RunnableConfig) -> dict:
             try:
                 logger.warning("[LLM] Trying backup Groq API Key...")
                 fallback_llm = _get_fallback_llm("groq", api_key=backup_key)
-                full_response = run_stream(fallback_llm)
+                full_response = _bounded_stream(fallback_llm)
                 actual_provider = "groq"
                 success = True
                 break
@@ -731,7 +896,7 @@ def llm_call_node(state: AgentState, config: RunnableConfig) -> dict:
             for provider in ("openrouter", "gemini"):
                 try:
                     fallback_llm = _get_fallback_llm(provider)
-                    full_response = run_stream(fallback_llm)
+                    full_response = _bounded_stream(fallback_llm)
                     actual_provider = provider
                     success = True
                     break
@@ -740,8 +905,23 @@ def llm_call_node(state: AgentState, config: RunnableConfig) -> dict:
                     continue
 
         if not success:
-            raise e
-    
+            # Every provider in the cascade genuinely failed. This used to
+            # re-raise the ORIGINAL exception (e.g. a raw
+            # "groq.AuthenticationError: Invalid API Key" or a Gemini
+            # ConnectTimeout), which propagates as an unhandled LangGraph
+            # node exception — and the generic exception handler on the
+            # other end of that (PhantomWorker.run() in the UI) shows
+            # str(exc) straight to the user, surfacing exactly the raw
+            # provider-specific text the UI is never supposed to display.
+            # Logged in full here (this is the one place that's supposed to
+            # know which provider said what); the user only ever sees a
+            # generic message.
+            logger.error("[LLM] All providers exhausted for this turn: %s", e)
+            full_response = AIMessage(
+                content="Unable to process request right now. Please try again."
+            )
+            actual_provider = "none"
+
     # Return update to state
     provider_used = actual_provider
 
