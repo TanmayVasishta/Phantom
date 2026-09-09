@@ -99,9 +99,22 @@ _MULTI_STEP_CONJUNCTION = re.compile(
     r"\b(first|then|after that|next|finally)\b.*\b(then|after|finally|next)\b",
     re.IGNORECASE,
 )
+# Organizing/sorting/cleaning up a real folder is a genuine multi-step agent
+# task (scan, categorize, move — not a one-shot deterministic command), so it
+# belongs here rather than in CONTROLLED_PATTERNS: that mode skips
+# guardian_node entirely (see route_after_mode in phantom_graph.py), and a
+# task that moves an unbounded number of files has no business running with
+# zero risk-scoring. The bounded gap (.{0,40}) keeps this from spanning
+# unrelated clauses in a longer sentence.
+_ORGANIZE_FILES = re.compile(
+    r"\b(organi[sz]e|sort|clean\s*up|tidy\s*up)\b.{0,40}\b"
+    r"(files?|downloads?|documents?|desktop|folder|directory)\b",
+    re.IGNORECASE,
+)
 
 AGENT_PATTERNS: list[re.Pattern] = [
     _RESEARCH_AND, _STEP_BY_STEP, _CREATE_REPORT, _MULTI_STEP_CONJUNCTION,
+    _ORGANIZE_FILES,
 ]
 
 

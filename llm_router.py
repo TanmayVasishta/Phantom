@@ -15,13 +15,34 @@ from __future__ import annotations
 
 import logging
 import os
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Callable
 
 from utils.usage_logger import log_usage, summarize as _summarize_usage
 
 logger = logging.getLogger(__name__)
+
+# Every provider call below is bounded from the CALLING side, not just via
+# each client's own timeout field — verified live (phantom_graph.py's
+# equivalent fix, same finding): ChatGroq's request_timeout is genuinely
+# honored (a 0.001s setting raised in 1.855s), but ChatGoogleGenerativeAI's
+# timeout= is NOT reliably honored for a stalled connection (the same
+# 0.001s setting took 34.183s, stuck in the TLS handshake specifically).
+# Persistent pool, not a per-call `with` — exiting `with
+# ThreadPoolExecutor(...)` blocks on shutdown(wait=True) regardless of any
+# timeout already given up on, which would defeat the entire point.
+CLOUD_CALL_TIMEOUT_SECONDS = 15
+_CALL_EXECUTOR = ThreadPoolExecutor(max_workers=6, thread_name_prefix="phantom-router-call")
+
+
+def _call_with_timeout(fn: Callable[[], Any], timeout: float = CLOUD_CALL_TIMEOUT_SECONDS) -> Any:
+    """Run fn() with a hard deadline enforced here, independent of whether
+    the client's own timeout parameter actually works for this provider."""
+    future = _CALL_EXECUTOR.submit(fn)
+    return future.result(timeout=timeout)
 
 
 def _client_model_name(client: Any) -> str:
@@ -32,9 +53,15 @@ def _client_model_name(client: Any) -> str:
     dict — a parallel mapping would silently drift the moment a model name is
     fixed in _get_client() (which has happened repeatedly in this project as
     providers deprecate models).
+
+    bind_tools() wraps the model in a RunnableBinding, whose model_name/model
+    live on .bound rather than the wrapper itself — checked first so a
+    tool-bound call (see PhantomRouter._client_for) doesn't silently log
+    "unknown" for every model.
     """
+    target = getattr(client, "bound", client)
     for attr in ("model_name", "model"):
-        value = getattr(client, attr, None)
+        value = getattr(target, attr, None)
         if isinstance(value, str) and value:
             return value
     return "unknown"
@@ -42,13 +69,19 @@ def _client_model_name(client: Any) -> str:
 # Provider tiers: weight (selection priority), tpm (per-minute token budget —
 # already 85% of each provider's real rate limit), and speed_tier (informational;
 # only "fast" is currently special-cased, by the speed lane).
+# agentic_weight is a SEPARATE priority ranking, used only when the caller
+# marks a request agentic=True: multi-step file/agent tasks aren't chasing
+# interactive chat latency the way normal streaming replies are, so they skip
+# the speed lane entirely (see _pick_slot) and are scored on this column
+# instead of weight — Gemini's large context and reliability matter more here
+# than Groq's raw tokens/sec.
 PROVIDER_CONFIG: dict[str, dict[str, Any]] = {
-    "gemini":     {"weight": 100, "tpm": 212500, "speed_tier": "medium", "context_limit": 800000},
-    "openrouter": {"weight": 40,  "tpm": 17000,  "speed_tier": "medium", "context_limit": 60000},
-    "nvidia":     {"weight": 25,  "tpm": 8500,   "speed_tier": "medium", "context_limit": 60000},
-    "xai":        {"weight": 25,  "tpm": 8500,   "speed_tier": "medium", "context_limit": 100000},
-    "groq":       {"weight": 60,  "tpm": 5100,   "speed_tier": "fast",   "context_limit": 6000},
-    "ollama":     {"weight": 1,   "tpm": 999999, "speed_tier": "local",  "context_limit": 4000},
+    "gemini":     {"weight": 100, "agentic_weight": 150, "tpm": 212500, "speed_tier": "medium", "context_limit": 800000},
+    "openrouter": {"weight": 40,  "agentic_weight": 80,  "tpm": 17000,  "speed_tier": "medium", "context_limit": 60000},
+    "nvidia":     {"weight": 25,  "agentic_weight": 60,  "tpm": 8500,   "speed_tier": "medium", "context_limit": 60000},
+    "xai":        {"weight": 25,  "agentic_weight": 40,  "tpm": 8500,   "speed_tier": "medium", "context_limit": 100000},
+    "groq":       {"weight": 60,  "agentic_weight": 20,  "tpm": 5100,   "speed_tier": "fast",   "context_limit": 6000},
+    "ollama":     {"weight": 1,   "agentic_weight": 5,   "tpm": 999999, "speed_tier": "local",  "context_limit": 4000},
 }
 
 # Cloud provider names in PROVIDER_CONFIG's declared order, Ollama excluded —
@@ -153,6 +186,10 @@ class ProviderSlot:
     @property
     def weight(self) -> int:
         return PROVIDER_CONFIG[self.name]["weight"]
+
+    @property
+    def agentic_weight(self) -> int:
+        return PROVIDER_CONFIG[self.name]["agentic_weight"]
 
     @property
     def speed_tier(self) -> str:
@@ -268,6 +305,7 @@ class PhantomRouter:
         estimated_tokens: int,
         stream: bool = False,
         exclude: frozenset[str] = frozenset(),
+        agentic: bool = False,
     ) -> tuple[ProviderSlot, str]:
         """
         Returns (slot, lane), where lane is "speed", "weighted", or "fallback".
@@ -275,16 +313,21 @@ class PhantomRouter:
         `exclude` is per-call, not persistent state: it's how invoke()/stream()
         cascade through candidates that already failed within THIS call
         without touching the cross-call quarantine counters.
+
+        `agentic` skips the speed lane unconditionally, even for a streaming
+        call: a multi-step file/agent task isn't chasing chat latency, and
+        scores weighted selection on agentic_weight instead of weight —
+        Gemini's context/reliability matters more there than Groq's tokens/sec.
         """
-        # 1. Speed lane
-        if (stream or estimated_tokens < SPEED_LANE_TOKEN_THRESHOLD) and "groq" not in exclude:
+        # 1. Speed lane — never for an agentic call.
+        if not agentic and (stream or estimated_tokens < SPEED_LANE_TOKEN_THRESHOLD) and "groq" not in exclude:
             groq = self._slots["groq"]
             if (
                 self._api_keys.get("groq")
                 and groq.is_healthy
                 and groq.available_tokens >= estimated_tokens
             ):
-                self._log_pick(groq, "speed", estimated_tokens)
+                self._log_pick(groq, "speed", estimated_tokens, agentic=agentic)
                 return groq, "speed"
             # Groq saturated/unhealthy/keyless — fall through to weighted selection.
 
@@ -306,29 +349,33 @@ class PhantomRouter:
                 continue
             if slot.available_tokens < slot.limit * RESERVE_FRACTION:
                 continue  # reserve buffer — never run a slot fully dry
-            score = slot.weight * (slot.available_tokens / slot.limit)
+            rank = slot.agentic_weight if agentic else slot.weight
+            score = rank * (slot.available_tokens / slot.limit)
             candidates.append((score, slot))
 
         if candidates:
             candidates.sort(key=lambda pair: pair[0], reverse=True)
             best_score, best_slot = candidates[0]
-            self._log_pick(best_slot, "weighted", estimated_tokens, score=best_score)
+            self._log_pick(best_slot, "weighted", estimated_tokens, score=best_score, agentic=agentic)
             return best_slot, "weighted"
 
         # 3. Ollama fallback — no cloud candidate qualified at all.
         ollama = self._slots["ollama"]
-        self._log_pick(ollama, "fallback", estimated_tokens)
+        self._log_pick(ollama, "fallback", estimated_tokens, agentic=agentic)
         return ollama, "fallback"
 
-    def _log_pick(self, slot: ProviderSlot, lane: str, estimated_tokens: int, score: float | None = None) -> None:
+    def _log_pick(self, slot: ProviderSlot, lane: str, estimated_tokens: int,
+                  score: float | None = None, agentic: bool = False) -> None:
         limit = slot.limit
         available = slot.available_tokens
         pct = (available / limit * 100.0) if limit else 0.0
+        rank = slot.agentic_weight if agentic else slot.weight
         if score is None:
-            score = slot.weight * (available / limit) if limit else 0.0
+            score = rank * (available / limit) if limit else 0.0
         logger.info(
-            "[router] -> %s | score=%.2f | weight=%d | remaining=%d/%d (%.0f%%) | lane=%s",
-            slot.name, score, slot.weight, available, limit, pct, lane,
+            "[PhantomRouter] -> %s | tokens: %d/%d | weight=%d | remaining=%d/%d (%.0f%%) | "
+            "lane=%s | agentic=%s",
+            slot.name, slot.tokens_used, limit, rank, available, limit, pct, lane, agentic,
         )
 
     # ── Client construction (lazy, cached per slot for the process lifetime) ──
@@ -345,6 +392,7 @@ class PhantomRouter:
             from langchain_groq import ChatGroq
             slot.client = ChatGroq(
                 model="openai/gpt-oss-120b", api_key=self._api_keys["groq"], temperature=0.3,
+                request_timeout=CLOUD_CALL_TIMEOUT_SECONDS,
             )
         elif name == "gemini":
             # gemini-1.5-flash, -2.0-flash, and -2.5-flash are all 404 now —
@@ -356,6 +404,7 @@ class PhantomRouter:
             from langchain_google_genai import ChatGoogleGenerativeAI
             slot.client = ChatGoogleGenerativeAI(
                 model="gemini-3.6-flash", api_key=self._api_keys["gemini"], temperature=0.3,
+                timeout=CLOUD_CALL_TIMEOUT_SECONDS,
             )
         elif name == "openrouter":
             # meta-llama/llama-3-8b-instruct:free no longer exists on OpenRouter
@@ -365,6 +414,7 @@ class PhantomRouter:
             slot.client = ChatOpenAI(
                 model="google/gemma-4-31b-it:free", api_key=self._api_keys["openrouter"],
                 base_url="https://openrouter.ai/api/v1", temperature=0.3,
+                request_timeout=CLOUD_CALL_TIMEOUT_SECONDS,
             )
         elif name == "nvidia":
             # meta/llama-3.1-8b-instruct has reached end-of-life (410 Gone) and
@@ -375,6 +425,7 @@ class PhantomRouter:
             slot.client = ChatOpenAI(
                 model="meta/llama-3.2-11b-vision-instruct", api_key=self._api_keys["nvidia"],
                 base_url="https://integrate.api.nvidia.com/v1", temperature=0.3,
+                request_timeout=CLOUD_CALL_TIMEOUT_SECONDS,
             )
         elif name == "xai":
             # Left as-is: the configured XAI_API_KEY itself is rejected
@@ -387,6 +438,7 @@ class PhantomRouter:
             slot.client = ChatOpenAI(
                 model="grok-beta", api_key=self._api_keys["xai"],
                 base_url="https://api.x.ai/v1", temperature=0.3,
+                request_timeout=CLOUD_CALL_TIMEOUT_SECONDS,
             )
         elif name == "ollama":
             from langchain_ollama import ChatOllama
@@ -455,12 +507,28 @@ class PhantomRouter:
         """
         return _summarize_usage(hours=hours)
 
+    def _client_for(self, name: str, tools: list | None):
+        """
+        The slot's cached raw client, tool-bound for this call if `tools` is
+        given.
+
+        Binding produces a new wrapper rather than mutating the cached
+        client in place, so re-binding per call never disturbs what's
+        cached on the slot — it's a cheap local wrap, not a network call,
+        and every provider's LangChain client supports it uniformly,
+        including Ollama.
+        """
+        client = self._get_client(name)
+        return client.bind_tools(tools) if tools else client
+
     def invoke(
         self,
         messages: list,
         estimated_tokens: int | None = None,
         stream: bool = False,
         session_id: str = "unknown",
+        agentic: bool = False,
+        tools: list | None = None,
         **kwargs,
     ) -> tuple[Any, str]:
         """
@@ -472,16 +540,26 @@ class PhantomRouter:
         to the NEXT-best cloud candidate — not straight to Ollama — so Ollama
         only engages once every cloud option has actually been exhausted for
         this call.
+
+        `agentic=True` skips the speed lane and scores candidates on
+        agentic_weight instead of weight — see _pick_slot. `tools`, if
+        given, is bound onto whichever client is selected — every client
+        _get_client() builds is otherwise plain/tool-less, and a caller
+        whose whole ReAct loop depends on tool calls (phantom_graph.py's
+        llm_call_node) would silently lose that ability without this.
         """
         estimated = self._resolve_estimate(messages, estimated_tokens)
 
         tried: set[str] = set()
         while True:
-            slot, _lane = self._pick_slot(estimated, stream=stream, exclude=frozenset(tried))
+            slot, _lane = self._pick_slot(estimated, stream=stream, exclude=frozenset(tried), agentic=agentic)
 
             try:
-                client = self._get_client(slot.name)
-                response = client.invoke(messages, **kwargs)
+                client = self._client_for(slot.name, tools)
+                # Bounded from the calling side — see CLOUD_CALL_TIMEOUT_SECONDS's
+                # docstring for why the client's own timeout field alone isn't
+                # trustworthy for every provider.
+                response = _call_with_timeout(lambda: client.invoke(messages, **kwargs))
                 response = _normalize_response(response, slot.name)
                 slot.record_success(estimated)
                 self._log_usage(slot, client, estimated, session_id)
@@ -499,31 +577,69 @@ class PhantomRouter:
                 tried.add(slot.name)
 
     def stream(self, messages: list, estimated_tokens: int | None = None,
-               session_id: str = "unknown", **kwargs):
+               session_id: str = "unknown", agentic: bool = False,
+               on_provider: Callable[[str], None] | None = None,
+               tools: list | None = None, **kwargs):
         """
-        Streaming variant. Always routes via the speed lane in _pick_slot
-        (stream=True), so Groq is preferred whenever it's healthy.
+        Streaming variant. Routes via the speed lane in _pick_slot (stream=
+        True) unless agentic=True, so Groq is preferred whenever it's
+        healthy for ordinary chat-style calls, while a multi-step agent task
+        skips straight to weighted (agentic_weight) selection instead.
+
+        `on_provider`, if given, fires exactly once — right when the router
+        commits to a slot, before the first chunk is yielded — so a caller
+        that needs to know which provider is serving this response (for a
+        UI badge, logging, ...) doesn't have to guess from the chunks
+        themselves. Mirrors this codebase's existing token_callback idiom
+        rather than inventing a new way to thread information out of a
+        generator.
+
+        `tools`, if given, is bound onto whichever client is selected — same
+        reasoning as invoke()'s `tools` param: phantom_graph.py's
+        llm_call_node ReAct loop needs tool-bound models, and every client
+        _get_client() builds is otherwise plain/tool-less.
 
         A failure before the first chunk is yielded cascades through the
         remaining candidates exactly like invoke(). A failure mid-stream
         (after chunks have already reached the caller) cannot be silently
         retried on a different provider without duplicating/confusing output,
-        so it propagates as-is once streaming has genuinely started.
+        so it propagates as-is once streaming has genuinely started. Only
+        getting to the FIRST chunk is wrapped in the calling-side timeout —
+        once a provider is confirmed responsive and chunks are already
+        flowing, capping total stream duration would risk truncating a
+        long-but-healthy response; the highest-risk moment is the initial
+        connection, which is exactly what this bounds.
+
+        That wrapped window covers client.stream(...) itself, not just the
+        next() after it — verified live against an unreachable Ollama host:
+        client.stream(...) can block on its own well past this timeout
+        (the connection attempt happens before any generator is even handed
+        back), so wrapping only next(chunk_iter) left that call free to hang
+        for however long the underlying HTTP client takes, bypassing this
+        backstop entirely and falling through to whatever outer ceiling the
+        caller happens to have (60s in phantom_graph.py's run_query — 4x
+        this timeout, for exactly the failure class this exists to bound).
         """
         estimated = self._resolve_estimate(messages, estimated_tokens)
 
         tried: set[str] = set()
         while True:
-            slot, _lane = self._pick_slot(estimated, stream=True, exclude=frozenset(tried))
-            client = self._get_client(slot.name)
+            slot, _lane = self._pick_slot(estimated, stream=True, exclude=frozenset(tried), agentic=agentic)
+            client = self._client_for(slot.name, tools)
+
+            def _start_stream():
+                it = client.stream(messages, **kwargs)
+                return it, next(it)
 
             try:
-                chunk_iter = client.stream(messages, **kwargs)
-                first_chunk = _normalize_response(next(chunk_iter), slot.name)
+                chunk_iter, first_chunk_raw = _call_with_timeout(_start_stream)
+                first_chunk = _normalize_response(first_chunk_raw, slot.name)
             except StopIteration:
                 slot.record_success(estimated)
                 self._log_usage(slot, client, estimated, session_id)
                 self.status(slot.name)
+                if on_provider:
+                    on_provider(slot.name)
                 return
             except Exception as exc:
                 slot.record_failure()
@@ -539,6 +655,8 @@ class PhantomRouter:
             # First chunk succeeded — committed to this slot for the rest of
             # the stream; a failure from here on propagates rather than
             # silently retrying elsewhere.
+            if on_provider:
+                on_provider(slot.name)
             yield first_chunk
             try:
                 for chunk in chunk_iter:
@@ -681,11 +799,25 @@ class PhantomRouter:
 # rather than constructing its own.
 
 _router_singleton: PhantomRouter | None = None
+_router_lock = threading.Lock()
 
 
 def get_router() -> PhantomRouter:
-    """Shared process-wide PhantomRouter, built from the environment once."""
+    """
+    Shared process-wide PhantomRouter, built from the environment once.
+
+    Double-checked locking: llm_call_node now calls this on every turn (it
+    previously never did, so this raced on nobody — see phantom_graph.py's
+    llm_call_node docs), and LangGraph turns can run concurrently. The plain
+    "if None: construct" this replaced is the same non-atomic-singleton
+    pattern already found and fixed for every ChromaDB getter in this
+    project (memory/chroma_manager.py) — two threads both observing None
+    and each constructing their own PhantomRouter would silently split the
+    tracked token budgets this whole feature exists to keep coherent.
+    """
     global _router_singleton
     if _router_singleton is None:
-        _router_singleton = PhantomRouter.from_env()
+        with _router_lock:
+            if _router_singleton is None:
+                _router_singleton = PhantomRouter.from_env()
     return _router_singleton
