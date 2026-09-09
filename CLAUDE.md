@@ -2949,3 +2949,126 @@ Not exercised deliberately: Bluetooth **off** (3 Bluetooth LE HID devices
 are connected on this machine and could be the user's mouse or keyboard),
 Wi-Fi off (drops the network), and screen lock (would lock the live
 session). All three are implemented and reachable by the user.
+
+## 11. LLM_CALL_NODE WIRED TO PHANTOMROUTER; TWO MORE PROVIDER-LEAK SITES (September 2026)
+
+Two bugs reported together: a raw provider/timeout string still reaching the
+UI, and the second query in a session failing because Groq's per-minute quota
+was already spent. Both traced back to the same root already named in §7 and
+§9 as a known, deliberate gap — `llm_call_node` never called `PhantomRouter` —
+and this phase finally closed it.
+
+### BUG 1 — two more leak sites, neither caught by the obvious grep
+
+The reported string ("Request timed out after 60s. Groq API key may be
+missing or overloaded. Try again.") wasn't in `llm_call_node` at all — it was
+`run_query()`'s own 60s outer-timeout branch, and `resume_query()`'s HITL-
+resume exception branch had the same problem independently. Both flow through
+the *normal* response path (`final_response`, not an exception), so §9's
+`_on_error`/`_on_failed` generic-message fix — which only wraps the exception
+path — never touched them. Both now return the same fixed string used
+everywhere else: `"Something went wrong. Please try again."`. A repo-wide
+sweep for `Groq|timed out after 60|API key may be|overloaded` (beyond just the
+two files already touched) turned up nothing else live — every remaining hit
+is a comment or a config sample.
+
+### BUG 2 — the wiring, and where the user's own fix spec was wrong
+
+`llm_call_node` now calls `get_router()` and drives the turn through
+`router.stream(messages, estimated_tokens=..., agentic=state["agent_mode"],
+tools=ALL_TOOLS, on_provider=...)`, replacing its entire old inline cascade
+(`select_model_for_task` → `_get_bound_llm` → backup Groq keys →
+`_get_fallback_llm("openrouter"/"gemini")`) — all now deleted. The reported
+mechanism holds up: that inline cascade tracked nothing across calls, so once
+Groq's 5100 TPM window was spent, *every* subsequent turn retried Groq (and
+every `GROQ_API_KEY_n`) from scratch before ever reaching another provider —
+stacked against `run_query()`'s 60s ceiling, a slow-failing cascade could
+still be working through dead keys when the outer timeout fired. Verified
+directly: with `groq.tokens_used` forced to its 5100 limit, a query is now
+routed to Gemini on the first attempt, correct answer, no retry cycle.
+
+The fix request's own pseudocode had several claims that didn't match this
+codebase and were corrected rather than implemented literally:
+- `router._slots[0]` — `_slots` is `dict[str, ProviderSlot]` keyed by
+  provider name, not a list. Real form: `router._slots["groq"]`.
+- `slot.consume(total)` — no such method. `record_success(tokens)` /
+  `record_failure()` already existed and already ran inside `invoke()`/
+  `stream()`; nothing needed adding here.
+- `self.last_provider_used = slot.name` as a shared instance attribute on
+  the router singleton — a real regression risk, not just a style
+  preference: `PhantomRouter` is a shared singleton and two turns can run
+  concurrently under LangGraph, so a shared mutable "last provider" field
+  lets one turn report *another* turn's provider. `invoke()`'s existing
+  `(response, provider_name)` tuple return was already race-free and
+  untouched; `stream()` (a generator with no simple return channel) got a
+  new `on_provider` callback instead, fired once right as the router commits
+  to a slot — mirrors the codebase's existing `token_callback` idiom rather
+  than inventing shared state.
+- Calling `router.invoke(..., stream=False)` from `llm_call_node` as
+  specified would have silently killed token-by-token streaming to the UI
+  (§20.1 GAP 1's whole point). Wired to `router.stream(...)` instead,
+  preserving real-time `token_callback` behavior exactly as before.
+- Not mentioned in the spec at all, and the most severe gap: `PhantomRouter`
+  clients built by `_get_client()` are plain — no tools bound. `llm_call_node`
+  requires tool-bound models for its entire ReAct loop; wiring it to the
+  router without addressing this would have silently stripped Phantom's
+  ability to call any tool (file operations, everything §6.5 lists) as an
+  unannounced side effect of a routing fix. Fixed with a new
+  `PhantomRouter._client_for(name, tools)` that binds tools onto the cached
+  client per-call without disturbing what's cached (`bind_tools()` returns a
+  new wrapper rather than mutating in place — same pattern `llm_call_node`
+  already relied on); `tools` is now a parameter on both `invoke()` and
+  `stream()`.
+- `agentic_weight` was added to `PROVIDER_CONFIG` and threaded through
+  `_pick_slot()` and `_log_pick()` largely as specified (gemini 150, groq 20,
+  openrouter 80, nvidia 60, xai 40, ollama 5) — this part of the spec was
+  accurate. `agentic=True` skips the Groq speed lane unconditionally and
+  scores weighted selection on `agentic_weight` instead of `weight`. Verified
+  live: "organize my downloads by file type" → `mode_classifier` now
+  recognizes it (new `_ORGANIZE_FILES` pattern in `AGENT_PATTERNS` — nothing
+  previously matched this phrasing) → `agentic=True` → router scores groq
+  20×1.0=20 vs gemini 150×1.0=150 → gemini picked, confirmed via
+  `_pick_slot()` directly rather than by actually running the reorganization
+  (see below).
+
+### A gap the router's own tests didn't catch, that live testing did
+
+`stream()`'s calling-side timeout (`_call_with_timeout`, independent of each
+client's own `request_timeout`/`timeout` field — see §9 for why the field
+alone isn't trustworthy) originally wrapped only `next(chunk_iter)`, on the
+assumption that `client.stream(...)` itself is cheap/lazy — true for a
+generator-based implementation, but not guaranteed. Caught live, not by
+inspection: pointing the router at an unreachable Ollama host
+(`http://localhost:1`) took the full 60s outer `run_query()` ceiling to fail,
+not the 15s the calling-side backstop should have enforced — `client.stream()`
+itself was blocking before ever handing back an iterator, entirely outside the
+wrapped window. Fixed by wrapping `client.stream(...)` and the first
+`next()` together in one `_call_with_timeout` call, so the bound covers
+connection setup through first byte regardless of which half hangs. Re-verified:
+the same unreachable-host case now fails in 13.5s.
+
+### Test 5's spec vs. the router's actual (correct) design
+
+The fix request's TEST 5 asserted Groq should show "0 or low usage" after 5
+ordinary chat queries, on the assumption that PhantomRouter should shift
+general traffic to Gemini. That's not what was built, deliberately: the speed
+lane (`_pick_slot`, non-agentic path) prefers Groq for any short/streaming
+call *because it's dramatically faster* — measured live, 1.4–5.0s per trivial
+query on Groq vs. 19.8s for the same class of question on Gemini. Run for
+real: 4 of 5 ordinary queries were served by Groq quickly, the 5th
+automatically fell to Gemini once Groq wasn't a good candidate, and forcing
+Groq's budget to its limit (separately, TEST 3) reroutes every subsequent call
+to Gemini on the first try. That is the correct fix — Gemini taking over
+*all* ordinary traffic would trade the original timeout bug for a
+latency regression on every trivial query. Recorded as a spec correction, not
+implemented literally.
+
+### Live test results (real provider APIs, real graph, this session)
+| Test | Result |
+|---|---|
+| Sanitization: no provider/timeout/API-key text reaches the user on total failure | PASS |
+| 5 consecutive ordinary queries, zero failures | PASS |
+| Groq forced to its tracked limit → next call reroutes to Gemini, correct answer | PASS |
+| Agentic phrase → `agent` mode → Gemini wins agentic-weight scoring (150 vs 20) | PASS |
+| Live agent-mode turn end-to-end through the real graph avoids Groq | PASS |
+| Groq shows near-zero usage after ordinary traffic (TEST 5b, as literally specified) | Did not hold — see above; not a defect |
