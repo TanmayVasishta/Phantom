@@ -2869,3 +2869,83 @@ built to fix on this same real Downloads folder (two 467MB files alone).
 The original ask's "<5s" target isn't achievable here without cutting
 real completeness; verified 13–20s through the live app, which is what
 honest, bounded coverage of this folder costs.
+
+## 10. DRAGGABLE OVERLAYS + REAL CONTROLLED-MODE ACTIONS (September 2026)
+
+### Drag handle (`utils/drag_handle.py`)
+
+A ⠿ grip at the left of the input bar on both agents. Hold 300ms to pick
+the window up, drag, release to drop. Position is saved into each agent's
+existing `WindowSettings` file (v1 `phantom_memory/settings.json`, v2
+`agent_v2/data/settings.json` — already separate, so the two agents keep
+independent placement) and restored next launch, clamped to the current
+screen and snapping within 20px of an edge.
+
+Drag is gated behind the handle *and* a hold, not the whole bar: a click
+anywhere else must still reach the input field, and drag-on-press would
+make a mis-aimed click nudge the window.
+
+Two things that only showed up when run, not when read:
+
+- **`show_window()` re-positions on every summon**, not just at
+  construction. Without routing that call through the saved position, a
+  dragged window snapped back to centre the next time the hotkey was
+  pressed — the drag appeared to work, then silently undid itself.
+- **Clamping must use `sizeHint()`, not `size()`.** Before the first
+  `show()` a QWidget still reports Qt's 640x480 placeholder while this
+  window is really 680x84 (both measured). Taking `max(size(), sizeHint())`
+  picked the placeholder's 480 height and clamped against a box ~400px
+  taller than the window is, so dragging down hit an invisible floor well
+  above the screen bottom. Both overlays lay out under
+  `SizeConstraint.SetFixedSize`, which pins the window to its sizeHint, so
+  sizeHint is authoritative in both states.
+
+Shared rather than inlined per window (the spec asked for inline "to keep
+it simple") — the same ~90 lines of press/timer/clamp state would otherwise
+exist twice and drift, the same reasoning `window_settings.py` documents
+for itself.
+
+### Controlled mode now actually does things (`utils/system_actions.py`)
+
+It was a stub: `"open chrome"` / `"volume up"` matched a pattern, skipped
+the LLM, and returned `"Running: <command>"` having done nothing.
+Implemented for real: radios (Bluetooth/Wi-Fi on/off/state), volume
+(up/down/mute/set N%), brightness (up/down/set), app launch/close, screen
+lock. Unrecognised input returns `None` so the caller falls back to its old
+reply instead of claiming success.
+
+**Radios use the WinRT Radio API driven from PowerShell**
+(`scripts/radio_control.ps1`), not `Enable-PnpDevice`/`Disable-PnpDevice`
+on the adapter. The PnP route is the obvious one and needs an elevated
+shell; an assistant launched from the tray doesn't have that. WinRT works
+as the logged-in user — verified live without elevation.
+
+**Everything here is read-only or one-click reversible, by design.**
+Controlled mode skips `guardian_node` entirely, so nothing routed here is
+risk-scored or HITL-approved. Consequences taken seriously:
+- App close uses `taskkill` **without `/F`** — a forced kill discards
+  unsaved work irreversibly with no approval step in front of it; a plain
+  close request lets the app prompt.
+- `"remove/delete duplicate"` is still **not** routed here. Deletion stays
+  on the smart path where the HITL gate runs (`delete_all_duplicates`
+  remains in `HIGH_RISK_TOOLS`).
+
+Two bugs found by running it:
+
+- `set_brightness` called `WmiSetBrightness` as a **static class method**,
+  which fails with `Type mismatch for parameter "Brightness"` even on
+  hardware that supports it. It is an instance method — fetched with
+  `Get-CimInstance` and invoked with `-InputObject`, it sets the panel
+  immediately. The old failure message blamed "external monitor / no
+  software brightness control", which was a guess and wrong here: reading
+  brightness worked fine on the same display.
+- The classifier accepted `"is bluetooth"` but the dispatcher's regex did
+  not, so it routed to controlled mode and fell through to the raw
+  `"Running: is bluetooth"` stub. **When those two patterns disagree the
+  stub is what the user sees** — they now cover the same phrasings, and a
+  leading "is"/"what's" reports state rather than switching the radio on.
+
+Not exercised deliberately: Bluetooth **off** (3 Bluetooth LE HID devices
+are connected on this machine and could be the user's mouse or keyboard),
+Wi-Fi off (drops the network), and screen lock (would lock the live
+session). All three are implemented and reachable by the user.
