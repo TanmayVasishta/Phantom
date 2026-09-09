@@ -24,6 +24,7 @@ from PyQt6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 
 from ui.hitl_modal import HITLModal
 from ui.worker import PhantomWorker
+from utils.drag_handle import DragHandle, apply_saved_position
 from utils.window_settings import WindowSettings
 
 ACCENT = "#7c3aed"
@@ -140,6 +141,12 @@ class PhantomAgentWindow(QWidget):
         row.setContentsMargins(10, 8, 10, 8)
         row.setSpacing(10)
 
+        # Leftmost, ahead of the ⬡ mark. Drag lives on this one small widget
+        # rather than the whole bar so a click anywhere else still goes to the
+        # input field, which is what a click on a search bar should do.
+        self._drag_handle = DragHandle(self, self._settings)
+        row.addWidget(self._drag_handle)
+
         icon = QLabel("⬡")
         icon.setStyleSheet(f"color: {ACCENT}; font-size: 20px; background: transparent; border: none;")
         row.addWidget(icon)
@@ -248,6 +255,16 @@ class PhantomAgentWindow(QWidget):
         self._collapse_anim.setEasingCurve(QEasingCurve.Type.InCubic)
 
     def _position_window(self) -> None:
+        """
+        Saved position wins; centre only when there isn't one.
+
+        This runs from show_window() as well as __init__, so without the
+        saved-position branch every hotkey press would yank a dragged window
+        back to centre — the drag would appear to work and then silently undo
+        itself the next time the overlay was summoned.
+        """
+        if apply_saved_position(self, self._settings):
+            return
         screen = QApplication.primaryScreen().availableGeometry()
         x = screen.left() + (screen.width() - self.WIDTH) // 2
         y = screen.top() + (screen.height() - self.COLLAPSED_H) // 2

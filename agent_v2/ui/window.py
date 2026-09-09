@@ -24,6 +24,7 @@ from PyQt6.QtWidgets import (
 _PARENT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if _PARENT not in sys.path:
     sys.path.insert(0, _PARENT)
+from utils.drag_handle import DragHandle, apply_saved_position  # noqa: E402
 from utils.window_settings import WindowSettings  # noqa: E402
 
 ACCENT = "#7c3aed"
@@ -208,6 +209,11 @@ class PhantomAgent2Window(QWidget):
         row = QHBoxLayout()
         row.setSpacing(10)
 
+        # Leftmost — same grip as v1 (utils/drag_handle.py). The privacy strip
+        # below the input row is unaffected; only this row gains a widget.
+        self._drag_handle = DragHandle(self, self._settings)
+        row.addWidget(self._drag_handle)
+
         icon = QLabel("⬡")
         icon.setStyleSheet(f"color: {ACCENT}; font-size: 20px; background: transparent; border: none;")
         row.addWidget(icon)
@@ -299,6 +305,11 @@ class PhantomAgent2Window(QWidget):
         return self._results
 
     def _position(self) -> None:
+        """Saved position wins; default placement only when there isn't one —
+        see the identical note in ui/phantom_window.py (v1) for why this
+        matters given show_window() calls this on every summon."""
+        if apply_saved_position(self, self._settings):
+            return
         screen = QApplication.primaryScreen().availableGeometry()
         self.move(screen.left() + (screen.width() - self.WIDTH) // 2,
                   screen.top() + int(screen.height() * 0.22))
