@@ -59,14 +59,15 @@ async def health():
 @app.get('/status')
 async def status():
     """
-    Live provider dashboard: 24h usage (file-backed, survives restarts and
-    includes traffic from BOTH the graph path and the router) plus current
-    rate-window state per provider.
+    Live provider dashboard: 24h usage (file-backed, survives restarts)
+    plus current rate-window state per provider.
 
-    Caveat: `providers` is this process's in-memory router state. Requests
-    served through phantom_graph's llm_call_node don't touch PhantomRouter,
-    so their window counters stay at zero here — `usage_24h` is the number
-    that reflects all real traffic.
+    `providers` is this process's in-memory PhantomRouter state.
+    phantom_graph's llm_call_node routes every turn through this same
+    router singleton (get_router()), so its window counters reflect real
+    graph traffic, not just direct router.invoke()/stream() callers —
+    unlike before this was wired up, when llm_call_node ran its own
+    inline provider cascade and never touched PhantomRouter at all.
     """
     from llm_router import get_router
     router = get_router()

@@ -74,36 +74,41 @@ def prewarm_pipeline():
 
     def _warm_models():
         _get_sentinel()
-        _get_bound_llm("groq")  # constructs the client, no network call
 
-    def _warm_fallback_providers():
+    def _warm_router_providers():
         """
-        Construct (never call) each fallback client so its SDK's first-time
-        Python import cost is paid here, not during a live Groq failure.
+        Construct (never call) PhantomRouter's client for every configured
+        cloud provider, so each SDK's first-time Python import cost is paid
+        here rather than during a live request.
 
-        Measured live: _get_fallback_llm("openrouter") alone takes 13.4s,
-        "gemini" 5.1s — almost entirely one-time module import (langchain_
-        openai / langchain_google_genai and their transitive deps), since
-        constructing a LangChain chat model does not itself make a network
-        call. These are only ever reached from llm_call_node's fallback
-        path, which normally never runs — so without this, the exact
-        moment a real Groq outage first needs a fallback is also the first
-        moment Python has ever imported these packages in this process,
-        adding ~18s of pure import latency on top of the actual network
-        attempt, right when the user is already waiting on a failure.
+        Measured live (same clients, same import cost either way):
+        constructing the openrouter client alone takes ~13.4s, gemini
+        ~5.1s — almost entirely one-time module import (langchain_openai /
+        langchain_google_genai and their transitive deps), not the network
+        call itself. Before llm_call_node routed through PhantomRouter,
+        only Groq was warmed here because the old inline cascade always
+        tried Groq first and only reached openrouter/gemini on failure. Now
+        that PhantomRouter picks a slot by tracked token budget (and by
+        agentic_weight for agent-mode turns — see llm_router._pick_slot),
+        ANY configured cloud provider can be the first one picked on a cold
+        process, so every one with a key set is warmed here, not just Groq.
         """
-        for provider in ("openrouter", "gemini"):
+        from llm_router import get_router, CLOUD_PROVIDER_NAMES
+        router = get_router()
+        for provider in CLOUD_PROVIDER_NAMES:
+            if not router._api_keys.get(provider):
+                continue
             try:
-                _get_fallback_llm(provider)
+                router._get_client(provider)
             except Exception as exc:
-                logger.warning("[PREWARM] Fallback provider %s warm-up failed: %s", provider, exc)
+                logger.warning("[PREWARM] Router provider %s warm-up failed: %s", provider, exc)
 
     with ThreadPoolExecutor(max_workers=4) as pool:
         futures = {
             "PII": pool.submit(_warm_pii),
             "Memory": pool.submit(_warm_memory),
             "Models": pool.submit(_warm_models),
-            "FallbackProviders": pool.submit(_warm_fallback_providers),
+            "RouterProviders": pool.submit(_warm_router_providers),
         }
         for name, fut in futures.items():
             try:
@@ -679,67 +684,6 @@ def parallel_preprocess_node(state: AgentState) -> dict:
 # NODE 2 — llm_call_node
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def select_model_for_task(intent: str) -> str:
-    """
-    Fast path: every task goes to Groq for latency.
-
-    This has returned a constant since the fast-path change. It previously took
-    a `complexity` score and ignored it; computing that score was the only thing
-    keeping the old providers/ package (a third routing stack, DeepSeek included)
-    in the live import graph, so both were removed. Kept as a named seam so
-    reintroducing per-intent routing stays a one-line change.
-    """
-    return "groq"
-
-_bound_llms = {}
-
-# Applied to every cloud client below (Groq, Gemini, OpenRouter — Ollama has
-# no equivalent field and is the local last-resort fallback anyway, where a
-# slow-but-working answer beats cutting it off). Without this, a client that
-# stalls rather than erroring fast (a slow/degraded endpoint, a hung TCP
-# connection) never raises — so llm_call_node's own exception-triggered
-# fallback cascade (backup Groq keys -> openrouter -> gemini) never fires,
-# and the ONLY thing that ever stops the request is run_query()'s outer 60s
-# ceiling, which does not retry anything. That is the actual mechanism
-# behind "Groq timeout kills the task with no rotation": the rotation code
-# was always there and correct, it just never got triggered. 15s leaves
-# room for several real attempts inside the 60s outer budget.
-CLOUD_CLIENT_TIMEOUT_SECONDS = 15
-
-# Backstop for the calling-side enforcement in llm_call_node's _bounded_stream
-# — see its docstring for why the client-level field above isn't trustworthy
-# on its own. Persistent, not per-call `with`, for the same reason as every
-# other executor in this file: exiting a `with ThreadPoolExecutor(...)` block
-# blocks on shutdown(wait=True) regardless of any timeout already given up
-# on, which would silently defeat the entire point of this wrapper.
-_LLM_CALL_EXECUTOR = ThreadPoolExecutor(max_workers=4, thread_name_prefix="phantom-llm-call")
-
-def _get_bound_llm(model_choice: str):
-    if model_choice in _bound_llms:
-        return _bound_llms[model_choice]
-
-    from tools.file_tools import ALL_TOOLS
-    import os
-
-    if model_choice == "groq" or model_choice == "cloud":
-        from langchain_groq import ChatGroq
-        api_key = os.getenv("GROQ_API_KEY")
-        if not api_key:
-            # fallback to local
-            from langchain_ollama import ChatOllama
-            llm = ChatOllama(model="qwen3.5:2b", temperature=0.3)
-        else:
-            api_key = os.getenv("GROQ_API_KEY", "")
-            llm = ChatGroq(model="openai/gpt-oss-120b", api_key=api_key, temperature=0.3,
-                           request_timeout=CLOUD_CLIENT_TIMEOUT_SECONDS)
-    else:
-        from langchain_ollama import ChatOllama
-        llm = ChatOllama(model="qwen3.5:2b", temperature=0.3)
-
-    bound = llm.bind_tools(ALL_TOOLS)
-    _bound_llms[model_choice] = bound
-    return bound
-
 PHANTOM_SYSTEM_PROMPT = """You are PHANTOM, a local AI agent that EXECUTES tasks directly on this Windows machine. You have tools. Use them.
 
 CRITICAL RULES:
@@ -773,203 +717,128 @@ Session context: {memory_context}
 
 from langchain_core.runnables import RunnableConfig
 
-def _get_fallback_llm(provider: str, api_key: str = None):
-    from tools.file_tools import ALL_TOOLS
-    import os
-    if provider == "groq":
-        from langchain_groq import ChatGroq
-        key = api_key or os.getenv("GROQ_API_KEY")
-        return ChatGroq(model="openai/gpt-oss-120b", api_key=key, temperature=0.3,
-                        request_timeout=CLOUD_CLIENT_TIMEOUT_SECONDS).bind_tools(ALL_TOOLS)
-    elif provider == "gemini":
-        # gemini-2.0-flash 404s ("no longer available") — verified live. This is
-        # the LAST link in the failover chain, so a dead model here meant a Groq
-        # outage took the whole response down. Kept in sync with llm_router.py's
-        # gemini client, which is the model name that actually resolves.
-        from langchain_google_genai import ChatGoogleGenerativeAI
-        key = os.getenv("GEMINI_API_KEY")
-        return ChatGoogleGenerativeAI(model="gemini-3.6-flash", api_key=key, temperature=0.3,
-                                      timeout=CLOUD_CLIENT_TIMEOUT_SECONDS).bind_tools(ALL_TOOLS)
-    elif provider == "openrouter":
-        from langchain_openai import ChatOpenAI
-        key = os.getenv("OPENROUTER_API_KEY")
-        return ChatOpenAI(model="google/gemma-4-31b-it:free", openai_api_key=key,
-                          openai_api_base="https://openrouter.ai/api/v1", temperature=0.3,
-                          request_timeout=CLOUD_CLIENT_TIMEOUT_SECONDS).bind_tools(ALL_TOOLS)
-    else:
-        try:
-            from langchain_ollama import ChatOllama
-        except ImportError:
-            from langchain_community.chat_models import ChatOllama
-        return ChatOllama(model="qwen3.5:2b", temperature=0.3).bind_tools(ALL_TOOLS)
 
 def llm_call_node(state: AgentState, config: RunnableConfig) -> dict:
     """
-    Core ReAct loop node (Fix A).
-    Initializes model dynamically based on intent (Fix E).
-    Calls model with stream() and passes tokens to UI (Fix F).
+    Core ReAct loop node.
+
+    Routes every call through PhantomRouter (llm_router.py) instead of the
+    fixed-always-Groq inline cascade this used to run. That old cascade had
+    no memory across turns: model selection always returned "groq"
+    regardless of how recently Groq had been rate-limited, so once Groq's
+    5100 TPM window was exhausted, EVERY subsequent turn re-tried Groq (and
+    every backup GROQ_API_KEY_n) from scratch, paying up to 5 timeout/retry
+    cycles before ever reaching openrouter or gemini. Stacked against
+    run_query()'s 60s outer ceiling, that — not an outright inability to
+    fail over — is what actually produced "second query times out": the
+    cascade could still be working through dead Groq keys when the outer
+    timeout fired. PhantomRouter tracks each provider's rolling token
+    budget across calls (ProviderSlot) and skips a provider proactively
+    once it's exhausted, so a saturated Groq is never retried at all on the
+    next turn — Gemini (or whichever slot actually has budget) is picked on
+    the first attempt.
+
+    `tools=ALL_TOOLS` keeps this node's ReAct/tool-calling ability intact —
+    PhantomRouter's own clients are otherwise plain/tool-less (see
+    PhantomRouter._client_for). `agentic=True` (from state["agent_mode"],
+    set by mode_classifier) skips the router's Groq speed lane and scores
+    providers on agentic_weight instead of weight, since Gemini's context
+    and reliability matter more for a multi-step file/agent task than
+    Groq's raw tokens/sec.
     """
     from tools.file_tools import ALL_TOOLS
     from langchain_core.messages import SystemMessage
-    import os
+    from llm_router import get_router, safe_content
 
     intent = state.get("intent", "GENERAL_QA")
-    model_choice = select_model_for_task(intent)
-    llm_with_tools = _get_bound_llm(model_choice)
-    
+    is_agentic = bool(state.get("agent_mode", False))
+
     system = PHANTOM_SYSTEM_PROMPT.format(
         tool_names=", ".join(t.name for t in ALL_TOOLS),
         memory_context=state.get("memory_context", "")
     )
-    
     messages = [SystemMessage(content=system), *state["messages"]]
-    
-    # 1. Token Pre-flight Checks
+
+    # Real token estimate from the actual prompt, not a flat guess — feeds
+    # PhantomRouter's per-provider budget accounting (_pick_slot) and, on
+    # a total failure below, the usage log.
     try:
         import tiktoken
         enc = tiktoken.get_encoding("cl100k_base")
         total_tokens = sum(len(enc.encode(str(getattr(m, 'content', m)))) for m in messages)
-        if total_tokens > 7000 and model_choice in ("groq", "cloud"):
-            logger.warning(f"[LLM] Payload too large ({total_tokens} tokens). Routing to Gemini fallback.")
-            llm_with_tools = _get_fallback_llm("gemini")
     except Exception as e:
-        logger.warning(f"[LLM] Token pre-flight check failed: {e}")
+        logger.warning(f"[LLM] Token estimate failed: {e}")
+        total_tokens = 0
 
-    logger.info("[LLM] Calling %s model", model_choice)
     token_callback = config.get("configurable", {}).get("token_callback")
-    
-    # 2. Robust API Rotation & Execution
-    groq_keys = [os.getenv("GROQ_API_KEY")]
-    for i in range(2, 6):
-        k = os.getenv(f"GROQ_API_KEY_{i}")
-        if k: groq_keys.append(k)
+    session_id = str(config.get("configurable", {}).get("thread_id", "unknown"))
+    router = get_router()
 
-    def run_stream(llm_client):
-        full_res = None
-        for chunk in llm_client.stream(messages):
-            if token_callback and chunk.content:
-                token_callback(chunk.content)
-            if full_res is None:
-                full_res = chunk
-            else:
-                full_res += chunk
-        return full_res
+    logger.info("[LLM] intent=%s agentic=%s est_tokens=%d -> PhantomRouter",
+                intent, is_agentic, total_tokens)
 
-    def _bounded_stream(llm_client):
-        """
-        run_stream(), but with the timeout enforced from the calling side
-        rather than trusted to the client's own timeout field.
+    # Set by on_provider the instant the router commits to a slot. A plain
+    # closure-local list, not an attribute on the router singleton — the
+    # router is shared across concurrent turns, and a shared mutable
+    # "last provider used" field would let one turn's result report the
+    # WRONG provider under concurrent LangGraph execution.
+    picked_provider = ["none"]
 
-        Verified live before relying on this: ChatGroq's request_timeout is
-        genuinely honored (a 0.001s setting raised APITimeoutError in
-        1.855s). ChatGoogleGenerativeAI's `timeout=` is NOT reliably
-        honored for a stalled connection — the same 0.001s setting took
-        34.183s to raise (ConnectTimeout, stuck in the TLS handshake phase
-        specifically, not the read phase the field seems to actually
-        bound). Without this wrapper, a Gemini-specific stall — Gemini
-        being the LAST link in the fallback chain below — would never
-        raise at all within any useful window, so the fallback logic
-        immediately below would never get a chance to run for that exact
-        failure mode, and the only thing that would eventually stop the
-        request is run_query()'s outer 60s ceiling, with zero rotation
-        ever attempted. That is the literal mechanism behind "rotation
-        isn't happening" for a stalled (as opposed to fast-erroring)
-        provider. The abandoned call keeps running harmlessly in the
-        background on this persistent pool if it does eventually resolve.
-        """
-        future = _LLM_CALL_EXECUTOR.submit(run_stream, llm_client)
-        return future.result(timeout=CLOUD_CLIENT_TIMEOUT_SECONDS)
+    def _on_provider(name: str) -> None:
+        picked_provider[0] = name
 
     full_response = None
-    # Which provider actually served the response. Starts as the intended one
-    # and is reassigned by the failover paths below — reporting the *intended*
-    # provider after a failover mislabels both the UI badge and the usage log.
-    actual_provider = "groq" if model_choice in ("groq", "cloud") else "ollama"
+    provider_used = "none"
     try:
-        full_response = _bounded_stream(llm_with_tools)
+        for chunk in router.stream(
+            messages,
+            estimated_tokens=total_tokens or None,
+            session_id=session_id,
+            agentic=is_agentic,
+            tools=ALL_TOOLS,
+            on_provider=_on_provider,
+        ):
+            if token_callback and chunk.content:
+                token_callback(chunk.content)
+            if full_response is None:
+                full_response = chunk
+            else:
+                full_response += chunk
+        provider_used = picked_provider[0]
     except Exception as e:
-        # Fail over on ANY provider error (rate limit, decommissioned model,
-        # bad request, timeout, etc.) — never let a single provider's outage
-        # or a stale hardcoded model name kill the whole response.
-        logger.warning(f"[LLM] API Error caught: {e}. Attempting failover...")
-        success = False
-
-        # Rotate backup Groq keys first (cheap, same provider)
-        for backup_key in groq_keys[1:]:
-            try:
-                logger.warning("[LLM] Trying backup Groq API Key...")
-                fallback_llm = _get_fallback_llm("groq", api_key=backup_key)
-                full_response = _bounded_stream(fallback_llm)
-                actual_provider = "groq"
-                success = True
-                break
-            except Exception:
-                continue
-
-        # Cross-provider fallback chain
-        if not success:
-            logger.warning("[LLM] All Groq keys failed. Failing over across providers...")
-            for provider in ("openrouter", "gemini"):
-                try:
-                    fallback_llm = _get_fallback_llm(provider)
-                    full_response = _bounded_stream(fallback_llm)
-                    actual_provider = provider
-                    success = True
-                    break
-                except Exception as fallback_exc:
-                    logger.warning(f"[LLM] {provider} fallback failed: {fallback_exc}")
-                    continue
-
-        if not success:
-            # Every provider in the cascade genuinely failed. This used to
-            # re-raise the ORIGINAL exception (e.g. a raw
-            # "groq.AuthenticationError: Invalid API Key" or a Gemini
-            # ConnectTimeout), which propagates as an unhandled LangGraph
-            # node exception — and the generic exception handler on the
-            # other end of that (PhantomWorker.run() in the UI) shows
-            # str(exc) straight to the user, surfacing exactly the raw
-            # provider-specific text the UI is never supposed to display.
-            # Logged in full here (this is the one place that's supposed to
-            # know which provider said what); the user only ever sees a
-            # generic message.
-            logger.error("[LLM] All providers exhausted for this turn: %s", e)
-            full_response = AIMessage(
-                content="Unable to process request right now. Please try again."
-            )
-            actual_provider = "none"
-
-    # Return update to state
-    provider_used = actual_provider
-
-    # Usage logging for THIS path too. The router (llm_router.py) logs its own
-    # calls, but the app's real traffic runs through this node and never
-    # touches PhantomRouter — logging only the router would leave actual
-    # production usage untracked. window_limit=0 marks an entry as not
-    # rate-window-managed (this path has no ProviderSlot budget).
-    try:
-        from utils.usage_logger import log_usage
-        # bind_tools() wraps the chat model in a RunnableBinding, so the model
-        # id lives on .bound rather than the wrapper itself.
-        _target = getattr(llm_with_tools, "bound", llm_with_tools)
-        _model = getattr(_target, "model_name", None) or getattr(_target, "model", None)
-        log_usage(
-            provider=provider_used,
-            model=str(_model) if _model else "unknown",
-            tokens_used=int(locals().get("total_tokens", 0) or 0),
-            window_tokens=0,
-            window_limit=0,
-            session_id=str(config.get("configurable", {}).get("thread_id", "unknown")),
-            mode=state.get("mode", "smart"),
+        # PhantomRouter already cascades through every healthy cloud
+        # provider (by tracked budget, not a fixed guess-and-retry order)
+        # plus Ollama before raising — reaching here means every option
+        # genuinely failed this turn. Real detail stays in the log only;
+        # see ui/worker.py's sanitizer for why the user-facing side must
+        # never see a provider name or raw exception text.
+        logger.error("[LLM] PhantomRouter exhausted all providers for this turn: %s", e)
+        # Same canonical string as run_query()'s timeout branch and
+        # resume_query()'s exception branch — one generic message
+        # everywhere a failure reaches the user, not a different-looking
+        # one per code path.
+        full_response = AIMessage(
+            content="Something went wrong. Please try again."
         )
-    except Exception:
-        pass
+        provider_used = "none"
+        # PhantomRouter logs usage itself on success (see stream()'s
+        # internal _log_usage calls) — only this failure path needs a
+        # manual entry, so a real outage still shows up in the usage log
+        # instead of vanishing silently.
+        try:
+            from utils.usage_logger import log_usage
+            log_usage(
+                provider="none", model="unknown", tokens_used=total_tokens,
+                window_tokens=0, window_limit=0, session_id=session_id,
+                mode=state.get("mode", "smart"),
+            )
+        except Exception:
+            pass
 
-    # safe_content(), not .content: the Gemini failover path returns content as
-    # a list of structured parts, and handing that list to pii_restore_node
-    # (which does regex substitution on a string) breaks the response path
-    # exactly when a provider outage has already put it under stress.
-    from llm_router import safe_content
-
+    # safe_content(), not .content: Gemini returns content as a list of
+    # structured parts, and handing that list to pii_restore_node (which
+    # does regex substitution on a string) breaks the response path exactly
+    # when a provider outage has already put it under stress.
     return {
         "messages": [full_response],
         "llm_response": safe_content(full_response),
@@ -1803,9 +1672,14 @@ def resume_query(decision: str, thread_id: str, token_callback=None) -> dict:
             graph, Command(resume=normalised), config, {}
         )
     except Exception as exc:
+        # Same rule as run_query()'s timeout branch just above: this dict
+        # flows through the normal response path (final_response), not an
+        # error signal, so nothing downstream re-sanitizes it — it has to be
+        # generic here or not at all. Real detail (the actual exception)
+        # stays in the log only.
         logger.error('[RESUME] Error: %s', exc)
-        msg = f'[PHANTOM] Resume error: {exc}'
-        return {'response': msg, 'final_response': msg, 'error': str(exc),
+        msg = 'Something went wrong. Please try again.'
+        return {'response': msg, 'final_response': msg, 'provider_used': 'none',
                 'hitl_required': False, 'thread_id': thread_id}
 
     result = _build_result(final_state, thread_id, _start, pending_interrupt=interrupt_payload)
@@ -1865,12 +1739,20 @@ def run_query(user_input, thread_id=None, verbose=True, token_callback=None,
         return future.result(timeout=timeout)
     except concurrent.futures.TimeoutError:
         future.add_done_callback(_log_abandoned_query_outcome)
-        msg = f"Request timed out after {timeout}s. Groq API key may be missing or overloaded. Try again."
+        # Generic on purpose — this return dict goes through the NORMAL
+        # response path (final_response, not an exception), so nothing
+        # downstream treats it as an error needing separate sanitization.
+        # ui/phantom_window.py's _on_response() prints final_response as-is;
+        # it was never routed through _on_error()'s generic-message wrapper,
+        # which is exactly why a raw provider name survived here after that
+        # fix. Real detail (timeout value, which provider) stays in the log.
+        logger.warning("[QUERY] Timed out after %ds (thread_id=%s)", timeout, thread_id)
+        msg = "Something went wrong. Please try again."
         return {
                 "response": msg,
                 "final_response": msg,
                 "n_pii_redacted": 0,
-                "provider_used": "timeout",
+                "provider_used": "none",
                 "latency_ms": timeout * 1000,
                 "hitl_required": False,
                 "risk_score": 0.0,
