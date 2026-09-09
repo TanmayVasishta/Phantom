@@ -62,7 +62,32 @@ _FIND_DUPLICATES = re.compile(
     re.IGNORECASE,
 )
 
-CONTROLLED_PATTERNS: list[re.Pattern] = [_APP_ACTION, _VOLUME, _BRIGHTNESS, _INPUT_SIM, _FIND_DUPLICATES]
+# Radios and screen lock. Both are reversible by the user in one click, which
+# is the bar for controlled mode (it skips guardian_node, so nothing routed
+# here is risk-scored or approved). Anchored whole-input like the rest, so
+# "explain how bluetooth pairing works" stays a normal question.
+_RADIO = re.compile(
+    r"^\s*(?:turn|switch|toggle)\s+(?:on|off)\s+(?:the\s+)?(?:bluetooth|bt|wi-?fi|wireless)\s*$"
+    r"|^\s*(?:bluetooth|bt|wi-?fi|wireless)\s+(?:on|off)\s*$"
+    r"|^\s*(?:enable|disable)\s+(?:the\s+)?(?:bluetooth|bt|wi-?fi|wireless)\s*$"
+    # State questions, kept in step with _RE_RADIO in utils/system_actions.py —
+    # when the two disagree the router sends it to controlled mode and the
+    # dispatcher then can't parse it, which surfaces as the raw "Running: ..."
+    # stub instead of an answer.
+    r"|^\s*(?:is|are|what'?s|whats)\s+(?:the\s+)?(?:bluetooth|bt|wi-?fi|wireless)"
+    r"(?:\s+(?:on|off|status|state))?\s*\??\s*$"
+    r"|^\s*(?:bluetooth|bt|wi-?fi|wireless)(?:\s+(?:status|state))?\s*$",
+    re.IGNORECASE,
+)
+_LOCK_SCREEN = re.compile(
+    r"^\s*lock\s+(?:the\s+)?(?:screen|pc|computer|workstation|desktop)\s*$",
+    re.IGNORECASE,
+)
+
+CONTROLLED_PATTERNS: list[re.Pattern] = [
+    _APP_ACTION, _VOLUME, _BRIGHTNESS, _INPUT_SIM, _FIND_DUPLICATES,
+    _RADIO, _LOCK_SCREEN,
+]
 
 # ── Agent: multi-step tasks ───────────────────────────────────────────────────
 _RESEARCH_AND = re.compile(

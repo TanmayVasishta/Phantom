@@ -450,6 +450,22 @@ def deterministic_action_node(state: AgentState) -> dict:
         response = _run_controlled_duplicate_scan(command)
         return {"final_response": response, "provider_used": "none"}
 
+    # Real OS actions (radios, volume, brightness, apps, lock). Returns None
+    # for anything it doesn't handle, which falls through to the original
+    # acknowledgement-only behaviour rather than claiming it did something.
+    try:
+        from utils.system_actions import execute as run_system_action
+
+        done = run_system_action(command)
+        if done:
+            return {"final_response": done, "provider_used": "none"}
+    except Exception as exc:
+        logger.warning("[CONTROLLED] system action failed: %s", exc)
+        return {
+            "final_response": "Couldn't complete that action. Please try again.",
+            "provider_used": "none",
+        }
+
     return {
         "final_response": f"Running: {command}",
         "provider_used": "none",
