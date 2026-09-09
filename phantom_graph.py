@@ -950,7 +950,15 @@ def _affected_preview(tool_name: str, tool_args: dict) -> list[str]:
     try:
         if tool_name == "delete_all_duplicates":
             from tools.file_tools import _get_duplicates_list
-            return [str(p) for p in _get_duplicates_list(args.get("path", ""))][:25]
+            # _get_duplicates_list returns (duplicates, scan_complete,
+            # skipped_folders), not a flat list — iterating over the tuple
+            # directly (as this used to) stringified all three elements,
+            # showing the approval prompt a garbled bracket-and-quote mess
+            # instead of a clean per-file list, with a wrong affected-file
+            # count. delete_all_duplicates() itself already unpacks this
+            # correctly; only this preview helper had the bug.
+            duplicates, _scan_complete, _skipped = _get_duplicates_list(args.get("path", ""))
+            return [str(p) for p in duplicates][:25]
         if tool_name == "delete_files":
             return [str(p) for p in (args.get("file_paths") or [])][:25]
         if tool_name == "delete_folder":
